@@ -1,3 +1,9 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  # JSON Rest API
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :clusters, except: [:update, :new, :edit]
+    end
+  end
 end
