@@ -17,4 +17,17 @@ class Api::V1::TopicsController < Api::V1::BaseController
       render_json(topic)
     end
   end
+
+  # DELETE /api/v1/clusters/:cluster_id/topics/:id
+  def destroy
+    cluster = Cluster.find(params[:cluster_id])
+    topic = cluster.topics.find { |t| t.name == params[:id] }
+
+    if topic.nil?
+      render_errors('Topic not found', status: 404)
+    else
+      topic.destroy
+      head :no_content
+    end
+  end
 end

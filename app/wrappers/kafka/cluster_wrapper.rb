@@ -36,7 +36,7 @@ module Kafka
       # returns information about each topic
       # i.e isr, leader, partitions
       topic_metadata = @brokers.sample.fetch_metadata(topics: nil)
-      @topics = topic_metadata.topics.map { |tm| TopicWrapper.new(tm) }
+      @topics = topic_metadata.topics.map { |tm| TopicWrapper.new(tm, @cluster) }
     end
   end
 end
