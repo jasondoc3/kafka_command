@@ -9,6 +9,13 @@ module Kafka
       @partition_metadata = partition_metadata
     end
 
+    def as_json(*)
+      {
+        isr: isr,
+        leader: leader,
+        number: partition_id
+      }.with_indifferent_access
+    end
 
     # TODO
     #

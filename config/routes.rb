@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :clusters, except: [:update, :new, :edit] do
         resources :brokers, only: [:index, :show]
+        resources :topics, except: [:new, :edit]
       end
     end
   end

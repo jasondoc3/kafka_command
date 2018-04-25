@@ -1,5 +1,4 @@
 class Cluster < ApplicationRecord
-
   has_many :brokers, dependent: :destroy
   validates :name, presence: true
 
@@ -8,6 +7,10 @@ class Cluster < ApplicationRecord
       brokers: brokers.map(&:host),
       client_id: name
     )
+  end
+
+  def topics
+    client.cluster.topics
   end
 
   def init_brokers(hosts)

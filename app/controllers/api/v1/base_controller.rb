@@ -15,7 +15,7 @@ class Api::V1::BaseController < ApplicationController
   end
 
   def render_errors(errors, status: :unprocessible_entity)
-    render json: errors
+    render json: errors, status: status
   end
 
 end
