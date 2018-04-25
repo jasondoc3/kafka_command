@@ -13,6 +13,11 @@ class Cluster < ApplicationRecord
     client.cluster.topics
   end
 
+  def create_topic(name, **kwargs)
+    client.cluster.create_topic(name, **kwargs)
+    client.cluster.refresh!
+  end
+
   def init_brokers(hosts)
     hosts.split(',').each do |h|
       brokers.new(host: h)
