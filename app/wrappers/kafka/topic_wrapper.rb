@@ -1,3 +1,5 @@
+require_dependency 'app/wrappers/kafka/partition_wrapper'
+
 module Kafka
   class TopicWrapper
     attr_reader :name, :partitions, :replication_factor

@@ -93,3 +93,6 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 end
+
+# Makes loading files into out tests without loading rails much easier
+$LOAD_PATH.unshift(File.expand_path('.'))

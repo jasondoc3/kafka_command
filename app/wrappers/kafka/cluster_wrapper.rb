@@ -1,4 +1,6 @@
 require 'forwardable'
+require_dependency 'app/wrappers/kafka/broker_wrapper'
+require_dependency 'app/wrappers/kafka/topic_wrapper'
 
 module Kafka
   class ClusterWrapper

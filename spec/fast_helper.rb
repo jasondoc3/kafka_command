@@ -1,0 +1,1 @@
+alias require_dependency require

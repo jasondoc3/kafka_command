@@ -1,9 +1,11 @@
 require 'forwardable'
+require_dependency 'app/wrappers/kafka/cluster_wrapper'
 
 module Kafka
   class ClientWrapper
     extend Forwardable
-    attr_reader :cluster
+
+    attr_reader :cluster, :client
     def_delegators :@client, :create_topic
 
     def initialize(brokers:, client_id: nil)
@@ -18,6 +20,5 @@ module Kafka
         hostname == b.host && port.to_i == b.port
       end
     end
-
   end
 end
