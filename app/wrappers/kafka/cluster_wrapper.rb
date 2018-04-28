@@ -5,7 +5,6 @@ module Kafka
     extend Forwardable
     attr_reader :brokers, :topics
     def_delegators :@cluster, :delete_topic, :create_partitions_for
-    CLUSTER_API_TIMEOUT = 5
 
     def initialize(cluster)
       @cluster = cluster
@@ -15,16 +14,6 @@ module Kafka
     def refresh!
       initialize_brokers
       initialize_topics
-    end
-
-    def create_topic(name, num_partitions:, replication_factor:)
-      @cluster.create_topic(
-        name,
-        num_partitions: num_partitions,
-        replication_factor: replication_factor,
-        config: {},
-        timeout: CLUSTER_API_TIMEOUT
-      )
     end
 
     def fetch_metadata(topics: nil)

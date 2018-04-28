@@ -14,7 +14,7 @@ class Cluster < ApplicationRecord
   end
 
   def create_topic(name, **kwargs)
-    client.cluster.create_topic(name, **kwargs)
+    client.create_topic(name, **kwargs)
     client.cluster.refresh!
   end
 

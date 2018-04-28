@@ -1,6 +1,7 @@
 module Kafka
   class TopicWrapper
     attr_reader :name, :partitions, :replication_factor
+    CLUSTER_API_TIMEOUT = 30
 
     def initialize(topic_metadata, cluster)
       @cluster = cluster
@@ -8,14 +9,14 @@ module Kafka
     end
 
     def destroy
-      @cluster.delete_topic(@name, timeout: ClusterWrapper::CLUSTER_API_TIMEOUT)
+      @cluster.delete_topic(@name, timeout: CLUSTER_API_TIMEOUT)
     end
 
     def set_partitions!(num_partitions)
       @cluster.create_partitions_for(
         @name,
         num_partitions: num_partitions,
-        timeout: ClusterWrapper::CLUSTER_API_TIMEOUT
+        timeout: CLUSTER_API_TIMEOUT
       )
 
       refresh!

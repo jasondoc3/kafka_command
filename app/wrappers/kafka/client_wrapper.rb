@@ -2,7 +2,9 @@ require 'forwardable'
 
 module Kafka
   class ClientWrapper
+    extend Forwardable
     attr_reader :cluster
+    def_delegators :@client, :create_topic
 
     def initialize(brokers:, client_id: nil)
       @client = Kafka.new(brokers, client_id: client_id)
