@@ -61,7 +61,7 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "kafkacommand_#{Rails.env}"
+  # config.active_job.queue_name_prefix = "kafka_command_#{Rails.env}"
 
   config.action_mailer.perform_caching = false
 
