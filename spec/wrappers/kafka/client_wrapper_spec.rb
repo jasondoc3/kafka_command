@@ -50,9 +50,14 @@ RSpec.describe Kafka::ClientWrapper do
         client_wrapper.create_topic(topic_name, **topic_kwargs)
       end
 
-      it 'creates a topic' do
-        client_wrapper.create_topic(topic_name, topic_kwargs)
-        expect(client_wrapper.client.topics).to include(topic_name)
+      context 'topic creation' do
+        after { client_wrapper.client.delete_topic(topic_name) }
+
+        it 'creates a topic' do
+          expect(client_wrapper.client.topics).to_not include(topic_name)
+          client_wrapper.create_topic(topic_name, topic_kwargs)
+          expect(client_wrapper.client.topics).to include(topic_name)
+        end
       end
     end
   end

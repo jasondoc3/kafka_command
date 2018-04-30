@@ -5,7 +5,7 @@ require_dependency 'app/wrappers/kafka/topic_wrapper'
 module Kafka
   class ClusterWrapper
     extend Forwardable
-    attr_reader :brokers, :topics
+    attr_reader :brokers, :cluster, :topics
     def_delegators :@cluster, :delete_topic, :create_partitions_for
 
     def initialize(cluster)
