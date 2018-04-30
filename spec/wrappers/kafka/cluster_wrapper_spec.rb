@@ -21,8 +21,8 @@ RSpec.describe Kafka::ClusterWrapper do
     end
 
     context 'topics' do
-      before { client.create_topic(topic_name) }
-      after { client.delete_topic(topic_name) }
+      before { create_topic(topic_name) }
+      after  { delete_topic(topic_name) }
 
       it 'initializes topics' do
         expect(cluster_wrapper.topics).to_not be_empty
@@ -34,8 +34,8 @@ RSpec.describe Kafka::ClusterWrapper do
 
   describe '#refresh!' do
     let!(:cluster_wrapper) { described_class.new(client.cluster) }
-    before { client.create_topic(topic_name) }
-    after  { client.delete_topic(topic_name) }
+    before { create_topic(topic_name) }
+    after  { delete_topic(topic_name) }
 
     it 'refreshes topic information' do
       expect(cluster_wrapper.topics.map(&:name)).to_not include(topic_name)
@@ -70,12 +70,12 @@ RSpec.describe Kafka::ClusterWrapper do
       end
 
       context 'deletion' do
-        before { client.create_topic(topic_name) }
+        before { create_topic(topic_name) }
 
         it 'deletes the topic' do
-          expect(client.topics).to include(topic_name)
+          expect(topic_exists?(topic_name)).to eq(true)
           cluster_wrapper.delete_topic(topic_name, **delete_topic_kwargs)
-          expect(client.topics).to_not include(topic_name)
+          expect(topic_exists?(topic_name)).to eq(false)
         end
       end
     end
@@ -91,15 +91,13 @@ RSpec.describe Kafka::ClusterWrapper do
       end
 
       context 'altering partitions' do
-        before { client.create_topic(topic_name, num_partitions: 1) }
-        after { client.delete_topic(topic_name) }
+        before { create_topic(topic_name, num_partitions: 1) }
+        after  { delete_topic(topic_name) }
 
         it 'changes the number of partitions' do
-          topic = cluster_wrapper.fetch_metadata.topics.find { |t| t.topic_name == topic_name }
-          expect(topic.partitions.count).to eq(1)
+          expect(partitions_for(topic_name)).to eq(1)
           cluster_wrapper.create_partitions_for(topic_name, **create_partitions_kwargs)
-          topic = cluster_wrapper.fetch_metadata.topics.find { |t| t.topic_name == topic_name }
-          expect(topic.partitions.count).to eq(5)
+          expect(partitions_for(topic_name)).to eq(5)
         end
       end
     end
@@ -113,14 +111,14 @@ RSpec.describe Kafka::ClusterWrapper do
       end
 
       context 'retrieving offsets 'do
-        before { client.create_topic(topic_name) }
-        after { client.delete_topic(topic_name) }
+        before { create_topic(topic_name) }
+        after  { delete_topic(topic_name) }
 
         it 'returns the offset' do
           offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
           expect(offset).to eq(0)
 
-          client.deliver_message('test', topic: topic_name, partition: partition_id)
+          deliver_message('test', topic: topic_name, partition: partition_id)
           offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
           expect(offset).to eq(1)
         end
