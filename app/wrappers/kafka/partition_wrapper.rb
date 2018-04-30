@@ -5,15 +5,22 @@ module Kafka
     extend Forwardable
     def_delegators :@partition_metadata, :isr, :leader, :partition_id, :replicas
 
-    def initialize(partition_metadata)
+    def initialize(partition_metadata, topic)
+      @topic = topic
       @partition_metadata = partition_metadata
     end
+
+    def highwater_mark_offset
+      @topic.offset_for(self)
+    end
+    alias offset highwater_mark_offset
 
     def as_json(*)
       {
         isr: isr,
         leader: leader,
-        number: partition_id
+        number: partition_id,
+        highwater_mark_offset: offset
       }.with_indifferent_access
     end
 

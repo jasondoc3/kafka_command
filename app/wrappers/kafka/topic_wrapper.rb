@@ -29,11 +29,15 @@ module Kafka
       initialize_from_metadata(topic_metadata)
     end
 
+    def offset_for(partition)
+      @cluster.resolve_offset(@name, partition.partition_id, :latest)
+    end
+
     def as_json(*)
       {
         name: @name,
         replication_factor: @replication_factor,
-        partitions: @partitions.map(&:as_json)
+        partitions: @partitions.sort_by(&:partition_id).map(&:as_json)
       }.with_indifferent_access
     end
 
@@ -41,7 +45,10 @@ module Kafka
 
     def initialize_from_metadata(topic_metadata)
       @name = topic_metadata.topic_name
-      @partitions = topic_metadata.partitions.map { |pm| PartitionWrapper.new(pm) }
+      @partitions = topic_metadata.partitions.map do |pm|
+        PartitionWrapper.new(pm, self)
+      end
+
       @replication_factor = @partitions.map(&:isr).map(&:length).max
     end
   end

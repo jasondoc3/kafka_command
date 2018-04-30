@@ -103,5 +103,28 @@ RSpec.describe Kafka::ClusterWrapper do
         end
       end
     end
+
+    describe '#resolve_offset' do
+      let(:partition_id) { 0 }
+
+      it 'forwards resolve_offset to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:resolve_offset).with(topic_name, partition_id, :latest)
+        cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
+      end
+
+      context 'retrieving offsets 'do
+        before { client.create_topic(topic_name) }
+        after { client.delete_topic(topic_name) }
+
+        it 'returns the offset' do
+          offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
+          expect(offset).to eq(0)
+
+          client.deliver_message('test', topic: topic_name, partition: partition_id)
+          offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
+          expect(offset).to eq(1)
+        end
+      end
+    end
   end
 end
