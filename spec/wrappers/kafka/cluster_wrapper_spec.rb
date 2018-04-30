@@ -1,7 +1,4 @@
-require 'fast_helper'
-require 'securerandom'
-require 'kafka'
-require 'config/initializers/kafka'
+require 'support/kafka_helper'
 require 'app/wrappers/kafka/cluster_wrapper'
 
 RSpec.describe Kafka::ClusterWrapper do
