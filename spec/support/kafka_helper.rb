@@ -23,10 +23,14 @@ def deliver_message(msg, **kwargs)
   kafka_client.deliver_message(msg, **kwargs)
 end
 
-def partitions_for(topic)
-  kafka_client.partitions_for(topic)
+def partitions_for(topic_name)
+  kafka_client.partitions_for(topic_name)
 end
 
-def topic_exists?(topic)
-  list_topic_names.include?(topic)
+def create_partitions_for(topic_name, **kwargs)
+  kafka_client.create_partitions_for(topic_name, **kwargs)
+end
+
+def topic_exists?(topic_name)
+  list_topic_names.include?(topic_name)
 end

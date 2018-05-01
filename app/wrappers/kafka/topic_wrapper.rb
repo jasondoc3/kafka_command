@@ -7,7 +7,8 @@ module Kafka
 
     def initialize(topic_metadata, cluster)
       @cluster = cluster
-      initialize_from_metadata(topic_metadata)
+      @topic_metadata = topic_metadata
+      initialize_from_metadata
     end
 
     def destroy
@@ -25,14 +26,17 @@ module Kafka
     end
 
     def refresh!
-      topic_metadata = @cluster.fetch_metadata(topics: [@name]).topics.first
-      initialize_from_metadata(topic_metadata)
+      @topic_metadata = @cluster.fetch_metadata(topics: [@name]).topics.first
+      initialize_from_metadata
     end
 
     def offset_for(partition)
-      @cluster.resolve_offset(@name, partition.partition_id, :latest)
+      # The offset resolution API will return the offset of the "next" message to
+      # be written when resolving the "latest" offset, so we subtract one.
+      @cluster.resolve_offset(@name, partition.partition_id, :latest) - 1
     end
 
+    # Needs arguments to be compatible with rails as_json calls
     def as_json(*)
       {
         name: @name,
@@ -43,9 +47,9 @@ module Kafka
 
     private
 
-    def initialize_from_metadata(topic_metadata)
-      @name = topic_metadata.topic_name
-      @partitions = topic_metadata.partitions.map do |pm|
+    def initialize_from_metadata
+      @name = @topic_metadata.topic_name
+      @partitions = @topic_metadata.partitions.map do |pm|
         PartitionWrapper.new(pm, self)
       end
 

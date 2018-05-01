@@ -56,6 +56,18 @@ RSpec.describe Kafka::ClusterWrapper do
     it 'returns a Kafka::Protocol::MetadataResponse' do
       expect(cluster_wrapper.fetch_metadata).to be_an_instance_of(Kafka::Protocol::MetadataResponse)
     end
+
+    context 'with topics' do
+      let(:metadata) { cluster_wrapper.fetch_metadata }
+      before { create_topic(topic_name) }
+      after  { delete_topic(topic_name) }
+
+      it 'contains topic and partition metadata' do
+        expect(metadata.topics).to_not be_empty
+        expect(metadata.topics.sample).to be_an_instance_of(Kafka::Protocol::MetadataResponse::TopicMetadata)
+        expect(metadata.topics.sample.partitions.first).to be_an_instance_of(Kafka::Protocol::MetadataResponse::PartitionMetadata)
+      end
+    end
   end
 
   context 'forwarding' do
