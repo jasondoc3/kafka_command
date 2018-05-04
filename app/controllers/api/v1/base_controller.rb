@@ -1,6 +1,11 @@
 class Api::V1::BaseController < ApplicationController
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   private
+
+  def record_not_found
+    render_errors('Not Found', status: :not_found)
+  end
 
   def serialize_json(data)
     if data.is_a?(ActiveRecord::Relation) || data.is_a?(Array)
