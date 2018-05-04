@@ -84,8 +84,8 @@ RSpec.describe Kafka::TopicWrapper do
     let(:offset) { topic.offset_for(partition) }
 
     describe 'no messsages' do
-      it 'returns -1' do
-        expect(offset).to eq(-1)
+      it 'returns 0' do
+        expect(offset).to eq(0)
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe Kafka::TopicWrapper do
       end
 
       it 'returns the latest offset' do
-        expect(offset).to eq(1)
+        expect(offset).to eq(num_messages)
       end
     end
   end

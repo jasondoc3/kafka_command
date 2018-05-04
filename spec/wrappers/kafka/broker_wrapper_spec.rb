@@ -56,7 +56,7 @@ RSpec.describe Kafka::BrokerWrapper do
         broker.fetch_metadata
       end
 
-      it 'returns an instance of Kafka::Protocol::MetadataRequest' do
+      it 'returns an instance of Kafka::Protocol::MetadataResponse' do
         expect(broker.fetch_metadata).to be_an_instance_of(Kafka::Protocol::MetadataResponse)
       end
     end

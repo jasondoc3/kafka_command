@@ -31,9 +31,7 @@ module Kafka
     end
 
     def offset_for(partition)
-      # The offset resolution API will return the offset of the "next" message to
-      # be written when resolving the "latest" offset, so we subtract one.
-      @cluster.resolve_offset(@name, partition.partition_id, :latest) - 1
+      @cluster.resolve_offset(@name, partition.partition_id, :latest)
     end
 
     # Needs arguments to be compatible with rails as_json calls
