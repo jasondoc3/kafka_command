@@ -13,8 +13,13 @@
 # it.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+#
+# Makes loading files into out tests without loading rails much easier
+$LOAD_PATH.unshift(File.expand_path('.'))
+
 require 'pry'
 require 'json'
+require 'support/kafka_helper'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -97,5 +102,3 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 end
 
-# Makes loading files into out tests without loading rails much easier
-$LOAD_PATH.unshift(File.expand_path('.'))

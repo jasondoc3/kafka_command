@@ -1,4 +1,3 @@
-require 'support/kafka_helper'
 require 'app/wrappers/kafka/client_wrapper'
 
 RSpec.describe Kafka::PartitionWrapper do

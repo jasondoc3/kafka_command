@@ -3,6 +3,13 @@ require 'securerandom'
 require 'kafka'
 require 'config/initializers/kafka'
 
+begin
+  Kafka.new(seed_brokers: ['localhost:9092']).topics
+rescue => e
+  puts "#{e.class}. A Kafka broker running at localhost:9092 is required to run the specs."
+  exit(0)
+end
+
 module KafkaHelpers
   def kafka_client
     Kafka.new(seed_brokers: ['localhost:9092'])
