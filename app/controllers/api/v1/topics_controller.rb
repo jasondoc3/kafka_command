@@ -1,4 +1,7 @@
 class Api::V1::TopicsController < Api::V1::BaseController
+  rescue_from Kafka::InvalidPartitions, with: :invalid_partitions
+  rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
+  rescue_from Kafka::InvalidTopic, with: :invalid_topic
 
   # GET /api/v1/clusters/:cluster_id/topics
   def index
@@ -55,5 +58,19 @@ class Api::V1::TopicsController < Api::V1::BaseController
       topic.destroy
       head :no_content
     end
+  end
+
+  private
+
+  def invalid_partitions
+    render_errors('Num partitions must be > 0 or > current number of partitions', status: 422)
+  end
+
+  def invalid_replication_factor
+    render_errors('Replication factor must be > 0 and < total number of brokers', status: 422)
+  end
+
+  def invalid_topic
+    render_errors('Topic must have a name', status: 422)
   end
 end

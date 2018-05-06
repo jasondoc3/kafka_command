@@ -10,6 +10,7 @@ class Cluster < ApplicationRecord
   end
 
   def topics
+    client.cluster.refresh!
     client.cluster.topics
   end
 

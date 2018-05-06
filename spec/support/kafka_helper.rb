@@ -33,6 +33,7 @@ module KafkaHelpers
   end
 
   def topic_exists?(topic_name)
+    return false if topic_name.nil? || topic_name.empty?
     list_topic_names.include?(topic_name)
   end
 end
