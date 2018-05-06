@@ -23,5 +23,4 @@ class Cluster < ApplicationRecord
       brokers.new(host: h)
     end
   end
-
 end

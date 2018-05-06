@@ -1,4 +1,5 @@
 class Api::V1::ClustersController < Api::V1::BaseController
+  before_action :check_hosts, only: :create
 
   # GET /api/v1/clusters
   def index
@@ -16,10 +17,16 @@ class Api::V1::ClustersController < Api::V1::BaseController
     cluster = Cluster.new(cluster_params.slice(*cluster_params_keys))
     cluster.init_brokers(params[:hosts])
 
+    invalid_broker = cluster.brokers.to_a.find(&:invalid?)
+    if invalid_broker
+      render_errors(invalid_broker.errors, status: 422)
+      return
+    end
+
     if cluster.save
       render_json(cluster, status: :created)
     else
-      render_errors(cluster.errors)
+      render_errors(cluster.errors, status: 422)
     end
   end
 
@@ -41,4 +48,10 @@ class Api::V1::ClustersController < Api::V1::BaseController
     [:name, :description, :version]
   end
 
+  def check_hosts
+    if params[:hosts].blank?
+      render_errors('Please specify the hosts', status: 422)
+      return
+    end
+  end
 end

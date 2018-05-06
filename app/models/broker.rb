@@ -1,10 +1,25 @@
 class Broker < ApplicationRecord
   belongs_to :cluster
-  after_create :set_broker_id
+  after_initialize :set_broker_id
 
-  validates :host, presence: true, uniqueness: true
+  validates :host,
+    presence: true,
+    uniqueness: true,
+    format: { with: /[^\:]+:[0-9]{1,5}/, message: 'Must be a valid hostname port combination' }
+
+  validates :kafka_broker_id, presence: true, uniqueness: true
 
   def set_broker_id
-    self.kafka_broker_id = cluster.client.find_broker(host).node_id
+    if valid_host?
+      client = Kafka::ClientWrapper.new(brokers: [host])
+      self.kafka_broker_id = client.find_broker(host).node_id
+    end
+  end
+
+  private
+
+  def valid_host?
+    valid?
+    errors[:host].blank?
   end
 end

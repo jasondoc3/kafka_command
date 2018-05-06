@@ -1,10 +1,15 @@
 class Api::V1::BaseController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from Kafka::ConnectionError, with: :kafka_connection_error
 
   private
 
   def record_not_found
     render_errors('Not Found', status: :not_found)
+  end
+
+  def kafka_connection_error
+    render_errors('Could not connect to Kafka with the specified brokers', status: 500)
   end
 
   def serialize_json(data)
