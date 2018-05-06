@@ -40,6 +40,8 @@ RSpec.describe Cluster do
   end
 
   describe '#init_brokers' do
+    before { allow_any_instance_of(Broker).to receive(:set_broker_id) }
+
     it 'initializes broker objects with hosts' do
       cluster.init_brokers('localhost:9093,localhost:9094')
       expect(cluster.brokers.map(&:host)).to include('localhost:9093')
