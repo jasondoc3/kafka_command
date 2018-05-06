@@ -1,5 +1,4 @@
 class Api::V1::BrokersController < Api::V1::BaseController
-
   # GET /api/v1/clusters/:cluster_id/brokers
   def index
     brokers = Broker.where(cluster_id: params[:cluster_id]).all
@@ -11,5 +10,4 @@ class Api::V1::BrokersController < Api::V1::BaseController
     broker = Broker.find(params[:id])
     render_json(broker)
   end
-
 end
