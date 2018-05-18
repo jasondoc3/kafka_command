@@ -10,13 +10,14 @@ class Cluster < ApplicationRecord
   end
 
   def topics
-    client.cluster.refresh!
-    client.cluster.topics
+    client.refresh!
+    client.topics
   end
 
   def create_topic(name, **kwargs)
     client.create_topic(name, **kwargs)
-    client.cluster.refresh!
+    client.refresh!
+    topics.find { |t| t.name == name }
   end
 
   def init_brokers(hosts)

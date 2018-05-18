@@ -20,5 +20,13 @@ module Kafka
         hostname == b.host && port.to_i == b.port
       end
     end
+
+    def topics
+      @cluster.topics
+    end
+
+    def refresh!
+      @cluster.refresh!
+    end
   end
 end

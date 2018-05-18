@@ -24,13 +24,12 @@ class Api::V1::TopicsController < Api::V1::BaseController
   # POST /api/v1/clusters/:cluster_id/topics
   def create
     cluster = Cluster.find(params[:cluster_id])
-    cluster.create_topic(
+    topic = cluster.create_topic(
       params[:name],
       num_partitions: params[:num_partitions].to_i,
       replication_factor: params[:replication_factor].to_i
     )
 
-    topic = cluster.topics.find { |t| t.name == params[:name] }
     render_json(topic)
   end
 
