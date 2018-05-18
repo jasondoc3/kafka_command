@@ -34,6 +34,11 @@ module Kafka
       @cluster.resolve_offset(@name, partition.partition_id, :latest)
     end
 
+    def offsets(partition_ids = nil)
+      partition_ids ||= @partitions.map(&:partition_id)
+      @cluster.resolve_offsets(@name, partition_ids, :latest)
+    end
+
     # Needs arguments to be compatible with rails as_json calls
     def as_json(*)
       {

@@ -1,12 +1,13 @@
 require 'forwardable'
 require_dependency 'app/wrappers/kafka/broker_wrapper'
+require_dependency 'app/wrappers/kafka/consumer_group_wrapper'
 require_dependency 'app/wrappers/kafka/topic_wrapper'
 
 module Kafka
   class ClusterWrapper
     extend Forwardable
-    attr_reader :brokers, :cluster, :topics
-    def_delegators :@cluster, :delete_topic, :create_partitions_for, :resolve_offset
+    attr_reader :brokers, :cluster, :topics, :groups
+    def_delegators :@cluster, :delete_topic, :create_partitions_for, :resolve_offset, :resolve_offsets
 
     def initialize(cluster)
       @cluster = cluster
@@ -16,10 +17,16 @@ module Kafka
     def refresh!
       initialize_brokers
       initialize_topics
+      initialize_groups
     end
 
     def fetch_metadata(topics: nil)
       @brokers.sample.fetch_metadata(topics: topics)
+    end
+
+    def get_group_coordinator(group_id:)
+      broker = @cluster.get_group_coordinator(group_id: group_id)
+      BrokerWrapper.new(broker)
     end
 
     private
@@ -42,6 +49,15 @@ module Kafka
       # returns information about each topic
       # i.e isr, leader, partitions
       @topics = fetch_metadata.topics.map { |tm| TopicWrapper.new(tm, self) }
+    end
+
+    def initialize_groups
+      group_ids = @cluster.list_groups
+
+      @groups = group_ids.map do |g|
+        group_metadata = @cluster.describe_group(g)
+        ConsumerGroupWrapper.new(group_metadata, self)
+      end
     end
   end
 end
