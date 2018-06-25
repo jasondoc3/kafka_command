@@ -7,7 +7,15 @@ module Kafka
   class ClusterWrapper
     extend Forwardable
     attr_reader :brokers, :cluster, :topics, :groups
-    def_delegators :@cluster, :delete_topic, :create_partitions_for, :resolve_offset, :resolve_offsets
+    METHOD_DELGATIONS = %i(
+      delete_topic
+      create_partitions_for
+      resolve_offset
+      resolve_offsets
+      describe_group
+    ).freeze
+
+    def_delegators :@cluster, *METHOD_DELGATIONS
 
     def initialize(cluster)
       @cluster = cluster

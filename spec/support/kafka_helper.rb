@@ -43,6 +43,16 @@ module KafkaHelpers
     return false if topic_name.nil? || topic_name.empty?
     list_topic_names.include?(topic_name)
   end
+
+  def run_consumer_group(topic_name, group_id)
+    deliver_message('test', topic: topic_name)
+    consumer = kafka_client.consumer(group_id: group_id)
+    consumer.subscribe(topic_name)
+    consumer.each_message do |msg|
+      yield if block_given?
+      consumer.stop
+    end
+  end
 end
 
 RSpec.configure do |config|

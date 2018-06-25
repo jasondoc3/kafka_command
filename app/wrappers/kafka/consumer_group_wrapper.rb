@@ -23,10 +23,6 @@ module Kafka
       state.match?(/empty/i) || members.none?
     end
 
-    def dead?
-      state.match?(/dead/i)
-    end
-
     def topics
       topic_names = @members.flat_map(&:topic_names).uniq
 
@@ -58,7 +54,7 @@ module Kafka
       end
 
       {
-        group_id: @group_id
+        group_id: @group_id,
         topics: topics_json
       }.with_indifferent_access
     end
