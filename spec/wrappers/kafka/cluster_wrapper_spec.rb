@@ -3,6 +3,7 @@ require 'app/wrappers/kafka/cluster_wrapper'
 RSpec.describe Kafka::ClusterWrapper do
   let(:brokers)         { ['localhost:9092'] }
   let(:topic_name)      { "test-#{SecureRandom.hex(12)}" }
+  let(:group_id)        { "test-#{SecureRandom.hex(12)}" }
   let(:client)          { Kafka.new(seed_brokers: brokers) }
   let(:cluster_wrapper) { described_class.new(client.cluster) }
 
@@ -27,6 +28,21 @@ RSpec.describe Kafka::ClusterWrapper do
         expect(cluster_wrapper.topics).to_not be_empty
         expect(cluster_wrapper.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
         expect(cluster_wrapper.topics.map(&:name)).to include(topic_name)
+      end
+    end
+
+    context 'groups' do
+      before do
+        create_topic(topic_name)
+        run_consumer_group(topic_name, group_id)
+      end
+
+      after { delete_topic(topic_name) }
+
+      it 'initializes groups' do
+        expect(cluster_wrapper.groups).to_not be_empty
+        expect(cluster_wrapper.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
+        expect(cluster_wrapper.groups.map(&:group_id)).to include(group_id)
       end
     end
   end
@@ -65,6 +81,24 @@ RSpec.describe Kafka::ClusterWrapper do
         expect(metadata.topics).to_not be_empty
         expect(metadata.topics.sample).to be_an_instance_of(Kafka::Protocol::MetadataResponse::TopicMetadata)
         expect(metadata.topics.sample.partitions.first).to be_an_instance_of(Kafka::Protocol::MetadataResponse::PartitionMetadata)
+      end
+    end
+  end
+
+  describe '#find_topic' do
+    context 'topic exists' do
+      before { create_topic(topic_name) }
+      after  { delete_topic(topic_name) }
+
+      it 'returns the topic' do
+        expect(cluster_wrapper.find_topic(topic_name)).to be_an_instance_of(Kafka::TopicWrapper)
+        expect(cluster_wrapper.find_topic(topic_name).name).to eq(topic_name)
+      end
+    end
+
+    context 'topic non-existent' do
+      it 'returns nil' do
+        expect(cluster_wrapper.find_topic(topic_name)).to be_nil
       end
     end
   end
@@ -132,6 +166,54 @@ RSpec.describe Kafka::ClusterWrapper do
           deliver_message('test', topic: topic_name, partition: partition_id)
           offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
           expect(offset).to eq(1)
+        end
+      end
+    end
+
+    describe '#resolve_offsets' do
+      let(:num_partitions) { 2 }
+      let(:partition_ids) { [0, 1] }
+
+      it 'forwards resolve_offsets to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:resolve_offsets).with(topic_name, partition_ids, :latest)
+        cluster_wrapper.resolve_offsets(topic_name, partition_ids, :latest)
+      end
+
+      context 'retrieving offsets 'do
+        before { create_topic(topic_name, num_partitions: num_partitions) }
+        after  { delete_topic(topic_name) }
+
+        it 'returns the offsets' do
+          offsets = cluster_wrapper.resolve_offsets(topic_name, partition_ids, :latest)
+
+          partition_ids.each do |partition_id|
+            expect(offsets[partition_id]).to eq(0)
+
+            deliver_message('test', topic: topic_name, partition: partition_id)
+            offset = cluster_wrapper.resolve_offsets(topic_name, partition_ids, :latest)
+            expect(offset[partition_id]).to eq(1)
+          end
+        end
+      end
+    end
+
+    describe '#describe_group' do
+      it 'forwards describe_group to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:describe_group).with(group_id)
+        cluster_wrapper.describe_group(group_id)
+      end
+
+      context 'describing' do
+        before do
+          create_topic(topic_name)
+          run_consumer_group(topic_name, group_id)
+        end
+
+        after  { delete_topic(topic_name) }
+
+        it 'returns the group metadata' do
+          expect(cluster_wrapper.describe_group(group_id)).to be_an_instance_of(Kafka::Protocol::DescribeGroupsResponse::Group)
+          expect(cluster_wrapper.describe_group(group_id).group_id).to eq(group_id)
         end
       end
     end
