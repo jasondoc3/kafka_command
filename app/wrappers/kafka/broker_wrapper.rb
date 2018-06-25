@@ -4,7 +4,7 @@ module Kafka
   class BrokerWrapper
     extend Forwardable
     attr_reader :broker
-    def_delegators :@broker, :port, :host, :node_id, :fetch_metadata
+    def_delegators :@broker, :port, :host, :node_id, :fetch_metadata, :fetch_offsets
 
     def initialize(broker)
       @broker = broker
