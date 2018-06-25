@@ -157,22 +157,66 @@ RSpec.describe Kafka::ConsumerGroupWrapper do
 
       describe 'some lag' do
         before do
-          deliver_message('test', topic: topic_name, partition: 0)
-          deliver_message('test1', topic: topic_name,  partition: 1)
-          deliver_message('test2', topic: topic_name , partition: 2)
-
-          run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
-
           2.times { deliver_message('test', topic: topic_name, partition: 0) }
           3.times { deliver_message('test1', topic: topic_name,  partition: 1) }
         end
 
-        it 'equals the total lag' do
+        it 'has lag' do
           expect(total_lag).to eq(5)
           expect(partition_0.lag).to eq(2)
           expect(partition_1.lag).to eq(3)
           expect(partition_2.lag).to eq(0)
         end
+      end
+    end
+  end
+
+  describe '#as_json' do
+    let(:num_partitions) { 3 }
+    let(:partitions) { group.partitions_for(topic_name) }
+
+
+    before do
+      deliver_message('test', topic: topic_name, partition: 0)
+      deliver_message('test1', topic: topic_name,  partition: 1)
+      deliver_message('test2', topic: topic_name , partition: 2)
+      run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
+      2.times { deliver_message('test', topic: topic_name, partition: 0) }
+      3.times { deliver_message('test1', topic: topic_name,  partition: 1) }
+    end
+
+    context 'running' do
+      let(:expected_json) do
+        {
+          group_id: group_id,
+          topics: [
+            {
+              name: topic_name,
+              partitions: partitions.map(&:as_json)
+            }
+          ],
+          state: 'Stable'
+        }
+      end
+
+      it 'returns the expected payload' do
+        run_consumer_group(topic_name, group_id) do
+          expect(group.as_json).to eq(expected_json)
+        end
+      end
+    end
+
+    context 'dormant' do
+      let(:expected_json) do
+        {
+          group_id: group_id,
+          topics: [],
+          state: 'Empty'
+        }
+      end
+
+      it 'returns the expected payload' do
+        expect(group.as_json).to eq(expected_json)
       end
     end
   end

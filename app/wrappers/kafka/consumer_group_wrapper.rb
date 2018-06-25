@@ -23,14 +23,6 @@ module Kafka
       state.match?(/empty/i) || members.none?
     end
 
-    def consumed_topics
-      topic_names = @members.flat_map(&:topic_names).uniq
-
-      @cluster.topics.select do |t|
-        topic_names.include?(t.name)
-      end
-    end
-
     def partitions_for(topic_name)
       topic = @cluster.find_topic(topic_name)
       partition_lag = lag_for(topic.name)
@@ -56,11 +48,20 @@ module Kafka
 
       {
         group_id: @group_id,
+        state: @state,
         topics: topics_json
       }.with_indifferent_access
     end
 
     private
+
+    def consumed_topics
+      topic_names = @members.flat_map(&:topic_names).uniq
+
+      @cluster.topics.select do |t|
+        topic_names.include?(t.name)
+      end
+    end
 
     def lag_for(topic_name)
       topic = @cluster.find_topic(topic_name)
