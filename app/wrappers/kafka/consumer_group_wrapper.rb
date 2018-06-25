@@ -23,7 +23,7 @@ module Kafka
       state.match?(/empty/i) || members.none?
     end
 
-    def topics
+    def consumed_topics
       topic_names = @members.flat_map(&:topic_names).uniq
 
       @cluster.topics.select do |t|
@@ -32,12 +32,13 @@ module Kafka
     end
 
     def partitions_for(topic_name)
-      topic = find_topic(topic_name)
+      topic = @cluster.find_topic(topic_name)
       partition_lag = lag_for(topic.name)
 
       topic.partitions.map do |p|
         ConsumerGroupPartitionWrapper.new(
-          lag: partition_lag[p.partition_id],
+          lag: partition_lag[p.partition_id][:lag],
+          offset: partition_lag[p.partition_id][:offset],
           group_id: @group_id,
           topic_name: topic.name,
           partition_id: p.partition_id
@@ -46,7 +47,7 @@ module Kafka
     end
 
     def as_json(*)
-      topics_json = topics.map do |topic|
+      topics_json = consumed_topics.map do |topic|
         {
           name: topic.name,
           partitions: partitions_for(topic.name).map(&:as_json)
@@ -61,12 +62,8 @@ module Kafka
 
     private
 
-    def find_topic(topic_name)
-      topics.find { |t| t.name == topic_name }
-    end
-
     def lag_for(topic_name)
-      topic = find_topic(topic_name)
+      topic = @cluster.find_topic(topic_name)
       topic_offsets = topic.offsets
       group_offsets = offsets_for(topic_name)
 
@@ -80,21 +77,30 @@ module Kafka
     end
 
     def offsets_for(topic_name)
-      topic = find_topic(topic_name)
+      topic = @cluster.find_topic(topic_name)
 
       offsets = @coordinator.fetch_offsets(
         group_id: @group_id,
         topics: { topic.name => topic.partitions.map(&:partition_id) }
       ).topics[topic.name]
 
-      offsets.keys.each { |partition_id| offsets[partition_id] = offsets[partition_id].offset }
+      offsets.keys.each do |partition_id|
+        if offsets[partition_id].offset == -1
+          offsets[partition_id] = nil
+        else
+          offsets[partition_id] = offsets[partition_id].offset
+        end
+      end
+
       offsets
     end
 
     def compute_lag(topic_offsets, group_offsets)
       topic_offsets.each_with_object({}) do |(partition_id, latest_offset), lag_hash|
         lag =
-          if group_offsets[partition_id] >= latest_offset
+          if group_offsets[partition_id].nil?
+            nil
+          elsif group_offsets[partition_id] >= latest_offset
             0
           else
             latest_offset - group_offsets[partition_id]

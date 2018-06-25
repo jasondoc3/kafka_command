@@ -44,13 +44,17 @@ module KafkaHelpers
     list_topic_names.include?(topic_name)
   end
 
-  def run_consumer_group(topic_name, group_id)
+  def run_consumer_group(topic_name, group_id, num_messages_to_consume: 0)
     deliver_message('test', topic: topic_name)
     consumer = kafka_client.consumer(group_id: group_id)
     consumer.subscribe(topic_name)
+
+    message_counter = 0
+    num_messages_to_consume += 1
     consumer.each_message do |msg|
       yield if block_given?
-      consumer.stop
+      message_counter += 1
+      consumer.stop if message_counter >= num_messages_to_consume
     end
   end
 end

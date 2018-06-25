@@ -104,4 +104,76 @@ RSpec.describe Kafka::ConsumerGroupWrapper do
       end
     end
   end
+
+  describe '#partitions_for' do
+    let(:num_partitions) { 3 }
+    let(:partitions) { group.partitions_for(topic_name) }
+    let(:total_lag)  { partitions.map(&:lag).compact.reduce(:+) }
+
+    it 'returns ConsumerGroupPartitionWrappers' do
+      run_consumer_group(topic_name, group_id) do
+        expect(partitions.count).to eq(num_partitions)
+        expect(partitions.sample).to be_an_instance_of(Kafka::ConsumerGroupPartitionWrapper)
+        expect(partitions.sample.group_id).to eq(group_id)
+        expect(partitions.sample.topic_name).to eq(topic_name)
+      end
+    end
+
+    context 'some partitions no offsets' do
+      before { run_consumer_group(topic_name, group_id) }
+
+      it 'has "nil" lag' do
+        expect(partitions.map(&:lag)).to include(nil)
+      end
+    end
+
+    context 'lag' do
+      let(:partition_0) do
+        partitions.find { |p| p.partition_id == 0 }
+      end
+
+      let(:partition_1) do
+        partitions.find { |p| p.partition_id == 1 }
+      end
+
+      let(:partition_2) do
+        partitions.find { |p| p.partition_id == 2 }
+      end
+
+      before do
+        deliver_message('test', topic: topic_name, partition: 0)
+        deliver_message('test1', topic: topic_name,  partition: 1)
+        deliver_message('test2', topic: topic_name , partition: 2)
+        run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
+      end
+
+      describe 'no lag' do
+        it 'has no lag' do
+          expect(partition_0.lag).to eq(0)
+          expect(partition_1.lag).to eq(0)
+          expect(partition_2.lag).to eq(0)
+        end
+      end
+
+      describe 'some lag' do
+        before do
+          deliver_message('test', topic: topic_name, partition: 0)
+          deliver_message('test1', topic: topic_name,  partition: 1)
+          deliver_message('test2', topic: topic_name , partition: 2)
+
+          run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
+
+          2.times { deliver_message('test', topic: topic_name, partition: 0) }
+          3.times { deliver_message('test1', topic: topic_name,  partition: 1) }
+        end
+
+        it 'equals the total lag' do
+          expect(total_lag).to eq(5)
+          expect(partition_0.lag).to eq(2)
+          expect(partition_1.lag).to eq(3)
+          expect(partition_2.lag).to eq(0)
+        end
+      end
+    end
+  end
 end

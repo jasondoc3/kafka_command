@@ -37,6 +37,10 @@ module Kafka
       BrokerWrapper.new(broker)
     end
 
+    def find_topic(topic_name)
+      @topics.find { |t| t.name == topic_name }
+    end
+
     private
 
     def initialize_brokers
