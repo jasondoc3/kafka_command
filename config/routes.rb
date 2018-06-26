@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       resources :clusters, except: [:update, :new, :edit] do
         resources :brokers, only: [:index, :show]
         resources :topics, except: [:new, :edit]
+        resources :consumer_groups, only: [:index, :show]
       end
     end
   end
