@@ -22,8 +22,17 @@ RSpec.describe Cluster do
 
   describe '#topics' do
     it 'calls ClusterWrapper#topics' do
+      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:refresh!).at_least(:once)
       expect_any_instance_of(Kafka::ClusterWrapper).to receive(:topics).once
       cluster.topics
+    end
+  end
+
+  describe '#groups' do
+    it 'calls Clusterwrapper#groups' do
+      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:refresh!).at_least(:once)
+      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:groups).once
+      cluster.groups
     end
   end
 

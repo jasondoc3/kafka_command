@@ -7,6 +7,7 @@ module Kafka
 
     attr_reader :cluster, :client
     def_delegators :@client, :create_topic
+    def_delegators :@cluster, :topics, :groups
 
     def initialize(brokers:, client_id: nil)
       @client = Kafka.new(brokers, client_id: client_id)
@@ -19,10 +20,6 @@ module Kafka
       @cluster.brokers.find do |b|
         hostname == b.host && port.to_i == b.port
       end
-    end
-
-    def topics
-      @cluster.topics
     end
 
     def refresh!

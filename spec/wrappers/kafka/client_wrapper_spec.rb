@@ -56,5 +56,19 @@ RSpec.describe Kafka::ClientWrapper do
         end
       end
     end
+
+    describe '#topics' do
+      it' forwards #topics to the Kafka::ClusterWrapper' do
+        expect(client_wrapper.cluster).to receive(:topics)
+        client_wrapper.topics
+      end
+    end
+
+    describe '#groups' do
+      it 'forwards #groups to the Kafka::ClusterWrapper' do
+        expect(client_wrapper.cluster).to receive(:groups)
+        client_wrapper.groups
+      end
+    end
   end
 end

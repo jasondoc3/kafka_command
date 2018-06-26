@@ -14,6 +14,11 @@ class Cluster < ApplicationRecord
     client.topics
   end
 
+  def groups
+    client.refresh!
+    client.groups
+  end
+
   def create_topic(name, **kwargs)
     client.create_topic(name, **kwargs)
     client.refresh!
