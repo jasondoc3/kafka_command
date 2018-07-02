@@ -22,7 +22,7 @@ module Kafka
         leader: leader,
         id: partition_id,
         highwater_mark_offset: offset
-      }.with_indifferent_access
+      }
     end
 
     # TODO

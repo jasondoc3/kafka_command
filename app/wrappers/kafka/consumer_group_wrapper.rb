@@ -43,14 +43,14 @@ module Kafka
         {
           name: topic.name,
           partitions: partitions_for(topic.name).map(&:as_json)
-        }.with_indifferent_access
+        }
       end
 
       {
         group_id: @group_id,
         state: @state,
         topics: topics_json
-      }.with_indifferent_access
+      }
     end
 
     private

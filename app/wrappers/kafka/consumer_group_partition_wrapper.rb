@@ -15,7 +15,7 @@ module Kafka
         lag: @lag,
         offset: @offset,
         partition_id: @partition_id
-      }.with_indifferent_access
+      }
     end
   end
 end

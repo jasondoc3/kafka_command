@@ -45,7 +45,7 @@ module Kafka
         name: @name,
         replication_factor: @replication_factor,
         partitions: @partitions.sort_by(&:partition_id).map(&:as_json)
-      }.with_indifferent_access
+      }
     end
 
     private
