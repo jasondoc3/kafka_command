@@ -4,7 +4,7 @@ class ConsumerGroupsController < ApplicationController
   def index
     cluster = Cluster.find(params[:cluster_id])
     @groups = cluster.groups
-    render_json(@groups)
+    render_success(@groups)
   end
 
   # GET /alusters/:cluster_id/consumer_groups/:id
@@ -13,9 +13,9 @@ class ConsumerGroupsController < ApplicationController
     @group = cluster.groups.find { |g| g.group_id == params[:id] }
 
     if @group.nil?
-      render_errors('Consumer group not found', status: 404)
+      render_error('Consumer group not found', status: 404)
     else
-      render_json(@group)
+      render_success(@group)
     end
   end
 end

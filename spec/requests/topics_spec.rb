@@ -24,7 +24,7 @@ RSpec.describe 'Topics API', type: :request do
     after  { delete_topic(topic_two_name) }
 
     it 'lists' do
-      get "#{uri_base}/#{cluster.id}/topics"
+      get "#{uri_base}/#{cluster.id}/topics.json"
       expect(response.status).to eq(200)
       expect(json['data']).to be_an_instance_of(Array)
       expect(json['data'].map { |d| d['name'] }).to include(topic_name)
@@ -35,7 +35,7 @@ RSpec.describe 'Topics API', type: :request do
   describe 'showing a topic' do
     context 'topic exists' do
       it 'shows' do
-        get "#{uri_base}/#{cluster.id}/topics/#{topic_name}"
+        get "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json"
         expect(response.status).to eq(200)
         expect(json['name']).to eq(topic_name)
         expect(json['partitions']).to be_an_instance_of(Array)
@@ -46,7 +46,7 @@ RSpec.describe 'Topics API', type: :request do
 
     context 'topic does not exist' do
       it 'returns 404' do
-        get "#{uri_base}/#{cluster.id}/topics/doesnotexist"
+        get "#{uri_base}/#{cluster.id}/topics/doesnotexist.json"
         expect(response.status).to eq(404)
         expect(response.body).to eq('Topic not found')
       end
@@ -69,8 +69,8 @@ RSpec.describe 'Topics API', type: :request do
 
     it 'creates' do
       expect do
-        post "#{uri_base}/#{cluster.id}/topics", params: create_topic_params
-        expect(response.status).to eq(200)
+        post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
+        expect(response.status).to eq(201)
         expect(json['name']).to eq(topic_two_name)
         expect(json['partitions']).to be_an_instance_of(Array)
         expect(json['partitions'].count).to eq(num_partitions)
@@ -84,7 +84,7 @@ RSpec.describe 'Topics API', type: :request do
 
         it 'returns 422' do
           expect do
-            post "#{uri_base}/#{cluster.id}/topics", params: create_topic_params
+            post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Topic must have a name')
           end.to change { cluster.topics.count }.by(0)
@@ -96,7 +96,7 @@ RSpec.describe 'Topics API', type: :request do
 
         it 'returns 422' do
           expect do
-            post "#{uri_base}/#{cluster.id}/topics", params: create_topic_params
+            post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Num partitions must be > 0 or > current number of partitions')
           end.to change { cluster.topics.count }.by(0)
@@ -113,7 +113,7 @@ RSpec.describe 'Topics API', type: :request do
 
           it 'returns 422' do
             expect do
-              post "#{uri_base}/#{cluster.id}/topics", params: create_topic_params
+              post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
               expect(response.status).to eq(422)
               expect(response.body).to eq(error_message)
             end.to change { cluster.topics.count }.by(0)
@@ -125,7 +125,7 @@ RSpec.describe 'Topics API', type: :request do
 
           it 'returns 422' do
             expect do
-              post "#{uri_base}/#{cluster.id}/topics", params: create_topic_params
+              post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
               expect(response.status).to eq(422)
               expect(response.body).to eq(error_message)
             end.to change { cluster.topics.count }.by(0)
@@ -146,7 +146,7 @@ RSpec.describe 'Topics API', type: :request do
 
     context 'topic exists' do
       it 'updates the topic' do
-        patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}", params: update_topic_params
+        patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json", params: update_topic_params
         expect(response.status).to eq(200)
         expect(topic.partitions.count).to eq(update_topic_params[:num_partitions])
       end
@@ -156,7 +156,7 @@ RSpec.describe 'Topics API', type: :request do
           let(:new_num_partitions) { num_partitions - 1 }
 
           it 'returns 422' do
-            patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}", params: update_topic_params
+            patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json", params: update_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Num partitions must be > 0 or > current number of partitions')
           end
@@ -166,7 +166,7 @@ RSpec.describe 'Topics API', type: :request do
 
     context 'topic does not exist' do
       it 'returns 404' do
-        patch "#{uri_base}/#{cluster.id}/topics/nonexistent", params: update_topic_params
+        patch "#{uri_base}/#{cluster.id}/topics/nonexistent.json", params: update_topic_params
         expect(response.status).to eq(404)
       end
     end
@@ -176,7 +176,7 @@ RSpec.describe 'Topics API', type: :request do
     context 'topic exists' do
       it 'destroys' do
         expect do
-          delete "#{uri_base}/#{cluster.id}/topics/#{topic_name}"
+          delete "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json"
           expect(response.status).to eq(204)
         end.to change { cluster.topics.count }.by(-1)
       end
@@ -187,7 +187,7 @@ RSpec.describe 'Topics API', type: :request do
 
       it 'returns 404' do
         expect do
-          delete "#{uri_base}/#{cluster.id}/topics/doesnotexist"
+          delete "#{uri_base}/#{cluster.id}/topics/doesnotexist.json"
           expect(response.status).to eq(404)
           expect(response.body).to eq('Topic not found')
         end.to change { cluster.topics.count }.by(0)

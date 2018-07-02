@@ -54,7 +54,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
       end
 
       it 'returns empty groups' do
-        get "#{uri_base}/consumer_groups"
+        get "#{uri_base}/consumer_groups.json"
         expect(response.status).to eq(200)
         expect(json['data']).to be_an_instance_of(Array)
         expect(json['data']).to include(expected_json_group_1_empty)
@@ -84,7 +84,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
 
       it 'returns non empty groups' do
         run_consumer_group(topic_name, group_id_1) do
-          get "#{uri_base}/consumer_groups"
+          get "#{uri_base}/consumer_groups.json"
           expect(json['data']).to include(expected_json)
         end
       end
@@ -96,7 +96,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
       before { run_consumer_group(topic_name, group_id_1) }
 
       it 'returns an empty group' do
-        get "#{uri_base}/consumer_groups/#{group_id_1}"
+        get "#{uri_base}/consumer_groups/#{group_id_1}.json"
         expect(response.status).to eq(200)
         expect(json).to eq(expected_json_group_1_empty)
       end
@@ -105,7 +105,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
     context 'running' do
       it 'returns an empty group' do
         run_consumer_group(topic_name, group_id_1) do
-          get "#{uri_base}/consumer_groups/#{group_id_1}"
+          get "#{uri_base}/consumer_groups/#{group_id_1}.json"
           expect(response.status).to eq(200)
           expect(json).to eq(expected_json_group_1_running)
         end
@@ -114,7 +114,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
 
     context 'not found' do
       it 'returns 404' do
-        get "#{uri_base}/consumer_groups/doesnotexists"
+        get "#{uri_base}/consumer_groups/doesnotexists.json"
         expect(response.status).to eq(404)
         expect(response.body).to eq('Consumer group not found')
       end

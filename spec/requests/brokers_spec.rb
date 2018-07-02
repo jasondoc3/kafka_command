@@ -13,7 +13,7 @@ RSpec.describe 'Brokers Api', type: :request do
     let!(:broker_two) { create(:broker, host: 'localhost:9093', cluster: cluster) }
 
     it 'lists' do
-      get "#{uri_base}/#{broker.cluster.id}/brokers"
+      get "#{uri_base}/#{broker.cluster.id}/brokers.json"
       expect(response.status).to eq(200)
       expect(json['data']).to be_an_instance_of(Array)
       expect(json['data'].map { |d| d['id'] }).to eq([broker.id, broker_two.id])
@@ -23,7 +23,7 @@ RSpec.describe 'Brokers Api', type: :request do
   describe 'showing a single broker' do
     context 'broker exists' do
       it 'shows' do
-        get "#{uri_base}/#{broker.cluster.id}/brokers/#{broker.id}"
+        get "#{uri_base}/#{broker.cluster.id}/brokers/#{broker.id}.json"
         expect(response.status).to eq(200)
         expect(json['id']).to eq(broker.id)
         expect(json['host']).to eq(broker.host)
@@ -35,7 +35,7 @@ RSpec.describe 'Brokers Api', type: :request do
       before { broker.destroy }
 
       it 'returns 404' do
-        get "#{uri_base}/#{broker.cluster.id}/brokers/#{broker.id}"
+        get "#{uri_base}/#{broker.cluster.id}/brokers/#{broker.id}.json"
         expect(response.status).to eq(404)
       end
     end
