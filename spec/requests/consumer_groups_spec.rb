@@ -6,7 +6,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:group_id_1) { "test-group-#{SecureRandom.hex(12)}" }
   let(:group_id_2) { "test-group-#{SecureRandom.hex(12)}" }
-  let(:uri_base) { "/api/v1/clusters/#{cluster.id}/" }
+  let(:uri_base) { "/clusters/#{cluster.id}/" }
   let(:expected_json_group_1_running) do
     {
       group_id: group_id_1,

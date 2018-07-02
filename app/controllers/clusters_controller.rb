@@ -1,18 +1,18 @@
-class Api::V1::ClustersController < Api::V1::BaseController
+class ClustersController < ApplicationController
   before_action :check_hosts, only: :create
 
-  # GET /api/v1/clusters
+  # GET /clusters
   def index
     render_json(Cluster.all)
   end
 
-  # GET /api/v1/clusters/:id
+  # GET /clusters/:id
   def show
     cluster = Cluster.find(params[:id])
     render_json(cluster)
   end
 
-  # POST /api/v1/clusters
+  # POST /clusters
   def create
     cluster = Cluster.new(cluster_params.slice(*cluster_params_keys))
     cluster.init_brokers(params[:hosts])
@@ -30,7 +30,7 @@ class Api::V1::ClustersController < Api::V1::BaseController
     end
   end
 
-  # DELETE /api/v1/clusters/:id
+  # DELETE /clusters/:id
   def destroy
     cluster = Cluster.find(params[:id])
     cluster.destroy

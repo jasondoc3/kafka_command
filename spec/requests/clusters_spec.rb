@@ -7,7 +7,7 @@ RSpec.describe 'Clusters Api', type: :request do
     let!(:cluster_two) { create(:cluster) }
 
     it 'lists' do
-      get '/api/v1/clusters'
+      get '/clusters'
       expect(response.status).to eq(200)
       expect(json['data']).to be_an_instance_of(Array)
       expect(json['data'].map { |d| d['id'] }).to eq([cluster.id, cluster_two.id])
@@ -17,7 +17,7 @@ RSpec.describe 'Clusters Api', type: :request do
   describe 'showing a single cluster' do
     context 'cluster exists' do
       it 'shows' do
-        get "/api/v1/clusters/#{cluster.id}"
+        get "/clusters/#{cluster.id}"
         expect(response.status).to eq(200)
         expect(json['id']).to eq(cluster.id)
         expect(json['name']).to eq(cluster.name)
@@ -30,7 +30,7 @@ RSpec.describe 'Clusters Api', type: :request do
       before { cluster.destroy }
 
       it 'returns 404' do
-        get "/api/v1/clusters/#{cluster.id}"
+        get "/clusters/#{cluster.id}"
         expect(response.status).to eq(404)
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
     it 'creates a new cluster' do
       expect do
-        post '/api/v1/clusters', params: cluster_params
+        post '/clusters', params: cluster_params
         expect(response.status).to eq(201)
         expect(json['name']).to eq(cluster_params[:name])
         expect(json['description']).to eq(cluster_params[:description])
@@ -59,7 +59,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
     it 'creates brokers with the cluster' do
       expect do
-        post '/api/v1/clusters', params: cluster_params
+        post '/clusters', params: cluster_params
         expect(response.status).to eq(201)
         cluster = Cluster.find(json['id'])
         expect(cluster.brokers.map(&:host)).to eq(cluster_params[:hosts].split(','))
@@ -72,7 +72,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
         it 'returns 422' do
           expect do
-            post '/api/v1/clusters', params: cluster_params
+            post '/clusters', params: cluster_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Please specify the hosts')
           end.to change { Cluster.count }.by(0)
@@ -84,7 +84,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
         it 'returns 422' do
           expect do
-            post '/api/v1/clusters', params: cluster_params
+            post '/clusters', params: cluster_params
             expect(response.status).to eq(422)
           end.to change { Cluster.count }.by(0)
         end
@@ -95,7 +95,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
         it 'returns 500' do
           expect do
-            post '/api/v1/clusters', params: cluster_params
+            post '/clusters', params: cluster_params
             expect(response.status).to eq(500)
             expect(response.body).to eq('Could not connect to Kafka with the specified brokers')
           end.to change { Cluster.count }.by(0)
@@ -110,14 +110,14 @@ RSpec.describe 'Clusters Api', type: :request do
     context 'cluster exists' do
       it 'destroys' do
         expect do
-          delete "/api/v1/clusters/#{cluster.id}"
+          delete "/clusters/#{cluster.id}"
           expect(response.status).to eq(204)
         end.to change { Cluster.count }.by(-1)
       end
 
       it 'destroys the broker' do
         expect do
-          delete "/api/v1/clusters/#{cluster.id}"
+          delete "/clusters/#{cluster.id}"
           expect(response.status).to eq(204)
         end.to change { Broker.count }.by(-cluster.brokers.count)
       end
@@ -128,7 +128,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
       it 'returns not found' do
         expect do
-          delete "/api/v1/clusters/#{cluster.id}"
+          delete "/clusters/#{cluster.id}"
         end.to change { Cluster.count }.by(0)
       end
     end

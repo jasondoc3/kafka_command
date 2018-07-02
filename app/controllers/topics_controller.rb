@@ -1,15 +1,15 @@
-class Api::V1::TopicsController < Api::V1::BaseController
+class TopicsController < ApplicationController
   rescue_from Kafka::InvalidPartitions, with: :invalid_partitions
   rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
   rescue_from Kafka::InvalidTopic, with: :invalid_topic
 
-  # GET /api/v1/clusters/:cluster_id/topics
+  # GET /clusters/:cluster_id/topics
   def index
     cluster = Cluster.find(params[:cluster_id])
     render_json(cluster.topics)
   end
 
-  # GET /api/v1/clusters/:cluster_id/topics/:id
+  # GET /clusters/:cluster_id/topics/:id
   def show
     cluster = Cluster.find(params[:cluster_id])
     topic = cluster.topics.find { |t| t.name == params[:id] }
@@ -21,7 +21,7 @@ class Api::V1::TopicsController < Api::V1::BaseController
     end
   end
 
-  # POST /api/v1/clusters/:cluster_id/topics
+  # POST /clusters/:cluster_id/topics
   def create
     cluster = Cluster.find(params[:cluster_id])
     topic = cluster.create_topic(
@@ -33,7 +33,7 @@ class Api::V1::TopicsController < Api::V1::BaseController
     render_json(topic)
   end
 
-  # PATCH/PUT /api/v1/clusters/:cluster_id/topics
+  # PATCH/PUT /clusters/:cluster_id/topics
   def update
     cluster = Cluster.find(params[:cluster_id])
     topic = cluster.topics.find { |t| t.name == params[:id] }
@@ -46,7 +46,7 @@ class Api::V1::TopicsController < Api::V1::BaseController
     render_json(topic)
   end
 
-  # DELETE /api/v1/clusters/:cluster_id/topics/:id
+  # DELETE /clusters/:cluster_id/topics/:id
   def destroy
     cluster = Cluster.find(params[:cluster_id])
     topic = cluster.topics.find { |t| t.name == params[:id] }
