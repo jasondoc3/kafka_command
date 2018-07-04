@@ -105,8 +105,6 @@ RSpec.describe 'Clusters Api', type: :request do
   end
 
   describe 'destroying a cluster' do
-    let!(:broker) { create(:broker, cluster: cluster) }
-
     context 'cluster exists' do
       it 'destroys' do
         expect do
