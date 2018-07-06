@@ -1,0 +1,35 @@
+<div class="hero">
+</div>
+<h1 class="title">Clusters</h1>
+<h2 class="subtitle">Manage multiple clusters</h2>
+<hr class="hr">
+
+<div class="columns">
+  <% @clusters.each do |cluster| %>
+  <div class="column is-half">
+    <div class="card">
+      <div class="card-header">
+        <p class="card-header-title">
+          <%= cluster.name.capitalize %>
+       </p>
+      </div>
+      <div class="card-content">
+        <table class="table">
+          <thead>
+            <th>Host</th>
+            <th>Broker ID</th>
+          </head>
+          <tbody>
+            <% cluster.brokers.each do |b| %>
+              <tr>
+                <td><%= b.host %></td>
+                <td><%= b.kafka_broker_id %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <% end %>
+</div>

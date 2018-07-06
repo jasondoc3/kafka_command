@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root 'clusters#index'
+
   resources :clusters, except: [:update, :new, :edit] do
     resources :brokers, only: [:index, :show]
     resources :topics, except: [:new, :edit]
