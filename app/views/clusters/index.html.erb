@@ -6,9 +6,12 @@
   <% @clusters.each do |cluster| %>
   <div class="column is-half">
     <div class="card">
-      <div class="card-header">
+      <div class="card-header has-background-primary">
         <p class="card-header-title">
           <%= cluster.name.capitalize %>
+       </p>
+       <p class="card-header-icon">
+         <%= cluster.version %>
        </p>
       </div>
       <div class="card-content">
@@ -16,12 +19,26 @@
           <thead>
             <th>Host</th>
             <th>Broker ID</th>
+            <th>Status</th>
           </head>
           <tbody>
             <% cluster.brokers.each do |b| %>
               <tr>
                 <td><%= b.host %></td>
                 <td><%= b.kafka_broker_id %></td>
+                <% if b.connected? %>
+                  <td>
+                    <span class="icon has-text-success">
+                      <i class="fas fa-check-circle"></i>
+                    </span>
+                  </td>
+                <% else %>
+                  <td>
+                    <span class="icon has-text-danger">
+                      <i class="fas fa-times-circle"></i>
+                    </span>
+                  </td>
+                <% end %>
               </tr>
             <% end %>
           </tbody>

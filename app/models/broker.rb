@@ -11,9 +11,19 @@ class Broker < ApplicationRecord
 
   def set_broker_id
     if kafka_broker_id.blank? && valid_host?
-      client = Kafka::ClientWrapper.new(brokers: [host])
       self.kafka_broker_id = client.find_broker(host).node_id
     end
+  end
+
+  def connected?
+    client.topics
+    true
+  rescue Kafka::ConnectionError
+    false
+  end
+
+  def client
+    @client ||= Kafka::ClientWrapper.new(brokers: [host])
   end
 
   private
