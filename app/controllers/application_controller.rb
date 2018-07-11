@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
 
   def render_error(data, status: :unprocessible_entity)
     respond_to do |format|
-      format.html
+      format.html { render file: 'public/500.html', status: status, layout: false }
       format.json { render_json_errors(data, status: status) }
     end
   end

@@ -10,7 +10,7 @@ class Broker < ApplicationRecord
   validates :kafka_broker_id, presence: true, uniqueness: true
 
   def set_broker_id
-    if valid_host?
+    if kafka_broker_id.blank? && valid_host?
       client = Kafka::ClientWrapper.new(brokers: [host])
       self.kafka_broker_id = client.find_broker(host).node_id
     end
