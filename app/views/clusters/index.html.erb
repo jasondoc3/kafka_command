@@ -4,47 +4,49 @@
 
 <div class="columns">
   <% @clusters.each do |cluster| %>
-  <div class="column is-half animated fadeIn" style="cursor: pointer">
-    <div class="card">
-      <div class="card-header has-background-primary">
-        <p class="card-header-title">
-          <%= cluster.name.capitalize %>
-       </p>
-       <p class="card-header-icon">
-         <%= cluster.version %>
-       </p>
-      </div>
-      <div class="card-content">
-        <table class="table is-striped is-fullwidth">
-          <thead>
-            <th>Host</th>
-            <th>Broker ID</th>
-            <th>Status</th>
-          </head>
-          <tbody>
-            <% cluster.brokers.each do |b| %>
-              <tr>
-                <td><%= b.host %></td>
-                <td><%= b.kafka_broker_id %></td>
-                <% if b.connected? %>
-                  <td>
-                    <span class="icon has-text-success">
-                      <i class="fas fa-check-circle"></i>
-                    </span>
-                  </td>
-                <% else %>
-                  <td>
-                    <span class="icon has-text-danger">
-                      <i class="fas fa-times-circle"></i>
-                    </span>
-                  </td>
+    <div class="column is-half animated fadeIn" style="cursor: pointer">
+       <%= link_to cluster_path(cluster) do %>
+        <div class="card">
+          <div class="card-header has-background-grey-lighter">
+            <p class="card-header-title">
+              <%= cluster.name.capitalize %>
+           </p>
+           <p class="card-header-icon">
+             <%= cluster.version %>
+           </p>
+          </div>
+          <div class="card-content">
+            <table class="table is-striped is-fullwidth">
+              <thead>
+                <th>Host</th>
+                <th>Broker ID</th>
+                <th>Status</th>
+              </head>
+              <tbody>
+                <% cluster.brokers.each do |b| %>
+                  <tr>
+                    <td><%= b.host %></td>
+                    <td><%= b.kafka_broker_id %></td>
+                    <% if b.connected? %>
+                      <td>
+                        <span class="icon has-text-success">
+                          <i class="fas fa-check-circle"></i>
+                        </span>
+                      </td>
+                    <% else %>
+                      <td>
+                        <span class="icon has-text-danger">
+                          <i class="fas fa-times-circle"></i>
+                        </span>
+                      </td>
+                    <% end %>
+                  </tr>
                 <% end %>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
     </div>
-  </div>
   <% end %>
 </div>
