@@ -22,9 +22,12 @@ class ApplicationController < ActionController::Base
     data.as_json
   end
 
-  def render_success(data, status: :ok)
+  def render_success(data, status: :ok, redirection_path: nil, flash: {})
     respond_to do |format|
-      format.html
+      format.html do
+        redirect_to redirection_path, flash: flash if redirection_path
+      end
+
       format.json do
         if status == :no_content || status.to_s.to_i == 204
           head :no_content

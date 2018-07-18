@@ -15,16 +15,19 @@
   </head>
 
   <body>
-    <div class="container">
-      <nav class="level">
-        <div class="level-left">
-          <a href="/" class="level-item">
+    <nav class="navbar" role="navigation">
+      <div class="container">
+        <div class="navbar-brand">
+          <%= link_to '/', class: 'navbar-item' do %>
             <%= image_tag('kafka2.png', alt: '') %>
             <p class="subtitle is-5">&nbsp;Command</p>
-          </a>
+          <% end %>
         </div>
-      </nav>
+      </div>
+    </nav>
 
+
+    <div class="container">
       <%= yield %>
     </div>
   </body>

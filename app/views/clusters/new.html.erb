@@ -1,0 +1,35 @@
+<h1 class="title">Clusters</h1>
+<h2 class="subtitle">Add a cluster</h2>
+<hr class="hr">
+
+<div class="column is-one-third">
+<%= form_for @cluster, url: { action: 'create' } do |f| %>
+  <div class="field">
+    <%= label_tag :name, 'Name', class: 'label' %>
+    <div class="control">
+      <input class="input" type="text" name="name" placeholder="Production">
+    </div>
+  </div>
+
+  <div class="field">
+    <%= label_tag :name, 'Description', class: 'label' %>
+    <div class="control">
+      <input class="input" type="text" name="description" placeholder="Production">
+    </div>
+  </div>
+
+  <div class="field">
+    <%= label_tag :name, 'Hosts', class: 'label' %>
+    <div class="control">
+      <input class="input" type="text" name="hosts" placeholder="10.0.0.1:9092,10.0.0.2:9092,10.0.0.3:9092">
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="control">
+      <%= f.submit 'Add', class: 'button is-primary' %>
+    </div>
+  </div>
+
+<% end %>
+</div>

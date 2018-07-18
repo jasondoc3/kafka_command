@@ -1,11 +1,7 @@
-<div class="columns">
-  <div class="column is-one-quarter">
-    <aside class="menu">
-      <ul class="menu-list">
-        <li><a>Clusters</a></li>
-      </ul>
-    </aside>
-  </div>
-  <div class="column">
-  </div>
+<div class="tabs">
+  <ul>
+    <li class="is-active"><%= link_to 'Info', cluster_brokers_path(@cluster) %></a>
+    <li><%= link_to 'Topics', cluster_topics_path(@cluster) %></li>
+    <li><%= link_to 'Consumer Groups', cluster_consumer_groups_path(@cluster) %></li>
+  </ul>
 </div>

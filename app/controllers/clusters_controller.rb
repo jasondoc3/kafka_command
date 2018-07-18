@@ -4,13 +4,20 @@ class ClustersController < ApplicationController
   # GET /clusters
   def index
     @clusters = Cluster.all
-    render_success(@clusters)
+
+    redirection_path = new_cluster_path if @clusters.none?
+    render_success(@clusters, redirection_path: redirection_path)
   end
 
   # GET /clusters/:id
   def show
     @cluster = Cluster.find(params[:id])
     render_success(@cluster)
+  end
+
+  # GET /clusters/new
+  def new
+    @cluster = Cluster.new
   end
 
   # POST /clusters
@@ -25,7 +32,12 @@ class ClustersController < ApplicationController
     end
 
     if @cluster.save
-      render_success(@cluster, status: :created)
+      render_success(
+        @cluster,
+        status: :created,
+        redirection_path: clusters_path,
+        flash: { success: 'Cluster created' }
+      )
     else
       render_error(@cluster.errors, status: 422)
     end
