@@ -1,3 +1,8 @@
 .cluster-card {
   margin-bottom: 1.5rem;
 }
+
+.delete-cluster {
+  justify-content: flex-end;
+  padding: 0.5rem;
+}

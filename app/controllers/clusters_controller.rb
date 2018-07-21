@@ -6,7 +6,7 @@ class ClustersController < ApplicationController
     @clusters = Cluster.all
 
     redirection_path = new_cluster_path if @clusters.none?
-    render_success(@clusters, redirection_path: redirection_path)
+    render_success(@clusters, redirection_path: redirection_path, flash: flash.to_hash)
   end
 
   # GET /clusters/:id
@@ -58,7 +58,12 @@ class ClustersController < ApplicationController
     @cluster = Cluster.find(params[:id])
     @cluster.destroy
 
-    render_success(@cluster, status: :no_content)
+    render_success(
+      @cluster,
+      status: :no_content,
+      redirection_path: root_path,
+      flash: { success: 'Cluster destroyed' }
+    )
   end
 
   private

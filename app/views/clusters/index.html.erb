@@ -45,6 +45,16 @@
           </tbody>
         </table>
       </div>
+
+      <footer class="card-footer">
+        <div class="card-footer-item delete-cluster">
+          <%= link_to cluster_path(cluster), method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <span class="icon has-text-danger">
+              <i class="fas fa-trash-alt"></i>
+            </span>
+          <% end %>
+        </div>
+      </footer>
     </div>
   <% end %>
 <% end %>
