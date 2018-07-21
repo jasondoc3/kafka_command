@@ -1,0 +1,13 @@
+<% if flash[:success] %>
+  <article class="message is-small is-success">
+    <div class="message-body">
+      <%= flash[:success] %>
+    </div>
+  </article>
+<% elsif flash[:error] %>
+  <article class="message is-small is-danger">
+    <div class="message-body">
+      <%= format_flash_errors %>
+    </div>
+  </article>
+<% end %>

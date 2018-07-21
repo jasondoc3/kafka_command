@@ -26,8 +26,14 @@ class ClustersController < ApplicationController
     @cluster.init_brokers(params[:hosts])
 
     invalid_broker = @cluster.brokers.to_a.find(&:invalid?)
+
     if invalid_broker
-      render_error(invalid_broker.errors, status: 422)
+      render_error(
+        invalid_broker.errors,
+        status: 422,
+        flash: { error: invalid_broker.errors }
+      )
+
       return
     end
 
@@ -39,7 +45,11 @@ class ClustersController < ApplicationController
         flash: { success: 'Cluster created' }
       )
     else
-      render_error(@cluster.errors, status: 422)
+      render_error(
+        @cluster.errors,
+        status: 422,
+        flash: { error: @cluster.errors }
+      )
     end
   end
 
@@ -63,7 +73,8 @@ class ClustersController < ApplicationController
 
   def check_hosts
     if params[:hosts].blank?
-      render_error('Please specify the hosts', status: 422)
+      error_msg = 'Please specify a list of hosts'
+      render_error(error_msg, status: 422, flash: { error: error_msg })
       return
     end
   end

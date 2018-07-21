@@ -2,13 +2,7 @@
 <h2 class="subtitle">Manage multiple clusters</h2>
 <hr class="hr">
 
-<% if flash[:success] %>
-  <article class="message is-small is-success">
-    <div class="message-body">
-      <%= flash[:success] %>
-    </div>
-  </article>
-<% end %>
+<%= render 'shared/alert' %>
 
 <% @clusters.each do |cluster| %>
   <%= link_to cluster_path(cluster) do %>

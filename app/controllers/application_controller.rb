@@ -11,7 +11,12 @@ class ApplicationController < ActionController::Base
   end
 
   def kafka_connection_error
-    render_error('Could not connect to Kafka with the specified brokers', status: 500)
+    error_msg = 'Could not connect to Kafka with the specified brokers'
+    render_error(
+      error_msg,
+      status: 500,
+      flash: { error: error_msg }
+    )
   end
 
   def serialize_json(data)
@@ -38,9 +43,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def render_error(data, status: :unprocessible_entity)
+  def render_error(data, status: :unprocessible_entity, flash: {})
     respond_to do |format|
-      format.html { render file: 'public/500.html', status: status, layout: false }
+      format.html do
+        redirect_back fallback_location: root_path, flash: flash and return if flash.present?
+
+        case status
+        when :not_found, 404
+          render file: 'public/404.html', status: status, layout: false
+        else
+          render file: 'public/500.html', status: status, layout: false
+        end
+      end
       format.json { render_json_errors(data, status: status) }
     end
   end

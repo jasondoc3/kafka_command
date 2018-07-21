@@ -74,7 +74,7 @@ RSpec.describe 'Clusters Api', type: :request do
           expect do
             post '/clusters.json', params: cluster_params
             expect(response.status).to eq(422)
-            expect(response.body).to eq('Please specify the hosts')
+            expect(response.body).to eq('Please specify a list of hosts')
           end.to change { Cluster.count }.by(0)
         end
       end

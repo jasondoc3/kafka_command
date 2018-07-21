@@ -7,7 +7,7 @@ class Broker < ApplicationRecord
     uniqueness: true,
     format: { with: /[^\:]+:[0-9]{1,5}/, message: 'Must be a valid hostname port combination' }
 
-  validates :kafka_broker_id, presence: true, uniqueness: true
+  validates :kafka_broker_id, presence: { message: 'Cannot find Kafka broker ID' }
 
   def set_broker_id
     if kafka_broker_id.blank? && valid_host?

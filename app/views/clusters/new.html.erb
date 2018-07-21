@@ -2,6 +2,8 @@
 <h2 class="subtitle">Add a cluster</h2>
 <hr class="hr">
 
+<%= render 'shared/alert' %>
+
 <div class="column is-one-third">
 <%= form_for @cluster, url: { action: 'create' } do |f| %>
   <div class="field">
