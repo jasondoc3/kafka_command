@@ -2,7 +2,6 @@ class Cluster < ApplicationRecord
   has_many :brokers, dependent: :destroy
   validates :name, presence: true
 
-
   def client
     @client ||= Kafka::ClientWrapper.new(
       brokers: brokers.map(&:host),
@@ -30,5 +29,9 @@ class Cluster < ApplicationRecord
     hosts&.split(',').each do |h|
       brokers.new(host: h)
     end
+  end
+
+  def to_human
+    name.humanize.capitalize
   end
 end

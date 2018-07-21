@@ -1,8 +1,4 @@
-<h1 class="title">Clusters</h1>
-<h2 class="subtitle">Manage multiple clusters</h2>
-<hr class="hr">
-
-<%= render 'shared/alert' %>
+<%= render partial: 'shared/title', locals: { title: 'Cluster', subtitle: 'Manage multiple Clusters' } %>
 
 <% @clusters.each do |cluster| %>
   <div class="card cluster-card animated fadeIn">

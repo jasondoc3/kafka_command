@@ -1,3 +1,5 @@
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: @cluster.description } %>
+
 <div class="tabs">
   <ul>
     <li class="is-active"><%= link_to 'Info', cluster_brokers_path(@cluster) %></a>

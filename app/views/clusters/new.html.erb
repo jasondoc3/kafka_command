@@ -1,8 +1,4 @@
-<h1 class="title">Clusters</h1>
-<h2 class="subtitle">Add a cluster</h2>
-<hr class="hr">
-
-<%= render 'shared/alert' %>
+<%= render 'shared/title', locals: { title: 'Clusters', subtitle: 'Add a cluster' } %>
 
 <div class="column is-one-third">
 <%= form_for @cluster, url: { action: 'create' } do |f| %>
