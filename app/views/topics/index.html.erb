@@ -1,0 +1,28 @@
+<%= render partial: 'clusters/tabs' %>
+
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <th>Name</th>
+    <th>Partitions</th>
+    <th>Replication Factor</th>
+    <th>Broker Spread</th>
+    <th>Latest Offset</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <% @topics.each do |topic| %>
+      <tr>
+        <td><%= link_to topic.name, topic_path(topic) %></td>
+        <td><%= topic.partitions.count %></td>
+        <td><%= topic.replication_factor %></td>
+        <td><%= "#{topic.brokers_spread} %" %></td>
+        <td><%= topic.offsets.values.reduce(:+) %></td>
+        <td>
+          <%= link_to topic_path(topic), method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

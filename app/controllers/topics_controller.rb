@@ -5,8 +5,8 @@ class TopicsController < ApplicationController
 
   # GET /clusters/:cluster_id/topics
   def index
-    cluster = Cluster.find(params[:cluster_id])
-    @topics = cluster.topics
+    @cluster = Cluster.find(params[:cluster_id])
+    @topics = @cluster.topics
 
     render_success(@topics)
   end

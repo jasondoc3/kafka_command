@@ -1,4 +1,4 @@
-<%= render partial: 'shared/title', locals: { title: 'Cluster', subtitle: 'Manage multiple Clusters' } %>
+<%= render partial: 'shared/title', locals: { title: 'Clusters', subtitle: 'Manage multiple Clusters' } %>
 
 <% @clusters.each do |cluster| %>
   <div class="card cluster-card animated fadeIn">
@@ -42,7 +42,7 @@
     </div>
 
     <footer class="card-footer">
-      <%= link_to 'View', cluster_path(cluster), class: 'card-footer-item' %>
+      <%= link_to 'View', cluster_topics_path(cluster), class: 'card-footer-item' %>
       <%= link_to cluster_path(cluster), method: :delete, class: 'card-footer-item', data: { confirm: 'Are you sure?' } do %>
         <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
       <% end %>

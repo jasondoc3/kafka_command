@@ -3,12 +3,18 @@ require_dependency 'app/wrappers/kafka/partition_wrapper'
 module Kafka
   class TopicWrapper
     attr_reader :name, :partitions, :replication_factor
+    alias_method :id, :name
     CLUSTER_API_TIMEOUT = 30
+    CONSUMER_OFFSET_TOPIC = '__consumer_offsets'.freeze
 
     def initialize(topic_metadata, cluster)
       @cluster = cluster
       @topic_metadata = topic_metadata
       initialize_from_metadata
+    end
+
+    def brokers_spread
+      ((@replication_factor.to_f / @cluster.brokers.count.to_f) * 100).round
     end
 
     def destroy
@@ -37,6 +43,10 @@ module Kafka
     def offsets(partition_ids = nil)
       partition_ids ||= @partitions.map(&:partition_id)
       @cluster.resolve_offsets(@name, partition_ids, :latest)
+    end
+
+    def consumer_offset_topic?
+      @name == CONSUMER_OFFSET_TOPIC
     end
 
     # Needs arguments to be compatible with rails as_json calls
