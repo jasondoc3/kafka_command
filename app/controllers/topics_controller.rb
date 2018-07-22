@@ -8,6 +8,15 @@ class TopicsController < ApplicationController
     @cluster = Cluster.find(params[:cluster_id])
     @topics = @cluster.topics
 
+    flash[:search] = params[:name]
+
+    if params[:name].present?
+      @topics =@topics.select do |t|
+        regex = /#{params[:name]}/i
+        t.name.match?(regex)
+      end
+    end
+
     render_success(@topics)
   end
 
