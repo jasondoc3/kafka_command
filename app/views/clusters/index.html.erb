@@ -1,53 +1,62 @@
-<%= render partial: 'shared/title', locals: { title: 'Clusters', subtitle: 'Manage multiple Clusters' } %>
+<%= render partial: 'shared/title', locals: { title: 'Clusters', subtitle: 'Manage multiple clusters' } %>
 
-<% @clusters.each do |cluster| %>
-  <div class="card cluster-card animated fadeIn">
-    <div class="card-header has-background-grey-lighter">
-      <p class="card-header-title">
-        <%= cluster.name.capitalize %>
-     </p>
-     <p class="card-header-icon">
-       <%= cluster.version %>
-     </p>
+<div class="level"a>
+  <div class="level-left">
+    <div class="level-item">
+      <p class="subtitle is-5">
+        <strong><%= @clusters.count %></strong> clusters
+      </p>
     </div>
-    <div class="card-content">
-      <table class="table is-striped is-fullwidth">
-        <thead>
-          <th>Host</th>
-          <th>Broker ID</th>
-          <th>Status</th>
-        </head>
-        <tbody>
-          <% cluster.brokers.each do |b| %>
-            <tr>
-              <td><%= b.host %></td>
-              <td><%= b.kafka_broker_id %></td>
-              <% if b.connected? %>
-                <td>
-                  <span class="icon has-text-success">
-                    <i class="fas fa-check-circle"></i>
-                  </span>
-                </td>
-              <% else %>
-                <td>
-                  <span class="icon has-text-danger">
-                    <i class="fas fa-times-circle"></i>
-                  </span>
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <footer class="card-footer">
-      <%= link_to 'View', cluster_topics_path(cluster), class: 'card-footer-item' %>
-      <%= link_to cluster_path(cluster), method: :delete, class: 'card-footer-item', data: { confirm: 'Are you sure?' } do %>
-        <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
+    <div class="level-item">
+      <%= form_tag clusters_path, method: :get do %>
+        <div class="field has-addons">
+          <p class="control has-icons-left">
+            <%= text_field_tag(:name, flash[:search], class: 'input is-small', id: 'search-input', placeholder: 'Find a cluster') %>
+            <span class="icon is-small is-left"><i class="fas fa-search"></i>
+          </p>
+          <p class="control">
+            <%= submit_tag('Search', class: 'button is-small') %>
+          </p>
+        </div>
       <% end %>
-    </footer>
+    </div>
   </div>
-<% end %>
+  <div class="level-right">
+    <%= link_to 'Add Cluster', new_cluster_path, class: 'button is-primary is-small' %>
+  </div>
+</div>
 
-<%= link_to 'Add Cluster', new_cluster_path, class: 'button is-primary' %>
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Brokers</th>
+    <th>Status</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <% @clusters.each do |cluster| %>
+      <tr>
+        <td><%= link_to cluster.name, cluster_topics_path(cluster) %></td>
+        <td><%= cluster.description %></td>
+        <td><%= cluster.brokers.count %></td>
+        <td>
+          <% if cluster.connected? %>
+            <span class="icon has-text-success">
+              <i class="fas fa-check-circle"></i>
+            </span>
+          <% else %>
+            <span class="icon has-text-danger">
+              <i class="fas fa-times-circle"></i>
+            </span>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to cluster_path(cluster), method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

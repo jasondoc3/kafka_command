@@ -14,6 +14,10 @@ class Cluster < ApplicationRecord
     client.topics
   end
 
+  def connected?
+    brokers.all?(&:connected?)
+  end
+
   def groups
     client.refresh!
     client.groups
