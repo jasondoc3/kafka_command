@@ -1,7 +1,8 @@
 class TopicsController < ApplicationController
   rescue_from Kafka::InvalidPartitions, with: :invalid_partitions
   rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
-  rescue_from Kafka::InvalidTopic, with: :invalid_topic
+  rescue_from Kafka::InvalidTopic, with: :invalid_topic_name
+  rescue_from Kafka::TopicAlreadyExists, with: :topic_already_exists
 
   # GET /clusters/:cluster_id/topics
   def index
@@ -88,14 +89,39 @@ class TopicsController < ApplicationController
   private
 
   def invalid_partitions
-    render_error('Num partitions must be > 0 or > current number of partitions', status: 422)
+    error_msg = 'Num partitions must be > 0 or > current number of partitions',
+    render_error(
+      error_msg,
+      status: 422,
+      flash: { error: error_msg }
+    )
   end
 
   def invalid_replication_factor
-    render_error('Replication factor must be > 0 and < total number of brokers', status: 422)
+    error_msg = 'Replication factor must be > 0 and < total number of brokers'
+
+    render_error(
+      error_msg,
+      status: 422,
+      flash: { error: error_msg }
+    )
   end
 
-  def invalid_topic
-    render_error('Topic must have a name', status: 422)
+  def invalid_topic_name
+    error_msg = 'Topic must have a name'
+    render_error(
+      error_msg,
+      status: 422,
+      flash: { error: error_msg }
+    )
+  end
+
+  def topic_already_exists
+    error_msg = 'Topic already exists'
+    render_error(
+      error_msg,
+      status: 422,
+      flash: { error: error_msg }
+    )
   end
 end
