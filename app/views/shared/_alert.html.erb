@@ -1,7 +1,7 @@
 <% if flash[:success] %>
   <article class="message is-small is-success">
     <div class="message-body">
-      <%= flash[:success] %>
+      <%= flash[:success].html_safe %>
     </div>
   </article>
 <% elsif flash[:error] %>

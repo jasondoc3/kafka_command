@@ -69,14 +69,19 @@ class TopicsController < ApplicationController
 
   # DELETE /clusters/:cluster_id/topics/:id
   def destroy
-    cluster = Cluster.find(params[:cluster_id])
-    @topic = cluster.topics.find { |t| t.name == params[:id] }
+    @cluster = Cluster.find(params[:cluster_id])
+    @topic = @cluster.topics.find { |t| t.name == params[:id] }
 
     if @topic.nil?
       render_error('Topic not found', status: 404)
     else
       @topic.destroy
-      render_success(@topic, status: :no_content)
+      render_success(
+        @topic,
+        status: :no_content,
+        redirection_path: cluster_topics_path,
+        flash: { success: "Topic \"#{@topic.name}\" is marked for deletion. <strong>Note: This will have no impact if delete.topic.enable is not set to true.</strong>".html_safe }
+      )
     end
   end
 

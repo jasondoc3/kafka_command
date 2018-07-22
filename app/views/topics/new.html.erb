@@ -1,37 +1,39 @@
-<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
+<%= link_to cluster_topics_path(@cluster) do %>
+  <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
+<% end %>
 
 <div class="column is-one-third">
-<%= form_tag cluster_topics_path, method: :post  do |f| %>
-  <div class="field">
-    <%= label_tag :name, 'Name', class: 'label' %>
-    <div class="control">
-      <input class="input" type="text" name="name" placeholder="my-topic">
+  <%= form_tag cluster_topics_path, method: :post  do |f| %>
+    <div class="field">
+      <%= label_tag :name, 'Name', class: 'label' %>
+      <div class="control">
+        <input class="input" type="text" name="name" placeholder="my-topic">
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
-    <div class="control">
-      <%= number_field_tag(:num_partitions, 5, min: 1, class: 'input') %>
+    <div class="field">
+      <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
+      <div class="control">
+        <%= number_field_tag(:num_partitions, 5, min: 1, class: 'input') %>
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <%= label_tag :replication_factor, 'Replication Factor', class: 'label' %>
-    <div class="control">
-      <%= number_field_tag(:replication_factor, 1, in: 1..(@cluster.brokers.count), class: 'input') %>
+    <div class="field">
+      <%= label_tag :replication_factor, 'Replication Factor', class: 'label' %>
+      <div class="control">
+        <%= number_field_tag(:replication_factor, 1, in: 1..(@cluster.brokers.count), class: 'input') %>
+      </div>
+      <p class="help">
+        The maximum value for replication factor is equal to the number of brokers in the cluster.
+        The <%= @cluster.to_human %> cluster has <strong><%= @cluster.brokers.count %></strong> brokers.
+      </p>
     </div>
-    <p class="help">
-      The maximum value for replication factor is equal to the number of brokers in the cluster.
-      The <%= @cluster.to_human %> cluster has <strong><%= @cluster.brokers.count %></strong> brokers.
-    </p>
-  </div>
 
-  <div class="field">
-    <div class="control">
-      <%= submit_tag('Add', class: 'button is-primary') %>
+    <div class="field">
+      <div class="control">
+        <%= submit_tag('Add', class: 'button is-primary') %>
+      </div>
     </div>
-  </div>
 
-<% end %>
+  <% end %>
 </div>
