@@ -12,7 +12,7 @@ class TopicsController < ApplicationController
     flash[:search] = params[:name]
 
     if params[:name].present?
-      @topics =@topics.select do |t|
+      @topics = @topics.select do ||
         regex = /#{params[:name]}/i
         t.name.match?(regex)
       end

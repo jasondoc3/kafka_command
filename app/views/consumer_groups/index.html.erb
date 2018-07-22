@@ -1,0 +1,34 @@
+<%= render partial: 'clusters/tabs' %>
+
+<div class="level"a>
+  <%=
+    render(
+      partial: 'shared/search_bar',
+      locals: {
+        resources: @groups,
+        resource_name: 'group',
+        resource_path: cluster_consumer_groups_path,
+        filter_property: :group_id
+      }
+    )
+  %>
+</div>
+
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <th>Group Id</th>
+    <th>Topic</th>
+    <th>Members</th>
+    <th>State</th>
+  </thead>
+  <tbody>
+    <% @groups.each do |group| %>
+      <tr>
+        <td><%= link_to group.group_id, consumer_groups_path(group) %>
+        <td><%= group.consumed_topics.first&.name || '' %></td>
+        <td><%= group.members.count %></td>
+        <td class="<%= status_color(group) %>"><%= group.state.upcase %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

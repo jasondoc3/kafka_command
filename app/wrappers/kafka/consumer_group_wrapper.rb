@@ -53,8 +53,6 @@ module Kafka
       }
     end
 
-    private
-
     def consumed_topics
       topic_names = @members.flat_map(&:topic_names).uniq
 
@@ -62,6 +60,8 @@ module Kafka
         topic_names.include?(t.name)
       end
     end
+
+    private
 
     def lag_for(topic_name)
       topic = @cluster.find_topic(topic_name)

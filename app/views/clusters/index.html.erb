@@ -1,26 +1,17 @@
 <%= render partial: 'shared/title', locals: { title: 'Clusters', subtitle: 'Manage multiple clusters' } %>
 
 <div class="level"a>
-  <div class="level-left">
-    <div class="level-item">
-      <p class="subtitle is-5">
-        <strong><%= @clusters.count %></strong> clusters
-      </p>
-    </div>
-    <div class="level-item">
-      <%= form_tag clusters_path, method: :get do %>
-        <div class="field has-addons">
-          <p class="control has-icons-left">
-            <%= text_field_tag(:name, flash[:search], class: 'input is-small', id: 'search-input', placeholder: 'Find a cluster') %>
-            <span class="icon is-small is-left"><i class="fas fa-search"></i>
-          </p>
-          <p class="control">
-            <%= submit_tag('Search', class: 'button is-small') %>
-          </p>
-        </div>
-      <% end %>
-    </div>
-  </div>
+  <%=
+    render(
+      partial: 'shared/search_bar',
+      locals: {
+        resources: @clusters,
+        resource_name: 'cluster',
+        resource_path: clusters_path,
+        filter_property: :name
+      }
+    )
+  %>
   <div class="level-right">
     <%= link_to 'Add Cluster', new_cluster_path, class: 'button is-primary is-small' %>
   </div>
