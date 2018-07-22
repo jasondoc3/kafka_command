@@ -1,0 +1,38 @@
+<%= render partial: 'clusters/tabs' %>
+
+<div class="level"a>
+  <div class="level-left">
+    <div class="level-item">
+      <p class="subtitle is-5">
+        <strong><%= @brokers.count %></strong> brokers
+      </p>
+    </div>
+  </div>
+</div>
+
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <th>Host</th>
+    <th>Id</th>
+    <th>Status</th>
+  </thead>
+  <tbody>
+    <% @brokers.each do |broker| %>
+      <tr>
+        <td><%= broker.host %></td>
+        <td><%= broker.kafka_broker_id %></td>
+        <td>
+          <% if broker.connected? %>
+            <span class="icon has-text-success">
+              <i class="fas fa-check-circle"></i>
+            </span>
+          <% else %>
+            <span class="icon has-text-danger">
+              <i class="fas fa-times-circle"></i>
+            </span>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

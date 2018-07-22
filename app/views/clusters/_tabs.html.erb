@@ -1,8 +1,9 @@
 <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: @cluster.description } %>
+
 <div class="tabs">
   <ul>
-    <li class="is-active"><%= link_to 'Topics', cluster_topics_path(@cluster) %></li>
-    <li><%= link_to 'Consumer Groups', cluster_consumer_groups_path(@cluster) %></li>
-    <li><%= link_to 'Brokers', cluster_brokers_path(@cluster) %></li>
+    <li class="<%= tab_class('topics') %>"><%= link_to 'Topics', cluster_topics_path(@cluster) %></li>
+    <li class="<%= tab_class('consumer_groups') %>"><%= link_to 'Consumer Groups', cluster_consumer_groups_path(@cluster) %></li>
+    <li class="<%= tab_class('brokers') %>"><%= link_to 'Brokers', cluster_brokers_path(@cluster) %></li>
   </ul>
 </div>

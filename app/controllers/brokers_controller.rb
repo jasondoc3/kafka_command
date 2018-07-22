@@ -1,7 +1,8 @@
 class BrokersController < ApplicationController
   # GET /clusters/:cluster_id/brokers
   def index
-    @brokers = Broker.where(cluster_id: params[:cluster_id]).all
+    @cluster = Cluster.find(params[:cluster_id])
+    @brokers = @cluster.brokers
     render_success(@brokers)
   end
 
