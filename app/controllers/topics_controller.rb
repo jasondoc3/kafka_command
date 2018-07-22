@@ -32,16 +32,26 @@ class TopicsController < ApplicationController
     end
   end
 
+  # GET /clusters/:cluster_id/topics/new
+  def new
+    @cluster = Cluster.find(params[:cluster_id])
+  end
+
   # POST /clusters/:cluster_id/topics
   def create
-    cluster = Cluster.find(params[:cluster_id])
-    @topic = cluster.create_topic(
+    @cluster = Cluster.find(params[:cluster_id])
+    @topic = @cluster.create_topic(
       params[:name],
       num_partitions: params[:num_partitions].to_i,
       replication_factor: params[:replication_factor].to_i
     )
 
-    render_success(@topic, status: :created)
+    render_success(
+      @topic,
+      status: :created,
+      redirection_path: cluster_topics_path,
+      flash: { success: 'Topic created' }
+    )
   end
 
   # PATCH/PUT /clusters/:cluster_id/topics

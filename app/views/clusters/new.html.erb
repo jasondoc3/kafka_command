@@ -1,4 +1,4 @@
-<%= render 'shared/title', locals: { title: 'Clusters', subtitle: 'Add a cluster' } %>
+<%= render partial: 'shared/title', locals: { title: 'Clusters', subtitle: 'Add a cluster' } %>
 
 <div class="column is-one-third">
 <%= form_for @cluster, url: { action: 'create' } do |f| %>
@@ -10,14 +10,14 @@
   </div>
 
   <div class="field">
-    <%= label_tag :name, 'Description', class: 'label' %>
+    <%= label_tag :description, 'Description', class: 'label' %>
     <div class="control">
       <input class="input" type="text" name="description" placeholder="Production">
     </div>
   </div>
 
   <div class="field">
-    <%= label_tag :name, 'Hosts', class: 'label' %>
+    <%= label_tag :hosts, 'Hosts', class: 'label' %>
     <div class="control">
       <input class="input" type="text" name="hosts" placeholder="10.0.0.1:9092,10.0.0.2:9092,10.0.0.3:9092">
     </div>
