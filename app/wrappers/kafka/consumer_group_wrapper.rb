@@ -3,7 +3,7 @@ require_dependency 'app/wrappers/kafka/consumer_group_partition_wrapper'
 
 module Kafka
   class ConsumerGroupWrapper
-    attr_reader :group_id, :members, :state
+    attr_reader :group_id, :members, :state, :coordinator
 
     def initialize(group_metadata, cluster)
       @cluster = cluster

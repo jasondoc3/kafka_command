@@ -18,6 +18,7 @@
   <thead>
     <th>Group Id</th>
     <th>Topic</th>
+    <th>Coordinator</th>
     <th>Members</th>
     <th>State</th>
   </thead>
@@ -26,6 +27,7 @@
       <tr>
         <td><%= link_to group.group_id, consumer_groups_path(group) %>
         <td><%= group.consumed_topics.first&.name || '' %></td>
+        <td><%= group.coordinator.node_id %></td>
         <td><%= group.members.count %></td>
         <td class="<%= status_color(group) %>"><%= group.state.upcase %></td>
       </tr>
