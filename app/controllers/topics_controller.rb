@@ -12,7 +12,7 @@ class TopicsController < ApplicationController
     flash[:search] = params[:name]
 
     if params[:name].present?
-      @topics = @topics.select do ||
+      @topics = @topics.select do |t|
         regex = /#{params[:name]}/i
         t.name.match?(regex)
       end
@@ -89,7 +89,8 @@ class TopicsController < ApplicationController
   private
 
   def invalid_partitions
-    error_msg = 'Num partitions must be > 0 or > current number of partitions',
+    error_msg = 'Num partitions must be > 0 or > current number of partitions'
+
     render_error(
       error_msg,
       status: 422,

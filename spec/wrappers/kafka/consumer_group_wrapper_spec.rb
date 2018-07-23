@@ -171,6 +171,24 @@ RSpec.describe Kafka::ConsumerGroupWrapper do
     end
   end
 
+  describe '#consumed_topics' do
+    context 'running' do
+      it 'returns a list of topics' do
+        run_consumer_group(topic_name, group_id) do
+          expect(group.consumed_topics.map(&:name)).to include(topic_name)
+        end
+      end
+    end
+
+    context 'dormant' do
+      before { run_consumer_group(topic_name, group_id) }
+
+      it 'returns an empty list' do
+        expect(group.consumed_topics).to be_empty
+      end
+    end
+  end
+
   describe '#as_json' do
     let(:num_partitions) { 3 }
     let(:partitions) { group.partitions_for(topic_name) }

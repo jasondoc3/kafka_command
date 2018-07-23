@@ -4,13 +4,30 @@ RSpec.describe 'Clusters Api', type: :request do
   let!(:cluster) { create(:cluster) }
 
   describe 'listing all clusters' do
-    let!(:cluster_two) { create(:cluster) }
+    let!(:cluster_two) { create(:cluster, name: 'number two') }
 
     it 'lists' do
       get '/clusters.json'
       expect(response.status).to eq(200)
       expect(json['data']).to be_an_instance_of(Array)
       expect(json['data'].map { |d| d['id'] }).to eq([cluster.id, cluster_two.id])
+    end
+
+    context 'filtering' do
+      it 'filters by name' do
+        get "/clusters.json?name=#{cluster.name}"
+        expect(response.status).to eq(200)
+        expect(json['data']).to be_an_instance_of(Array)
+        expect(json['data'].map { |d| d['id'] }).to include(cluster.id)
+        expect(json['data'].map { |d| d['id'] }).to_not include(cluster_two.id)
+      end
+
+      it 'filters by name' do
+        get "/clusters.json?name=unknown"
+        expect(response.status).to eq(200)
+        expect(json['data']).to be_an_instance_of(Array)
+        expect(json['data']).to be_empty
+      end
     end
   end
 
@@ -108,14 +125,14 @@ RSpec.describe 'Clusters Api', type: :request do
     context 'cluster exists' do
       it 'destroys' do
         expect do
-          delete "/clusters/#{cluster.id}"
+          delete "/clusters/#{cluster.id}.json"
           expect(response.status).to eq(204)
         end.to change { Cluster.count }.by(-1)
       end
 
       it 'destroys the broker' do
         expect do
-          delete "/clusters/#{cluster.id}"
+          delete "/clusters/#{cluster.id}.json"
           expect(response.status).to eq(204)
         end.to change { Broker.count }.by(-cluster.brokers.count)
       end

@@ -116,4 +116,37 @@ RSpec.describe Kafka::TopicWrapper do
       expect(topic.as_json.to_json).to eq(expected_json)
     end
   end
+
+  describe '#brokers_spread' do
+    let(:broker_doubles) do
+      [
+        double(:broker),
+        double(:broker),
+        double(:broker),
+        double(:broker),
+        double(:broker)
+      ]
+    end
+
+    before do
+      allow_any_instance_of(Kafka::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
+      allow(topic).to receive(:replication_factor).and_return(replication_factor_double)
+    end
+
+    context '100%' do
+      let(:replication_factor_double) { broker_doubles.count }
+
+      it 'returns 100' do
+        expect(topic.brokers_spread).to eq(100)
+      end
+    end
+
+    context 'less than 20%' do
+      let(:replication_factor_double) { 1 }
+
+      it 'returns 20' do
+        expect(topic.brokers_spread).to eq(20)
+      end
+    end
+  end
 end

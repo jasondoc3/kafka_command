@@ -59,6 +59,23 @@ RSpec.describe 'Consumer Groups Api', type: :request do
         expect(json['data']).to include(expected_json_group_1_empty)
         expect(json['data']).to include(expected_json_group_2_empty)
       end
+
+      context 'filtering' do
+        it 'filters by group id' do
+          get "#{uri_base}/consumer_groups.json?group_id=#{group_id_1}"
+          expect(response.status).to eq(200)
+          expect(json['data']).to be_an_instance_of(Array)
+          expect(json['data']).to include(expected_json_group_1_empty)
+          expect(json['data']).to_not include(expected_json_group_2_empty)
+        end
+
+        it 'filters by group id' do
+          get "#{uri_base}/consumer_groups.json?group_id=unknown"
+          expect(response.status).to eq(200)
+          expect(json['data']).to be_an_instance_of(Array)
+          expect(json['data']).to be_empty
+        end
+      end
     end
 
     describe 'running 'do

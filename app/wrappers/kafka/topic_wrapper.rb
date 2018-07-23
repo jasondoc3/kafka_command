@@ -14,7 +14,7 @@ module Kafka
     end
 
     def brokers_spread
-      ((@replication_factor.to_f / @cluster.brokers.count.to_f) * 100).round
+      ((replication_factor.to_f / @cluster.brokers.count.to_f) * 100).round
     end
 
     def destroy

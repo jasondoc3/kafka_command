@@ -29,6 +29,23 @@ RSpec.describe 'Topics API', type: :request do
       expect(json['data'].map { |d| d['name'] }).to include(topic_name)
       expect(json['data'].map { |d| d['name'] }).to include(topic_two_name)
     end
+
+    context 'filtering' do
+      it 'filters by name' do
+        get "#{uri_base}/#{cluster.id}/topics.json?name=#{topic_name}"
+        expect(response.status).to eq(200)
+        expect(json['data']).to be_an_instance_of(Array)
+        expect(json['data'].map { |d| d['name'] }).to include(topic_name)
+        expect(json['data'].map { |d| d['name'] }).to_not include(topic_two_name)
+      end
+
+      it 'filters by name' do
+        get "#{uri_base}/#{cluster.id}/topics.json?name=unknown"
+        expect(response.status).to eq(200)
+        expect(json['data']).to be_an_instance_of(Array)
+        expect(json['data']).to be_empty
+      end
+    end
   end
 
   describe 'showing a topic' do
@@ -86,6 +103,18 @@ RSpec.describe 'Topics API', type: :request do
             post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Topic must have a name')
+          end.to change { cluster.topics.count }.by(0)
+        end
+      end
+
+      describe 'topic already exists' do
+        let(:topic_two_name) { topic_name }
+
+        it 'returns 422' do
+          expect do
+            post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
+            expect(response.status).to eq(422)
+            expect(response.body).to eq('Topic already exists')
           end.to change { cluster.topics.count }.by(0)
         end
       end

@@ -10,9 +10,10 @@ class ConsumerGroupsController < ApplicationController
     if params[:group_id].present?
       @groups = @groups.select do |g|
         regex = /#{params[:group_id]}/i
-        g.name.match?(regex)
+        g.group_id.match?(regex)
       end
     end
+
     render_success(@groups)
   end
 
