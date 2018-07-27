@@ -35,7 +35,10 @@
         <td><%= "#{topic.brokers_spread} %" %></td>
         <td><%= topic.offsets.values.reduce(:+) %></td>
         <td>
-          <%= link_to topic_path(topic), method: :delete, data: { confirm: 'Are you sure?' } do %>
+          <%= link_to "#{topic_path(topic)}/edit" do %>
+            <span class="icon has-text-grey"><i class="fas fa-edit"></i></span>
+          <% end %>
+          <%= link_to topic_path(topic), method: :delete, data: { confirm: "Are you sure you want to delete topic #{topic.name} ?" } do %>
             <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
           <% end %>
         </td>

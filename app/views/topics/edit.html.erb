@@ -1,0 +1,23 @@
+<%= link_to cluster_topics_path(@cluster) do %>
+  <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: "Edit #{@topic.name}" } %>
+<% end %>
+
+<div class="column is-one-third">
+  <%= form_tag topic_path(@topic), method: :patch do |f| %>
+    <div class="field">
+      <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
+      <div class="control">
+        <%= number_field_tag(:num_partitions, @topic.partitions.count + 1, min: @topic.partitions.count + 1, class: 'input') %>
+      </div>
+      <p class="help">
+        The number of partitions can only be increased. A topic must be deleted and recreated to decrease partitions.
+      </p>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= submit_tag('Save', class: 'button is-primary') %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -38,6 +38,12 @@ class TopicsController < ApplicationController
     @cluster = Cluster.find(params[:cluster_id])
   end
 
+  # GET /clusters/:cluster_id/topics/edit
+  def edit
+    @cluster = Cluster.find(params[:cluster_id])
+    @topic = @cluster.topics.find { |t| t.name == params[:id] }
+  end
+
   # POST /clusters/:cluster_id/topics
   def create
     @cluster = Cluster.find(params[:cluster_id])
@@ -55,7 +61,7 @@ class TopicsController < ApplicationController
     )
   end
 
-  # PATCH/PUT /clusters/:cluster_id/topics
+  # PATCH/PUT /clusters/:cluster_id/topics/:id
   def update
     cluster = Cluster.find(params[:cluster_id])
     @topic = cluster.topics.find { |t| t.name == params[:id] }
@@ -65,7 +71,12 @@ class TopicsController < ApplicationController
       @topic.set_partitions!(params[:num_partitions].to_i)
     end
 
-    render_success(@topic)
+    render_success(
+      @topic,
+      status: :ok,
+      redirection_path: cluster_topics_path,
+      flash: { success: 'Topic updated' }
+    )
   end
 
   # DELETE /clusters/:cluster_id/topics/:id
