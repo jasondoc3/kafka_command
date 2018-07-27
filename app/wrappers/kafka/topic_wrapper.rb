@@ -45,6 +45,10 @@ module Kafka
       @cluster.resolve_offsets(@name, partition_ids, :latest)
     end
 
+    def offset_sum
+      offsets.values.reduce(:+)
+    end
+
     def consumer_offset_topic?
       @name == CONSUMER_OFFSET_TOPIC
     end

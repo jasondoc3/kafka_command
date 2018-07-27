@@ -42,6 +42,7 @@ class TopicsController < ApplicationController
   def edit
     @cluster = Cluster.find(params[:cluster_id])
     @topic = @cluster.topics.find { |t| t.name == params[:id] }
+    @redirect_path = params[:redirect_path]
   end
 
   # POST /clusters/:cluster_id/topics
@@ -74,7 +75,7 @@ class TopicsController < ApplicationController
     render_success(
       @topic,
       status: :ok,
-      redirection_path: cluster_topics_path,
+      redirection_path: params[:redirect_path] || cluster_topics_path,
       flash: { success: 'Topic updated' }
     )
   end

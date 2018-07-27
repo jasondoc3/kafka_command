@@ -1,32 +1,91 @@
-<%= render partial: 'clusters/tabs' %>
+<%= render partial: 'shared/title', locals: { title: @topic.name, subtitle: @cluster.name } %>
 
-<div class="column card is-paddingless">
-  <header class="card-header">
-    <p class="card-header-title">
-      Partitions
-    </p>
-  </header>
-  <div class="card-content">
-    <div class="content">
-      <table class="table is-striped is-fullwidth">
-        <thead>
-          <th>Partition Id</th>
-          <th>Leader</th>
-          <th>In-sync Replicas</th>
-          <th>Offset</th>
-        </thead>
+<div class="columns">
+  <div class="column is-four-fifths">
+    <nav class="level">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Replication Factor</p>
+          <p class="title"><%= @topic.replication_factor %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Partitions</p>
+          <p class="title"><%= @topic.partitions.count %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Consumer Groups</p>
+          <p class="title">10</p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Brokers Spread</p>
+          <p class="title"><%= "#{@topic.brokers_spread}%" %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Offset Sum</p>
+          <p class="title"><%= @topic.offset_sum %></p>
+        </div>
+      </div>
+    </nav>
+  </div>
 
-        <tbody>
-          <% @topic.partitions.sort_by(&:partition_id).each do |p| %>
-            <tr>
-              <td><%= p.partition_id %></td>
-              <td><%= p.leader %></td>
-              <td><%= "#{p.isr.join(', ')}" %></td>
-              <td><%= p.offset %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+  <div class="column">
+    <div class="box is-clearfix is-shadowless">
+      <div class="is-pulled-right">
+        <%= link_to "#{topic_path(@topic)}/edit?redirect_path=#{URI.encode(topic_path(@topic))}" do %>
+          <span class="icon has-text-grey"><i class="fas fa-edit fa-2x"></i></span>
+        <% end %>
+        &nbsp;&nbsp;
+        <%= link_to topic_path(@topic), method: :delete, data: { confirm: "Are you sure you want to delete topic #{@topic.name} ?" } do %>
+          <span class="icon has-text-danger"><i class="fas fa-trash-alt fa-2x"></i></span>
+        <% end %>
+      </div>
     </div>
+  </div>
+</div>
+<hr class="hr">
+
+<div class="columns">
+  <div class="column is-three-quarters">
+    <table class="table is-striped is-fullwidth is-bordered">
+      <thead>
+        <th>Partition Id</th>
+        <th>Leader</th>
+        <th>In-sync Replicas</th>
+        <th>Offset</th>
+      </thead>
+
+      <tbody>
+        <% @topic.partitions.sort_by(&:partition_id).each do |p| %>
+          <tr>
+            <td><%= p.partition_id %></td>
+            <td><%= p.leader %></td>
+            <td><%= "#{p.isr.join(', ')}" %></td>
+            <td><%= p.offset %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="column is-one-quarter">
+    <table class="table is-striped is-bordered is-fullwidth">
+      <thead>
+        <th>Consumers</th>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>hey</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

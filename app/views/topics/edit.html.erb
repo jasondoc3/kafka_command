@@ -1,5 +1,5 @@
-<%= link_to cluster_topics_path(@cluster) do %>
-  <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: "Edit #{@topic.name}" } %>
+<%= link_to topic_path(@topic) do %>
+  <%= render partial: 'shared/title', locals: { title: @topic.name, subtitle: 'Edit' } %>
 <% end %>
 
 <div class="column is-one-third">
@@ -13,6 +13,10 @@
         The number of partitions can only be increased. A topic must be deleted and recreated to decrease partitions.
       </p>
     </div>
+
+    <% if @redirect_path.present? %>
+      <%= hidden_field_tag(:redirect_path, @redirect_path) %>
+    <% end %>
 
     <div class="field">
       <div class="control">
