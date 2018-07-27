@@ -23,8 +23,8 @@ class TopicsController < ApplicationController
 
   # GET /clusters/:cluster_id/topics/:id
   def show
-    cluster = Cluster.find(params[:cluster_id])
-    @topic = cluster.topics.find { |t| t.name == params[:id] }
+    @cluster = Cluster.find(params[:cluster_id])
+    @topic = @cluster.topics.find { |t| t.name == params[:id] }
 
     if @topic.nil?
       render_error('Topic not found', status: 404)

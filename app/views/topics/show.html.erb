@@ -1,0 +1,52 @@
+<%= render partial: 'clusters/tabs' %>
+
+<div class="columns">
+  <div class="column card is-one-quarter is-paddingless">
+    <header class="card-header">
+      <p class="card-header-title">
+        Summary
+      </p>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <table class="table is-striped is-fullwidth">
+          <tbody>
+            <td><strong>Test</strong></td>
+            <td>Value</td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="column card is-paddingless">
+    <header class="card-header">
+      <p class="card-header-title">
+        Partitions
+      </p>
+    </header>
+    <div class="card-content">
+      <div class="content">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <th>Partition Id</th>
+            <th>Leader</th>
+            <th>In-sync Replicas</th>
+            <th>Offset</th>
+          </thead>
+
+          <tbody>
+            <% @topic.partitions.sort_by(&:partition_id).each do |p| %>
+              <tr>
+                <td><%= p.partition_id %></td>
+                <td><%= p.leader %></td>
+                <td><%= "#{p.isr.join(', ')}" %></td>
+                <td><%= p.offset %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
