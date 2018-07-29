@@ -24,8 +24,8 @@ module Kafka
 
     def refresh!
       initialize_brokers
-      initialize_topics
       initialize_groups
+      initialize_topics
     end
 
     def fetch_metadata(topics: nil)
