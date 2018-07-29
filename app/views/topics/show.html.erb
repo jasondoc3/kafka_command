@@ -40,7 +40,7 @@
     <div class="box is-shadowless">
       <div>
         <%= link_to "#{topic_path(@topic)}/edit?redirect_path=#{URI.encode(topic_path(@topic))}" do %>
-          <button class="button is-info"><span class="icon"><i class="fas fa-edit"></i></span></button>
+          <button class="button is-light"><span class="icon"><i class="fas fa-edit"></i></span></button>
         <% end %>
         <%= link_to topic_path(@topic), method: :delete, data: { confirm: "Are you sure you want to delete topic #{@topic.name} ?" } do %>
           <button class="button is-danger"><span class="icon"><i class="fas fa-trash-alt"></i></span></button>
@@ -52,15 +52,21 @@
 
 <div class="columns">
   <div class="column is-three-quarters">
-    <table class="table is-striped is-fullwidth is-bordered">
-      <thead>
-        <th>Partition Id</th>
-        <th>Leader</th>
-        <th>In-sync Replicas</th>
-        <th>Offset</th>
+    <table class="table is-striped is-bordered is-fullwidth">
+      <thead class="has-background-primary is-borderless">
+        <th class="has-text-white is-borderless">Partitions</th>
+        <th class="is-borderless"></th>
+        <th class="is-borderless"></th>
+        <th class="is-borderless"></th>
       </thead>
 
       <tbody>
+        <tr>
+          <th>Id</th>
+          <th>Leader</th>
+          <th>In-sync Replicas</th>
+          <th>Offset</th>
+        </tr>
         <% @topic.partitions.sort_by(&:partition_id).each do |p| %>
           <tr>
             <td><%= p.partition_id %></td>
@@ -75,16 +81,22 @@
 
   <div class="column is-one-quarter">
     <table class="table is-striped is-bordered is-fullwidth">
-      <thead>
-        <th>Consumers</th>
+      <thead class="has-background-primary">
+        <th class="has-text-white">Consumers</th>
       </thead>
 
       <tbody>
-        <% @topic.groups.each do |group| %>
+        <% if @topic.groups.any? %>
+          <% @topic.groups.each do |group| %>
+            <tr>
+              <td><%= group.group_id %></td>
+            </tr>
+          <% end %>
+        <% else %>
           <tr>
-            <td><%= group.group_id %></td>
+            <td class="has-text-grey-light">None</td>
           </tr>
-      <% end %>
+        <% end %>
       </tbody>
     </table>
   </div>

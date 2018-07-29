@@ -22,6 +22,13 @@ class ConsumerGroupsController < ApplicationController
     @cluster = Cluster.find(params[:cluster_id])
     @group = @cluster.groups.find { |g| g.group_id == params[:id] }
 
+    @current_topic =
+      if params[:topic_name]
+        @group.consumed_topics.find { |t| t.name == params[:topic_name] }
+      else
+        @group.consumed_topics.first
+      end
+
     if @group.nil?
       render_error('Consumer group not found', status: 404)
     else

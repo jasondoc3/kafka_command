@@ -13,3 +13,7 @@
  *= require_tree .
  *= require_self
  */
+
+.is-borderless {
+  border-width: 0px !important;
+}

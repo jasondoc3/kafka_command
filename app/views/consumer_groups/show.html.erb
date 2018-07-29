@@ -1,0 +1,93 @@
+<%= render partial: 'shared/title', locals: { title: 'Consumer view', subtitle: @group.group_id } %>
+
+<div class="columns">
+  <div class="column is-four-fifths">
+    <nav class="level">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Members</p>
+          <p class="title"><%= @group.members.count %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">State</p>
+          <p class="title"><%= @group.state.downcase.capitalize %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Coordinator</p>
+          <p class="title"><%= @group.coordinator.node_id %></p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Total Lag</p>
+          <p class="title"><%= @group.total_lag_for(@current_topic.name) %></p>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="column is-2 has-text-centered">
+    <div class="box is-shadowless">
+      <div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="columns">
+  <div class="column is-three-quarters">
+    <table class="table is-striped is-bordered is-fullwidth">
+      <thead class="has-background-primary">
+        <th class="has-text-white is-borderless">Partitions</th>
+        <th class="is-borderless"></th>
+        <th class="is-borderless"></th>
+        <th class="is-borderless"></th>
+      </thead>
+
+      <tbody>
+        <tr>
+          <th>Id</th>
+          <th>Group Offset</th>
+          <th>Topic Offset</th>
+          <th>Lag</th>
+        </tr>
+        <% @group.partitions_for(@current_topic.name).sort_by(&:partition_id).each do |p| %>
+          <tr>
+            <td><%= p.partition_id %></td>
+            <% if p.offset %>
+              <td><%= p.offset %></td>
+            <% else %>
+              <td class="has-text-grey-light">N/A</td>
+            <% end %>
+            <td><%= @current_topic.offset_for(p) %></td>
+            <% if p.lag %>
+              <td><%= p.lag %>
+            <% else %>
+              <td class="has-text-grey-light">N/A</td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="column is-one-quarter">
+    <table class="table is-striped is-bordered is-fullwidth">
+      <thead class="has-background-primary">
+        <th class="is-borderless has-text-white">Members</th>
+      </thead>
+
+      <tbody>
+        <% @group.members.each do |member| %>
+          <tr>
+            <td><%= member.member_id %></td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

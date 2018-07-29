@@ -38,6 +38,10 @@ module Kafka
       end
     end
 
+    def total_lag_for(topic_name)
+      lag_for(topic_name).values.map { |lag_hash| lag_hash[:lag] || 0 }.reduce(:+)
+    end
+
     def as_json(*)
       topics_json = consumed_topics.map do |topic|
         {
