@@ -1,4 +1,4 @@
-<%= render partial: 'shared/title', locals: { title: 'Consumer view', subtitle: @group.group_id } %>
+<%= render partial: 'shared/title', locals: { title: @group.group_id, subtitle: @cluster.to_human } %>
 
 <div class="columns">
   <div class="column is-three-quarters">
