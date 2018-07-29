@@ -2,7 +2,7 @@ require_dependency 'app/wrappers/kafka/partition_wrapper'
 
 module Kafka
   class TopicWrapper
-    attr_reader :name, :partitions, :replication_factor, :consumer_groups
+    attr_reader :name, :partitions, :replication_factor
     alias_method :id, :name
     CLUSTER_API_TIMEOUT = 30
     CONSUMER_OFFSET_TOPIC = '__consumer_offsets'.freeze
@@ -53,6 +53,12 @@ module Kafka
       @name == CONSUMER_OFFSET_TOPIC
     end
 
+    def groups
+      @cluster.groups.select do |g|
+        g.consumed_topics.include?(self)
+      end
+    end
+
     # Needs arguments to be compatible with rails as_json calls
     def as_json(*)
       {
@@ -75,9 +81,6 @@ module Kafka
       end
 
       @replication_factor = @partitions.map(&:isr).map(&:length).max
-      @consumer_groups = @cluster.groups.select do |g|
-        g.consumed_topics.include?(self)
-      end
     end
   end
 end

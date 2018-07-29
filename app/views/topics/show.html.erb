@@ -18,7 +18,7 @@
       <div class="level-item has-text-centered">
         <div>
           <p class="heading">Consumer Groups</p>
-          <p class="title"><%= @topic.consumer_groups.count %></p>
+          <p class="title"><%= @topic.groups.count %></p>
         </div>
       </div>
       <div class="level-item has-text-centered">
@@ -36,21 +36,19 @@
     </nav>
   </div>
 
-  <div class="column">
-    <div class="box is-clearfix is-shadowless">
-      <div class="is-pulled-right">
+  <div class="column is-2 has-text-centered">
+    <div class="box is-shadowless">
+      <div>
         <%= link_to "#{topic_path(@topic)}/edit?redirect_path=#{URI.encode(topic_path(@topic))}" do %>
-          <span class="icon has-text-grey"><i class="fas fa-edit fa-2x"></i></span>
+          <button class="button is-info"><span class="icon"><i class="fas fa-edit"></i></span></button>
         <% end %>
-        &nbsp;&nbsp;
         <%= link_to topic_path(@topic), method: :delete, data: { confirm: "Are you sure you want to delete topic #{@topic.name} ?" } do %>
-          <span class="icon has-text-danger"><i class="fas fa-trash-alt fa-2x"></i></span>
+          <button class="button is-danger"><span class="icon"><i class="fas fa-trash-alt"></i></span></button>
         <% end %>
       </div>
     </div>
   </div>
 </div>
-<hr class="hr">
 
 <div class="columns">
   <div class="column is-three-quarters">
@@ -82,9 +80,9 @@
       </thead>
 
       <tbody>
-        <% @topic.consumer_groups.each do |group| %>j
+        <% @topic.groups.each do |group| %>
           <tr>
-            <td><%= group.group_id %>k</td>
+            <td><%= group.group_id %></td>
           </tr>
       <% end %>
       </tbody>
