@@ -23,8 +23,8 @@ class ConsumerGroupsController < ApplicationController
     @group = @cluster.groups.find { |g| g.group_id == params[:id] }
 
     @current_topic =
-      if params[:topic_name]
-        @group.consumed_topics.find { |t| t.name == params[:topic_name] }
+      if params[:topic]
+        @group.consumed_topics.find { |t| t.name == params[:topic] }
       else
         @group.consumed_topics.first
       end
