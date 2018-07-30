@@ -2,10 +2,25 @@ require_dependency 'app/wrappers/kafka/partition_wrapper'
 
 module Kafka
   class TopicWrapper
-    attr_reader :name, :partitions, :replication_factor
+    attr_reader :name,
+                :partitions,
+                :replication_factor,
+                :max_message_bytes,
+                :retention_ms,
+                :retention_bytes
+
     alias_method :id, :name
-    CLUSTER_API_TIMEOUT = 30
+
+    CLUSTER_API_TIMEOUT = 10
     CONSUMER_OFFSET_TOPIC = '__consumer_offsets'.freeze
+    DEFAULT_MAX_MESSAGE_BYTES = 1000012
+    DEFAULT_RETENTION_MS = 604800000
+    DEFAULT_RETENTION_BYTES = -1
+    TOPIC_CONFIGS = %w[
+      max.message.bytes
+      retention.bytes
+      retention.ms
+    ].freeze
 
     def initialize(topic_metadata, cluster)
       @cluster = cluster
@@ -19,6 +34,16 @@ module Kafka
 
     def destroy
       @cluster.delete_topic(@name, timeout: CLUSTER_API_TIMEOUT)
+    end
+
+    def set_configs!(max_message_bytes: nil, retention_ms: nil, retention_bytes: nil)
+      config = {}
+      config['max.message.bytes'] = max_message_bytes if max_message_bytes
+      config['retention.ms']      = retention_ms      if retention_ms
+      config['retention.bytes']   = retention_bytes   if retention_bytes
+
+      @cluster.alter_topic(@name, config) unless config.empty?
+      refresh!
     end
 
     def set_partitions!(num_partitions)
@@ -50,7 +75,7 @@ module Kafka
     end
 
     def consumer_offset_topic?
-      @name == CONSUMER_OFFSET_TOPIC
+      name == CONSUMER_OFFSET_TOPIC
     end
 
     def groups
@@ -64,6 +89,11 @@ module Kafka
       {
         name: @name,
         replication_factor: @replication_factor,
+        config: {
+          max_message_bytes: @max_message_bytes,
+          retention_ms: @retention_ms,
+          retention_bytes: @retention_bytes
+        },
         partitions: @partitions.sort_by(&:partition_id).map(&:as_json)
       }
     end
@@ -74,6 +104,10 @@ module Kafka
 
     private
 
+    def describe
+      @cluster.describe_topic(@name, TOPIC_CONFIGS)
+    end
+
     def initialize_from_metadata
       @name = @topic_metadata.topic_name
       @partitions = @topic_metadata.partitions.map do |pm|
@@ -81,6 +115,11 @@ module Kafka
       end
 
       @replication_factor = @partitions.map(&:isr).map(&:length).max
+
+      config = describe
+      @retention_ms = config['retention.ms'].to_i
+      @retention_bytes = config['retention.bytes'].to_i
+      @max_message_bytes = config['max.message.bytes'].to_i
     end
   end
 end

@@ -9,6 +9,8 @@ module Kafka
     attr_reader :brokers, :cluster, :topics, :groups
     METHOD_DELGATIONS = %i(
       delete_topic
+      alter_topic
+      describe_topic
       create_partitions_for
       resolve_offset
       resolve_offsets

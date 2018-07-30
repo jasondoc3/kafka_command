@@ -20,10 +20,9 @@ RSpec.describe Kafka::TopicWrapper do
   end
 
   before { create_topic(topic_name, **topic_creation_kwargs) }
+  after  { delete_topic(topic_name) if topic_exists?(topic_name) }
 
   describe '#new' do
-    after { delete_topic(topic_name) }
-
     it 'initializes Kafka::TopicWrapper with name, replication_factor, and partitions' do
       expect(topic.name).to eq(topic_name)
       expect(topic.replication_factor).to eq(1)
@@ -40,8 +39,6 @@ RSpec.describe Kafka::TopicWrapper do
   end
 
   describe '#set_partitions!' do
-    after { delete_topic(topic_name) }
-
     describe 'num_partitions > current num_partitions' do
       it 'increases partitions' do
         topic.set_partitions!(num_partitions + 1)
@@ -67,9 +64,95 @@ RSpec.describe Kafka::TopicWrapper do
     end
   end
 
-  describe '#refresh!' do
-    after { delete_topic(topic_name) }
+  describe '#set_configs!' do
+    context 'max message bytes' do
+      describe 'greater than 0' do
+        let(:max_message_bytes) { 1024 }
 
+        it 'works' do
+          topic.set_configs!(max_message_bytes: max_message_bytes)
+          expect(topic.max_message_bytes).to eq(max_message_bytes)
+        end
+      end
+
+      describe 'is 0' do
+        let(:max_message_bytes) { 0 }
+
+        it 'works' do
+          topic.set_configs!(max_message_bytes: max_message_bytes)
+          expect(topic.max_message_bytes).to eq(max_message_bytes)
+        end
+      end
+
+      describe 'less than 0' do
+        let(:max_message_bytes) { -1 }
+
+        it 'errors' do
+          expect { topic.set_configs!(max_message_bytes: max_message_bytes) }.to raise_error(Kafka::InvalidRequest)
+        end
+      end
+    end
+
+    context 'retention ms' do
+      describe 'greater than 0'do
+        let(:retention_ms) { 102400000 }
+
+        it 'works' do
+          topic.set_configs!(retention_ms: retention_ms)
+          expect(topic.retention_ms).to eq(retention_ms)
+        end
+      end
+
+      describe 'equal to 0' do
+        let(:retention_ms) { 0 }
+
+        it 'works' do
+          topic.set_configs!(retention_ms: retention_ms)
+          expect(topic.retention_ms).to eq(retention_ms)
+        end
+      end
+
+      describe 'less than 0' do
+        let(:retention_ms) { -1 }
+
+        it 'works' do
+          topic.set_configs!(retention_ms: retention_ms)
+          expect(topic.retention_ms).to eq(retention_ms)
+        end
+      end
+    end
+
+    context 'retention bytes' do
+      describe 'greater than 0'do
+        let(:retention_bytes) { 102400000 }
+
+        it 'works' do
+          topic.set_configs!(retention_bytes: retention_bytes)
+          expect(topic.retention_bytes).to eq(retention_bytes)
+        end
+      end
+
+      describe 'equal to 0' do
+        let(:retention_bytes) { 0 }
+
+        it 'works' do
+          topic.set_configs!(retention_bytes: retention_bytes)
+          expect(topic.retention_bytes).to eq(retention_bytes)
+        end
+      end
+
+      describe 'less than 0' do
+        let(:retention_bytes) { -1 }
+
+        it 'works' do
+          topic.set_configs!(retention_bytes: retention_bytes)
+          expect(topic.retention_bytes).to eq(retention_bytes)
+        end
+      end
+    end
+  end
+
+  describe '#refresh!' do
     it 'reloads the topic metadata' do
       create_partitions_for(topic_name, num_partitions: num_partitions + 1)
       topic.refresh!
@@ -78,7 +161,6 @@ RSpec.describe Kafka::TopicWrapper do
   end
 
   describe '#offset_for' do
-    after { delete_topic(topic_name) }
     let(:partition) { double(partition_id: 0) }
     let(:offset) { topic.offset_for(partition) }
 
@@ -106,11 +188,14 @@ RSpec.describe Kafka::TopicWrapper do
       {
         name: topic_name,
         replication_factor: replication_factor,
+        config: {
+          max_message_bytes: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
+          retention_ms: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
+          retention_bytes: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES
+        },
         partitions: partition_json
       }.to_json
     end
-
-    after { delete_topic(topic_name) }
 
     it 'equals the expected payload' do
       expect(topic.as_json.to_json).to eq(expected_json)
@@ -146,6 +231,45 @@ RSpec.describe Kafka::TopicWrapper do
 
       it 'returns 20' do
         expect(topic.brokers_spread).to eq(20)
+      end
+    end
+  end
+
+  describe '#groups' do
+    let(:group_id_1) { "test-group-#{SecureRandom.hex(12)}" }
+
+    context 'group consuming' do
+      it 'returns a list containing the group' do
+        run_consumer_group(topic_name, group_id_1) do
+          expect(topic.groups.map(&:group_id)).to include(group_id_1)
+        end
+      end
+    end
+
+    context 'group not consuming' do
+      it 'returns a list not containing the group' do
+        run_consumer_group(topic_name, group_id_1)
+        expect(topic.groups.map(&:group_id)).to_not include(group_id_1)
+      end
+    end
+  end
+
+  describe '#consumer_offset_topic?' do
+    context 'when consumer offset topic' do
+      let(:consumer_offset_topic) { Kafka::TopicWrapper::CONSUMER_OFFSET_TOPIC }
+
+      before do
+        allow(topic).to receive(:name).and_return(consumer_offset_topic)
+      end
+
+      it 'returns true' do
+        expect(topic.consumer_offset_topic?).to eq(true)
+      end
+    end
+
+    context 'normal topic' do
+      it 'returns false' do
+        expect(topic.consumer_offset_topic?).to eq(false)
       end
     end
   end

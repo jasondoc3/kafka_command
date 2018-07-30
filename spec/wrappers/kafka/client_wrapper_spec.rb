@@ -37,7 +37,12 @@ RSpec.describe Kafka::ClientWrapper do
       let(:topic_kwargs) do
         {
           num_partitions: 10,
-          replication_factor: 1
+          replication_factor: 1,
+          config: {
+            'retention.ms' => 1024,
+            'retention.bytes' => 6000,
+            'max.message.bytes' => 1204
+          }
         }
       end
 

@@ -125,6 +125,56 @@ RSpec.describe Kafka::ClusterWrapper do
       end
     end
 
+    describe '#alter_topic' do
+      let(:retention_ms) { 1000000 }
+      let(:retention_bytes) { 100000000 }
+      let(:max_message_bytes) { 100000000 }
+      let(:alter_topic_configs) do
+        {
+          'retention.ms' => retention_ms,
+          'retention.bytes' => retention_bytes,
+          'max.message.bytes' => max_message_bytes
+        }
+      end
+
+      it 'forwards alter_topic to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:alter_topic).with(topic_name, alter_topic_configs)
+        cluster_wrapper.alter_topic(topic_name, alter_topic_configs)
+      end
+
+      context 'altering the topic' do
+        before { create_topic(topic_name) }
+        after  { delete_topic(topic_name) }
+
+        it 'alters the configs' do
+          cluster_wrapper.alter_topic(topic_name, alter_topic_configs)
+          configs = cluster_wrapper.describe_topic(topic_name, alter_topic_configs.keys)
+          expect(configs['max.message.bytes']).to eq(max_message_bytes.to_s)
+          expect(configs['retention.bytes']).to eq(retention_bytes.to_s)
+          expect(configs['retention.ms']).to eq(retention_ms.to_s)
+        end
+      end
+    end
+
+    describe '#describe_topic' do
+      let(:describe_topic_configs) { Kafka::TopicWrapper::TOPIC_CONFIGS }
+
+      it 'forwards describe_topic to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:describe_topic).with(topic_name, describe_topic_configs)
+        cluster_wrapper.describe_topic(topic_name, describe_topic_configs)
+      end
+
+      context 'describing the topic' do
+        before { create_topic(topic_name) }
+        after  { delete_topic(topic_name) }
+
+        it 'describes the topic' do
+          config = cluster_wrapper.describe_topic(topic_name, describe_topic_configs)
+          describe_topic_configs.each { |c| expect(config.key?(c)).to eq(true) }
+        end
+      end
+    end
+
     describe '#create_partitions_for' do
       let(:create_partitions_kwargs) do
         { num_partitions: 5, timeout: 30 }
