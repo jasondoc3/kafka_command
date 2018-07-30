@@ -1,33 +1,33 @@
-<%= render partial: 'shared/title', locals: { title: @topic.name, subtitle: @cluster.name } %>
+<%= render partial: 'shared/title', locals: { title: @cluster.name, subtitle: @topic.name } %>
 
 <div class="columns">
   <div class="column is-three-quarters">
     <nav class="level">
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Replication Factor</p>
           <p class="title"><%= @topic.replication_factor %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Partitions</p>
           <p class="title"><%= @topic.partitions.count %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Consumer Groups</p>
           <p class="title"><%= @topic.groups.count %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Brokers Spread</p>
           <p class="title"><%= "#{@topic.brokers_spread}%" %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Offset Sum</p>
           <p class="title"><%= @topic.offset_sum %></p>

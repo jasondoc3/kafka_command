@@ -12,15 +12,15 @@
 
 <table class="table is-striped is-fullwidth is-bordered">
   <thead>
-    <th>Host</th>
     <th>Id</th>
+    <th>Host</th>
     <th>Status</th>
   </thead>
   <tbody>
     <% @brokers.each do |broker| %>
       <tr>
-        <td><%= broker.host %></td>
         <td><%= broker.kafka_broker_id %></td>
+        <td><%= broker.host %></td>
         <td>
           <% if broker.connected? %>
             <span class="icon has-text-success">

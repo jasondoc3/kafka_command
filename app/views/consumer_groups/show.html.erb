@@ -1,27 +1,27 @@
-<%= render partial: 'shared/title', locals: { title: @group.group_id, subtitle: @cluster.to_human } %>
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: @group.group_id } %>
 
 <div class="columns">
   <div class="column is-three-quarters">
     <nav class="level">
-      <div class="level-item has-text-centered">
-        <div>
-          <p class="heading">Members</p>
-          <p class="title"><%= @group.members.count %></p>
-        </div>
-      </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">State</p>
           <p class="title"><%= @group.state.downcase.capitalize %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
+        <div>
+          <p class="heading">Members</p>
+          <p class="title"><%= @group.members.count %></p>
+        </div>
+      </div>
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Coordinator</p>
           <p class="title"><%= @group.coordinator.node_id %></p>
         </div>
       </div>
-      <div class="level-item has-text-centered">
+      <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Total Lag</p>
           <p class="title"><%= @group.total_lag_for(@current_topic.name) %></p>
