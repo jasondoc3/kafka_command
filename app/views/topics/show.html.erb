@@ -36,14 +36,15 @@
     </nav>
   </div>
 
-  <div class="column is-one-quarter has-text-centered">
+  <div class="column is-one-quarter has-text-right">
     <div class="box is-shadowless">
       <div>
         <%= link_to "#{topic_path(@topic)}/edit?redirect_path=#{URI.encode(topic_path(@topic))}" do %>
-          <button class="button is-light"><span class="icon"><i class="fas fa-edit"></i></span></button>
+          <span class="icon has-text-grey-light"><i class="fas fa-edit fa-2x"></i></span>
         <% end %>
+        &nbsp;
         <%= link_to topic_path(@topic), method: :delete, data: { confirm: "Are you sure you want to delete topic #{@topic.name} ?" } do %>
-          <button class="button is-danger"><span class="icon"><i class="fas fa-trash-alt"></i></span></button>
+          <span class="icon has-text-danger"><i class="fas fa-trash-alt fa-2x"></i></span>
         <% end %>
       </div>
     </div>
@@ -80,6 +81,28 @@
   </div>
 
   <div class="column is-one-quarter">
+    <table class="table is-striped is-bordered is-fullwidth config-table">
+      <thead class="has-background-primary is-borderless">
+        <th class="has-text-white is-borderless">Configs</th>
+        <th class="is-borderless"></th>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Max message bytes</td>
+          <td><%= @topic.max_message_bytes %></td>
+        </tr>
+        <tr>
+          <td>Log retention milliseconds</td>
+          <td><%= @topic.retention_ms %></td>
+        </tr>
+        <tr>
+          <td>Log retention bytes</td>
+          <td><%= @topic.retention_bytes %></td>
+        </tr>
+      </tbody>
+    </table>
+
     <table class="table is-striped is-bordered is-fullwidth">
       <thead class="has-background-primary">
         <th class="has-text-white">Consumers</th>

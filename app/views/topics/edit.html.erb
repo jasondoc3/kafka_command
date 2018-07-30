@@ -1,27 +1,17 @@
-<%= link_to topic_path(@topic) do %>
-  <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: @topic.name } %>
-<% end %>
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: @topic.name } %>
 
 <div class="column is-one-third">
   <%= form_tag topic_path(@topic), method: :patch do |f| %>
-    <div class="field">
-      <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
-      <div class="control">
-        <%= number_field_tag(:num_partitions, @topic.partitions.count + 1, min: @topic.partitions.count + 1, class: 'input') %>
-      </div>
-      <p class="help">
-        The number of partitions can only be increased. A topic must be deleted and recreated to decrease partitions.
-      </p>
-    </div>
-
-    <% if @redirect_path.present? %>
-      <%= hidden_field_tag(:redirect_path, @redirect_path) %>
-    <% end %>
-
-    <div class="field">
-      <div class="control">
-        <%= submit_tag('Save', class: 'button is-primary') %>
-      </div>
-    </div>
+    <%=
+      render(
+        partial: 'form_fields',
+        locals: {
+          retention_bytes_value: @topic.retention_bytes,
+          max_message_bytes_value: @topic.max_message_bytes,
+          retention_ms_value: @topic.retention_ms,
+          partitions_value: @topic.partitions.count
+        }
+      )
+    %>
   <% end %>
 </div>

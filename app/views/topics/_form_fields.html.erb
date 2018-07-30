@@ -1,0 +1,49 @@
+<div class="field">
+  <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
+  <div class="control">
+    <%= number_field_tag(:num_partitions, partitions_value, min: partitions_value, class: 'input') %>
+  </div>
+  <p class="help">
+    The number of partitions can only be increased. A topic must be deleted and recreated to decrease partitions.
+  </p>
+</div>
+
+<div class="field">
+  <%= label_tag :retention_ms, 'Log Retention Milliseconds', class: 'label' %>
+  <div class="control">
+    <%= number_field_tag(:retention_ms, retention_ms_value, min: 1, class: 'input') %>
+  </div>
+  <p class="help">
+    Controls the maximum time a partition's log segments are retained before they are discarded to free up space.
+  </p>
+</div>
+
+<div class="field">
+  <%= label_tag :retention_bytes, 'Log Retention Bytes', class: 'label' %>
+  <div class="control">
+    <%= number_field_tag(:retention_bytes, retention_bytes_value, class: 'input') %>
+  </div>
+  <p class="help">
+    Controls the maximum size a partition can grow before discarding old log segments to free up space. <strong>A value of -1 disables this configuration option.</strong>
+  </p>
+</div>
+
+<div class="field">
+  <%= label_tag :max_message_bytes, 'Max Message Bytes', class: 'label' %>
+  <div class="control">
+    <%= number_field_tag(:max_message_bytes, max_message_bytes_value, min: 1, class: 'input') %>
+  </div>
+  <p class="help">
+    The largest record batch size allowed by Kafka.
+  </p>
+</div>
+
+<% if @redirect_path.present? %>
+  <%= hidden_field_tag(:redirect_path, @redirect_path) %>
+<% end %>
+
+<div class="field">
+  <div class="control">
+    <%= submit_tag('Save', class: 'button is-primary') %>
+  </div>
+</div>

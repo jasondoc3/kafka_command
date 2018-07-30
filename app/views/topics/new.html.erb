@@ -1,6 +1,4 @@
-<%= link_to cluster_topics_path(@cluster) do %>
-  <%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
-<% end %>
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
 
 <div class="column is-one-third">
   <%= form_tag cluster_topics_path, method: :post  do |f| %>
@@ -8,13 +6,6 @@
       <%= label_tag :name, 'Name', class: 'label' %>
       <div class="control">
         <input class="input" type="text" name="name" placeholder="my-topic">
-      </div>
-    </div>
-
-    <div class="field">
-      <%= label_tag :num_partitions, 'Partitions', class: 'label' %>
-      <div class="control">
-        <%= number_field_tag(:num_partitions, 5, min: 1, class: 'input') %>
       </div>
     </div>
 
@@ -29,11 +20,17 @@
       </p>
     </div>
 
-    <div class="field">
-      <div class="control">
-        <%= submit_tag('Add', class: 'button is-primary') %>
-      </div>
-    </div>
+    <%=
+      render(
+        partial: 'form_fields',
+        locals: {
+          retention_bytes_value: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES,
+          retention_ms_value: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
+          max_message_bytes_value: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
+          partitions_value: 5
+        }
+     )
+    %>
 
   <% end %>
 </div>

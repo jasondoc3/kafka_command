@@ -72,7 +72,7 @@ class TopicsController < ApplicationController
 
     render_error('Topic not found', status: 404) and return if @topic.nil?
     if params[:num_partitions]
-      @topic.set_partitions!(params[:num_partitions].to_i)
+      @topic.set_partitions!(params[:num_partitions].to_i) unless params[:num_partitions].to_i == @topic.partitions.count
     end
 
     if build_config.present?
