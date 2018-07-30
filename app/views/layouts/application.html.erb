@@ -24,7 +24,7 @@
         </div>
         <div class="navbar-start">
           <div class="navbar-menu is-active">
-            <% if @cluster %>
+            <% if @cluster && !@cluster.new_record? %>
               <div class="navbar-item has-dropdown is-hoverable">
                 <%= link_to 'Clusters', clusters_path, class: 'navbar-link has-text-weight-bold' %>
                 <div class="navbar-dropdown is-boxed">

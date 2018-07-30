@@ -24,33 +24,39 @@
       <div class="level-item is-narrow has-text-centered">
         <div>
           <p class="heading">Total Lag</p>
-          <p class="title"><%= @group.total_lag_for(@current_topic.name) %></p>
+          <% if @current_topic %>
+            <p class="title"><%= @group.total_lag_for(@current_topic.name) %></p>
+          <% else %>
+            <p class="title">N/A</p>
+          <% end %>
         </div>
       </div>
     </nav>
   </div>
 
-  <div class="column is-one-quarter has-text-centered">
-    <div class="box is-shadowless">
-      <div id="select-topic-dropdown" class="dropdown is-hoverable">
-        <div class="dropdown-trigger">
-          <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-            <span><%= trim_name(@current_topic.name) %></span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-down" aria-hidden="true"></i>
-            </span>
-          </button>
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-          <div class="dropdown-content">
-            <% @group.consumed_topics.each do |topic| %>
-              <%= link_to trim_name(topic.name), "#{consumer_groups_path(@group)}?topic=#{topic.name}", class: 'dropdown-item' %>
-            <% end %>
+  <% if @group.consumed_topics.any? %>
+    <div class="column is-one-quarter has-text-centered">
+      <div class="box is-shadowless">
+        <div id="select-topic-dropdown" class="dropdown is-hoverable">
+          <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+              <span><%= trim_name(@current_topic.name) %></span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <% @group.consumed_topics.each do |topic| %>
+                <%= link_to trim_name(topic.name), "#{consumer_groups_path(@group)}?topic=#{topic.name}", class: 'dropdown-item' %>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 </div>
 
 <div class="columns">
@@ -70,21 +76,23 @@
           <th>Topic Offset</th>
           <th>Lag</th>
         </tr>
-        <% @group.partitions_for(@current_topic.name).sort_by(&:partition_id).each do |p| %>
-          <tr>
-            <td><%= p.partition_id %></td>
-            <% if p.offset %>
-              <td><%= p.offset %></td>
-            <% else %>
-              <td class="has-text-grey-light">N/A</td>
-            <% end %>
-            <td><%= @current_topic.offset_for(p) %></td>
-            <% if p.lag %>
-              <td><%= p.lag %></td>
-            <% else %>
-              <td class="has-text-grey-light">N/A</td>
-            <% end %>
-          </tr>
+        <% if @current_topic %>
+          <% @group.partitions_for(@current_topic.name).sort_by(&:partition_id).each do |p| %>
+            <tr>
+              <td><%= p.partition_id %></td>
+              <% if p.offset %>
+                <td><%= p.offset %></td>
+              <% else %>
+                <td class="has-text-grey-light">N/A</td>
+              <% end %>
+              <td><%= @current_topic.offset_for(p) %></td>
+              <% if p.lag %>
+                <td><%= p.lag %></td>
+              <% else %>
+                <td class="has-text-grey-light">N/A</td>
+              <% end %>
+            </tr>
+          <% end %>
         <% end %>
       </tbody>
     </table>
