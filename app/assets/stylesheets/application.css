@@ -17,3 +17,11 @@
 .is-borderless {
   border-width: 0px !important;
 }
+
+.kafka-logo {
+  margin-left: 0 !important;
+}
+
+.page-title {
+  margin-top: 1rem;
+}

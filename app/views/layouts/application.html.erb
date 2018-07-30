@@ -15,17 +15,35 @@
   </head>
 
   <body>
-    <nav class="navbar" role="navigation">
+    <nav class="navbar is-light" role="navigation">
       <div class="container">
-        <div class="navbar-brand">
-          <%= link_to '/', class: 'navbar-item' do %>
+        <div class="navbar-brand kafka-logo">
+          <p class="navbar-item is-paddingless">
             <%= image_tag('kafka2.png', alt: '') %>
-            <p class="subtitle is-5">&nbsp;Command</p>
-          <% end %>
+          </a>
+        </div>
+        <div class="navbar-start">
+          <div class="navbar-menu is-active">
+            <% if @cluster %>
+              <div class="navbar-item has-dropdown is-hoverable">
+                <%= link_to 'Clusters', clusters_path, class: 'navbar-link has-text-weight-bold' %>
+                <div class="navbar-dropdown is-boxed">
+                  <% Cluster.all.each do |cluster| %>
+                    <%= link_to trim_name(cluster.name), cluster_topics_path(cluster), class: 'navbar-item' %>
+                  <% end %>
+                </div>
+              </div>
+              <%= link_to 'Topics', cluster_topics_path(@cluster), class: 'navbar-item' %>
+              <%= link_to 'Consumers', cluster_consumer_groups_path(@cluster), class: 'navbar-item' %>
+              <%= link_to 'Brokers', cluster_brokers_path(@cluster), class: 'navbar-item' %>
+            <% end %>
+          </div>
+        </div>
+        <div class="navbar-end">
+          <p class="subtitle navbar-item">Command</p>
         </div>
       </div>
     </nav>
-
 
     <div class="container">
       <%= yield %>

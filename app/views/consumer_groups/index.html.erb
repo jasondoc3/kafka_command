@@ -1,4 +1,4 @@
-<%= render partial: 'clusters/tabs' %>
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Consumers' } %>
 
 <div class="level"a>
   <%=
@@ -6,7 +6,7 @@
       partial: 'shared/search_bar',
       locals: {
         resources: @groups,
-        resource_name: 'group',
+        resource_name: 'consumer',
         resource_path: cluster_consumer_groups_path,
         filter_property: :group_id
       }

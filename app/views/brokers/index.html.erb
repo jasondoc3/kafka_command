@@ -1,4 +1,4 @@
-<%= render partial: 'clusters/tabs' %>
+<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Brokers' } %>
 
 <div class="level"a>
   <div class="level-left">
@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<table class="table is-striped is-fullwidth">
+<table class="table is-striped is-fullwidth is-bordered">
   <thead>
     <th>Host</th>
     <th>Id</th>
