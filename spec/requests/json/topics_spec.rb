@@ -73,11 +73,17 @@ RSpec.describe 'Topics API', type: :request do
     let(:topic_two_name) { "test-#{SecureRandom.hex(12)}" }
     let(:new_num_partitions) { num_partitions }
     let(:new_replication_factor) { replication_factor }
+    let(:retention_ms) { 1024 }
+    let(:retention_bytes) { 10000 }
+    let(:max_message_bytes) { 10000 }
     let(:create_topic_params) do
       {
         name: topic_two_name,
         replication_factor: new_replication_factor,
-        num_partitions: new_num_partitions
+        num_partitions: new_num_partitions,
+        retention_bytes: retention_bytes,
+        retention_ms: retention_ms,
+        max_message_bytes: max_message_bytes
       }
     end
 
@@ -91,6 +97,9 @@ RSpec.describe 'Topics API', type: :request do
         expect(json['partitions']).to be_an_instance_of(Array)
         expect(json['partitions'].count).to eq(num_partitions)
         expect(json['replication_factor']).to eq(replication_factor)
+        expect(json['config']['retention_ms']).to eq(retention_ms)
+        expect(json['config']['retention_bytes']).to eq(retention_bytes)
+        expect(json['config']['max_message_bytes']).to eq(max_message_bytes)
       end.to change { cluster.topics.count }.by(1)
     end
 
@@ -115,6 +124,18 @@ RSpec.describe 'Topics API', type: :request do
             post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Topic already exists')
+          end.to change { cluster.topics.count }.by(0)
+        end
+      end
+
+      describe 'invalid max message bytes' do
+        let(:max_message_bytes) { -1 }
+
+        it 'returns 422' do
+          expect do
+            post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
+            expect(response.status).to eq(422)
+            expect(response.body).to eq('An unknown error occurred with the request to Kafka. Check any request parameters.')
           end.to change { cluster.topics.count }.by(0)
         end
       end
@@ -166,9 +187,15 @@ RSpec.describe 'Topics API', type: :request do
   describe 'updating a topic' do
     let(:topic) { cluster.topics.find { |t| t.name == topic_name } }
     let(:new_num_partitions) { num_partitions + 1 }
+    let(:max_message_bytes) { 1024 }
+    let(:retention_ms) { 1024 }
+    let(:retention_bytes) { 1024 }
     let(:update_topic_params) do
       {
-        num_partitions: new_num_partitions
+        num_partitions: new_num_partitions,
+        retention_bytes: retention_bytes,
+        max_message_bytes: max_message_bytes,
+        retention_ms: retention_ms
       }
     end
 
@@ -177,6 +204,9 @@ RSpec.describe 'Topics API', type: :request do
         patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json", params: update_topic_params
         expect(response.status).to eq(200)
         expect(topic.partitions.count).to eq(update_topic_params[:num_partitions])
+        expect(topic.retention_ms).to eq(retention_ms)
+        expect(topic.retention_bytes).to eq(retention_bytes)
+        expect(topic.max_message_bytes).to eq(max_message_bytes)
       end
 
       context 'invalid parameters' do
@@ -187,6 +217,16 @@ RSpec.describe 'Topics API', type: :request do
             patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json", params: update_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Num partitions must be > 0 or > current number of partitions')
+          end
+        end
+
+        describe 'invalid max message bytes' do
+          let(:max_message_bytes) { -1 }
+
+          it 'returns 422' do
+            patch "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json", params: update_topic_params
+            expect(response.status).to eq(422)
+            expect(response.body).to eq('An unknown error occurred with the request to Kafka. Check any request parameters.')
           end
         end
       end

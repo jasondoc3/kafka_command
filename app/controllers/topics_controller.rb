@@ -3,6 +3,8 @@ class TopicsController < ApplicationController
   rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
   rescue_from Kafka::InvalidTopic, with: :invalid_topic_name
   rescue_from Kafka::TopicAlreadyExists, with: :topic_already_exists
+  rescue_from Kafka::UnknownError, with: :unknown_error
+  rescue_from Kafka::InvalidRequest, with: :unknown_error
 
   # GET /clusters/:cluster_id/topics
   def index
@@ -51,7 +53,8 @@ class TopicsController < ApplicationController
     @topic = @cluster.create_topic(
       params[:name],
       num_partitions: params[:num_partitions].to_i,
-      replication_factor: params[:replication_factor].to_i
+      replication_factor: params[:replication_factor].to_i,
+      config: build_config
     )
 
     render_success(
@@ -70,6 +73,14 @@ class TopicsController < ApplicationController
     render_error('Topic not found', status: 404) and return if @topic.nil?
     if params[:num_partitions]
       @topic.set_partitions!(params[:num_partitions].to_i)
+    end
+
+    if build_config.present?
+      @topic.set_configs!(
+        max_message_bytes: params[:max_message_bytes],
+        retention_ms: params[:retention_ms],
+        retention_bytes: params[:retention_bytes]
+      )
     end
 
     render_success(
@@ -99,6 +110,14 @@ class TopicsController < ApplicationController
   end
 
   private
+
+  def build_config
+    {}.tap do |config|
+      config['max.message.bytes'] = params[:max_message_bytes] if params[:max_message_bytes]
+      config['retention.ms']      = params[:retention_ms]      if params[:retention_ms]
+      config['retention.bytes']   = params[:retention_bytes]   if params[:retention_bytes]
+    end
+  end
 
   def invalid_partitions
     error_msg = 'Num partitions must be > 0 or > current number of partitions'
@@ -131,6 +150,16 @@ class TopicsController < ApplicationController
 
   def topic_already_exists
     error_msg = 'Topic already exists'
+    render_error(
+      error_msg,
+      status: 422,
+      flash: { error: error_msg }
+    )
+  end
+
+  def unknown_error
+    error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
+
     render_error(
       error_msg,
       status: 422,
