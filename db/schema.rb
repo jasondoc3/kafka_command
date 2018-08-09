@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_16_020801) do
+ActiveRecord::Schema.define(version: 2018_08_09_050613) do
 
   create_table "brokers", force: :cascade do |t|
     t.string "host"
@@ -27,6 +27,12 @@ ActiveRecord::Schema.define(version: 2018_04_16_020801) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "sasl_scram_username"
+    t.string "encrypted_sasl_scram_password"
+    t.string "encrypted_sasl_scram_password_iv"
+    t.string "sasl_scram_mechanism"
+    t.text "encrypted_ssl_ca_cert"
+    t.string "encrypted_ssl_ca_cert_iv"
   end
 
 end

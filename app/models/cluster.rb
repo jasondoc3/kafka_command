@@ -2,11 +2,32 @@ class Cluster < ApplicationRecord
   has_many :brokers, dependent: :destroy
   validates :name, presence: true
 
-  def client
-    @client ||= Kafka::ClientWrapper.new(
-      brokers: brokers.map(&:host),
+  attr_encrypted :sasl_scram_password, key: Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
+  attr_encrypted :ssl_ca_cert, key: Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
+
+  def self.client(**kwargs)
+    @client ||= begin
+      Kafka::ClientWrapper.new(**kwargs, logger: Rails.logger)
+    end
+  end
+
+  def client(seed_brokers: nil)
+    hosts = seed_brokers || brokers.map(&:host)
+
+    client_kwargs = {
+      brokers: hosts,
       client_id: name
-    )
+    }
+
+    if sasl?
+      client_kwargs[:sasl_scram_username] = sasl_scram_username
+      client_kwargs[:sasl_scram_password] = sasl_scram_password
+      client_kwargs[:sasl_scram_mechanism] = 'sha256'
+      client_kwargs[:sasl_over_ssl] = ssl_ca_cert.present?
+      client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+    end
+
+    self.class.client(**client_kwargs)
   end
 
   def topics
@@ -38,4 +59,10 @@ class Cluster < ApplicationRecord
   def to_human
     name.humanize.capitalize
   end
+
+  private
+
+    def sasl?
+      sasl_scram_username.present? && sasl_scram_password.present?
+    end
 end

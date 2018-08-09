@@ -9,8 +9,8 @@ module Kafka
     def_delegators :@client, :create_topic
     def_delegators :@cluster, :topics, :groups
 
-    def initialize(brokers:, client_id: nil)
-      @client = Kafka.new(brokers, client_id: client_id)
+    def initialize(brokers:, **kwargs)
+      @client = Kafka.new(brokers, **kwargs)
       @cluster = ClusterWrapper.new(@client.cluster)
     end
 

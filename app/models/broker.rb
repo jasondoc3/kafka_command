@@ -23,7 +23,7 @@ class Broker < ApplicationRecord
   end
 
   def client
-    @client ||= Kafka::ClientWrapper.new(brokers: [host])
+    @client ||= cluster.client(seed_brokers: [host])
   end
 
   private
