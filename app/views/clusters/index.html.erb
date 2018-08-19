@@ -22,6 +22,7 @@
     <th>Name</th>
     <th>Description</th>
     <th>Brokers</th>
+    <th>Connection Protocol</th>
     <th>Status</th>
     <th></th>
   </thead>
@@ -31,6 +32,15 @@
         <td><%= link_to cluster.name, cluster_topics_path(cluster) %></td>
         <td><%= cluster.description %></td>
         <td><%= cluster.brokers.count %></td>
+        <td>
+          <% if cluster.ssl? %>
+            SSL
+          <% elsif cluster.sasl? %>
+            SASL/SCRAM
+          <% else %>
+            PLAINTEXT
+          <% end %>
+        </td>
         <td>
           <% if cluster.connected? %>
             <span class="icon has-text-success">

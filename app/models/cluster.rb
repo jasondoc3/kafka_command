@@ -23,7 +23,6 @@ class Cluster < ApplicationRecord
       client_kwargs[:sasl_scram_username] = sasl_scram_username
       client_kwargs[:sasl_scram_password] = sasl_scram_password
       client_kwargs[:sasl_scram_mechanism] = 'sha256'
-      client_kwargs[:sasl_over_ssl] = ssl_ca_cert.present?
       client_kwargs[:ssl_ca_cert] = ssl_ca_cert
     elsif ssl?
       client_kwargs[:ssl_ca_cert] = ssl_ca_cert
@@ -65,15 +64,13 @@ class Cluster < ApplicationRecord
     name.humanize.capitalize
   end
 
-  private
+  def ssl?
+    encrypted_ssl_ca_cert.present? &&
+      encrypted_ssl_client_cert.present? &&
+      encrypted_ssl_client_cert_key.present?
+  end
 
-    def ssl?
-      encrypted_ssl_ca_cert.present? &&
-        encrypted_ssl_client_cert.present? &&
-        encrypted_ssl_client_cert_key.present?
-    end
-
-    def sasl?
-      sasl_scram_username.present? && sasl_scram_password.present?
-    end
+  def sasl?
+    sasl_scram_username.present? && sasl_scram_password.present?
+  end
 end

@@ -36,21 +36,35 @@
     </div>
   </div>
 
-  <div class="field">
+  <div id="sasl-scram-username" class="field" style="display:none">
+    <%= label_tag :sasl_scram_username, 'SASL/SCRAM Username', class: 'label' %>
+    <div class="control">
+      <input type="text" name="sasl_scram_username" class="input" placeholder="SASL/SCRAM username">
+    </div>
+  </div>
+
+  <div id="sasl-scram-password" class="field" style="display:none">
+    <%= label_tag :sasl_scram_password, 'SASL/SCRAM Password', class: 'label' %>
+    <div class="control">
+      <input type="password" class="input" name="sasl_scram_password" placeholder="SASL/SCRAM password">
+    </div>
+  </div>
+
+  <div id="ca-cert-textarea" class="field" style="display:none">
     <%= label_tag :ssl_ca_cert, 'SSL CA Certificate', class: 'label' %>
     <div class="control">
       <textarea type="textarea" name="ssl_ca_cert" class="textarea"></textarea>
     </div>
   </div>
 
-  <div class="field">
+  <div id="client-cert-textarea" class="field" style="display:none">
     <%= label_tag :ssl_client_cert, 'SSL Client Certificate', class: 'label' %>
     <div class="control">
       <textarea name="ssl_client_cert" class="textarea"></textarea>
     </div>
   </div>
 
-  <div class="field">
+  <div id="client-cert-key-textarea" class="field" style="display:none">
     <%= label_tag :ssl_client_cert_key, 'SSL Client Certificate Key', class: 'label' %>
     <div class="control">
       <textarea type="textarea" name="ssl_client_cert_key" class="textarea"></textarea>
@@ -67,4 +81,35 @@
 </div>
 
 <script type="text/javascript">
+  var protocolSelectTag = document.getElementById("protocol-selection");
+
+  protocolSelectTag.onchange = function() {
+    var saslUsername = document.getElementById("sasl-scram-username");
+    var saslPassword = document.getElementById("sasl-scram-password");
+    var sslCaCertText = document.getElementById("ca-cert-textarea");
+    var sslClientText = document.getElementById("client-cert-textarea");
+    var sslClientCertKeyText = document.getElementById("client-cert-key-textarea");
+
+    saslUsername.getElementsByTagName('input')[0].value = "";
+    saslPassword.getElementsByTagName('input')[0].value = "";
+    sslCaCertText.getElementsByTagName('textarea')[0].value = "";
+    sslClientText.getElementsByTagName('textarea')[0].value = "";
+    sslClientCertKeyText.getElementsByTagName('textarea')[0].value = "";
+
+    saslUsername.style.display = "none";
+    saslPassword.style.display = "none";
+    sslCaCertText.style.display = "none";
+    sslClientText.style.display = "none";
+    sslClientCertKeyText.style.display = "none";
+
+    if(this.value == "SSL") {
+      sslCaCertText.style.display = "block";
+      sslClientText.style.display = "block";
+      sslClientCertKeyText.style.display = "block";
+    } else if(this.value == "SASL/SCRAM") {
+      sslCaCertText.style.display = "block";
+      saslUsername.style.display = "block";
+      saslPassword.style.display = "block";
+    }
+  };
 </script>

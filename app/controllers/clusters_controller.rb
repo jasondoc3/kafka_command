@@ -35,6 +35,10 @@ class ClustersController < ApplicationController
     @cluster.ssl_ca_cert = params[:ssl_ca_cert] if params[:ssl_ca_cert]
     @cluster.ssl_client_cert = params[:ssl_client_cert] if params[:ssl_client_cert]
     @cluster.ssl_client_cert_key = params[:ssl_client_cert_key] if params[:ssl_client_cert_key]
+    @cluster.ssl_client_cert = params[:ssl_client_cert] if params[:ssl_client_cert]
+    @cluster.ssl_client_cert_key = params[:ssl_client_cert_key] if params[:ssl_client_cert_key]
+    @cluster.sasl_scram_username = params[:sasl_scram_username] if params[:sasl_scram_username]
+    @cluster.sasl_scram_password = params[:sasl_scram_password] if params[:sasl_scram_password]
     @cluster.init_brokers(params[:hosts])
 
     invalid_broker = @cluster.brokers.to_a.find(&:invalid?)
