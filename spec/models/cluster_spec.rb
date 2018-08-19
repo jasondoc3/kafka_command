@@ -4,6 +4,7 @@ RSpec.describe Cluster do
   let(:cluster_name) { 'test_cluster' }
   let(:broker)       { build(:broker) }
   let(:cluster)      { create(:cluster, name: cluster_name, brokers: [broker]) }
+  let(:topic_name)   { SecureRandom.hex(12) }
 
   describe '#client' do
     it 'creates and returns a Kafka::ClientWrapper' do
@@ -20,19 +21,26 @@ RSpec.describe Cluster do
     end
   end
 
+  after { delete_topic(topic_name) if topic_exists?(topic_name) }
+
   describe '#topics' do
-    it 'calls ClusterWrapper#topics' do
-      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:refresh!).at_least(:once)
-      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:topics).once
-      cluster.topics
+    before { create_topic(topic_name) }
+
+    it 'returns a list of topics' do
+      expect(cluster.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
+      expect(cluster.topics.map(&:name)).to include(topic_name)
     end
   end
 
   describe '#groups' do
-    it 'calls Clusterwrapper#groups' do
-      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:refresh!).at_least(:once)
-      expect_any_instance_of(Kafka::ClusterWrapper).to receive(:groups).once
-      cluster.groups
+    before { create_topic(topic_name) }
+    let(:group_id) { SecureRandom.hex(12) }
+
+    it 'returns a list of groups' do
+      run_consumer_group(topic_name, group_id) do
+        expect(cluster.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
+        expect(cluster.groups.map(&:group_id)).to include(group_id)
+      end
     end
   end
 
@@ -49,12 +57,12 @@ RSpec.describe Cluster do
   end
 
   describe '#init_brokers' do
-    before { allow_any_instance_of(Broker).to receive(:set_broker_id) }
+    let(:cluster) { create(:cluster, name: cluster_name) }
 
     it 'initializes broker objects with hosts' do
-      cluster.init_brokers('localhost:9093,localhost:9094')
-      expect(cluster.brokers.map(&:host)).to include('localhost:9093')
-      expect(cluster.brokers.map(&:host)).to include('localhost:9094')
+      cluster.init_brokers('localhost:9092')
+      cluster.save!
+      expect(cluster.brokers.map(&:host)).to include('localhost:9092')
       expect(cluster.reload.brokers.count).to eq(1)
     end
   end

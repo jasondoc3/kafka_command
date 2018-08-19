@@ -3,8 +3,9 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from Kafka::ConnectionError, with: :kafka_connection_error
+  rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
 
-  private
+  protected
 
   def record_not_found
     render_error('Not Found', status: :not_found)
@@ -15,6 +16,15 @@ class ApplicationController < ActionController::Base
     render_error(
       error_msg,
       status: 500,
+      flash: { error: error_msg }
+    )
+  end
+
+  def kafka_authorization_error
+    error_msg = 'You are not authorized to perform that action'
+    render_error(
+      error_msg,
+      status: 401,
       flash: { error: error_msg }
     )
   end

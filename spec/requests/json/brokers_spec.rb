@@ -5,10 +5,6 @@ RSpec.describe 'Brokers Api', type: :request do
   let(:broker) { cluster.brokers.first }
   let(:uri_base) { '/clusters' }
 
-  before do
-    allow_any_instance_of(Broker).to receive(:set_broker_id)
-  end
-
   describe 'listing all brokers' do
     let!(:broker_two) { create(:broker, host: 'localhost:9093', cluster: cluster) }
 

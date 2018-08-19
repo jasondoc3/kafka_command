@@ -32,6 +32,9 @@ class ClustersController < ApplicationController
   # POST /clusters
   def create
     @cluster = Cluster.new(cluster_params.slice(*cluster_params_keys))
+    @cluster.ssl_ca_cert = params[:ssl_ca_cert] if params[:ssl_ca_cert]
+    @cluster.ssl_client_cert = params[:ssl_client_cert] if params[:ssl_client_cert]
+    @cluster.ssl_client_cert_key = params[:ssl_client_cert_key] if params[:ssl_client_cert_key]
     @cluster.init_brokers(params[:hosts])
 
     invalid_broker = @cluster.brokers.to_a.find(&:invalid?)
@@ -90,6 +93,13 @@ class ClustersController < ApplicationController
       error_msg = 'Please specify a list of hosts'
       render_error(error_msg, status: 422, flash: { error: error_msg })
       return
+    else
+      hosts = params[:hosts].split(',')
+
+      if hosts.any? { |h| !h.match?(Broker::HOST_REGEX) }
+        render_error('Host must be a valid hostname port combination', status: 422, flash: { error: error_msg })
+        return
+      end
     end
   end
 end

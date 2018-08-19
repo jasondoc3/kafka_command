@@ -24,6 +24,40 @@
   </div>
 
   <div class="field">
+    <%= label_tag :protocol, 'Protocol', class: 'label' %>
+    <div class="control">
+      <div class="select">
+        <select id="protocol-selection">
+          <option>PLAINTEXT</option>
+          <option>SSL</option>
+          <option>SASL/SCRAM</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= label_tag :ssl_ca_cert, 'SSL CA Certificate', class: 'label' %>
+    <div class="control">
+      <textarea type="textarea" name="ssl_ca_cert" class="textarea"></textarea>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= label_tag :ssl_client_cert, 'SSL Client Certificate', class: 'label' %>
+    <div class="control">
+      <textarea name="ssl_client_cert" class="textarea"></textarea>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= label_tag :ssl_client_cert_key, 'SSL Client Certificate Key', class: 'label' %>
+    <div class="control">
+      <textarea type="textarea" name="ssl_client_cert_key" class="textarea"></textarea>
+    </div>
+  </div>
+
+  <div class="field">
     <div class="control">
       <%= f.submit 'Add', class: 'button is-primary' %>
     </div>
@@ -31,3 +65,6 @@
 
 <% end %>
 </div>
+
+<script type="text/javascript">
+</script>

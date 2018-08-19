@@ -5,6 +5,7 @@ class TopicsController < ApplicationController
   rescue_from Kafka::TopicAlreadyExists, with: :topic_already_exists
   rescue_from Kafka::UnknownError, with: :unknown_error
   rescue_from Kafka::InvalidRequest, with: :unknown_error
+  rescue_from Kafka::TopicAuthorizationFailed, with: :kafka_authorization_error
 
   # GET /clusters/:cluster_id/topics
   def index

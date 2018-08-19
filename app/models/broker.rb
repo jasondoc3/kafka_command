@@ -1,19 +1,13 @@
 class Broker < ApplicationRecord
+  HOST_REGEX = /[^\:]+:[0-9]{1,5}/
   belongs_to :cluster
-  after_initialize :set_broker_id
 
   validates :host,
     presence: true,
     uniqueness: true,
-    format: { with: /[^\:]+:[0-9]{1,5}/, message: 'Must be a valid hostname port combination' }
+    format: { with: HOST_REGEX, message: 'Must be a valid hostname port combination' }
 
   validates :kafka_broker_id, presence: { message: 'Cannot find Kafka broker ID' }
-
-  def set_broker_id
-    if kafka_broker_id.blank? && valid_host?
-      self.kafka_broker_id = client.find_broker(host).node_id
-    end
-  end
 
   def connected?
     client.topics
@@ -24,12 +18,5 @@ class Broker < ApplicationRecord
 
   def client
     @client ||= cluster.client(seed_brokers: [host])
-  end
-
-  private
-
-  def valid_host?
-    valid?
-    errors[:host].blank?
   end
 end

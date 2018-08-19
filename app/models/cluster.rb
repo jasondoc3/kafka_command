@@ -2,14 +2,14 @@ class Cluster < ApplicationRecord
   has_many :brokers, dependent: :destroy
   validates :name, presence: true
 
-  attr_encrypted :sasl_scram_password, key: Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
-  attr_encrypted :ssl_ca_cert, key: Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
+  ENCRYPTION_KEY = Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
 
-  def self.client(**kwargs)
-    @client ||= begin
-      Kafka::ClientWrapper.new(**kwargs, logger: Rails.logger)
-    end
-  end
+  %i(
+    sasl_scram_password
+    ssl_ca_cert
+    ssl_client_cert
+    ssl_client_cert_key
+  ).each { |attribute| attr_encrypted attribute, key: ENCRYPTION_KEY }
 
   def client(seed_brokers: nil)
     hosts = seed_brokers || brokers.map(&:host)
@@ -25,9 +25,14 @@ class Cluster < ApplicationRecord
       client_kwargs[:sasl_scram_mechanism] = 'sha256'
       client_kwargs[:sasl_over_ssl] = ssl_ca_cert.present?
       client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+    elsif ssl?
+      client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+      client_kwargs[:ssl_client_cert] = ssl_client_cert
+      client_kwargs[:ssl_client_cert_key] = ssl_client_cert_key
+      client_kwargs
     end
 
-    self.class.client(**client_kwargs)
+    Kafka::ClientWrapper.new(**client_kwargs, logger: Rails.logger)
   end
 
   def topics
@@ -51,8 +56,8 @@ class Cluster < ApplicationRecord
   end
 
   def init_brokers(hosts)
-    hosts&.split(',').each do |h|
-      brokers.new(host: h)
+    client(seed_brokers: hosts.split(',')).cluster.brokers.each do |broker|
+      brokers.new(host: "#{broker.host}:#{broker.port}", kafka_broker_id: broker.node_id)
     end
   end
 
@@ -61,6 +66,12 @@ class Cluster < ApplicationRecord
   end
 
   private
+
+    def ssl?
+      encrypted_ssl_ca_cert.present? &&
+        encrypted_ssl_client_cert.present? &&
+        encrypted_ssl_client_cert_key.present?
+    end
 
     def sasl?
       sasl_scram_username.present? && sasl_scram_password.present?

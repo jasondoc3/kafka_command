@@ -6,5 +6,9 @@ class AddSslAndSaslColumns < ActiveRecord::Migration[5.2]
     add_column :clusters, :sasl_scram_mechanism, :string
     add_column :clusters, :encrypted_ssl_ca_cert, :text
     add_column :clusters, :encrypted_ssl_ca_cert_iv, :string
+    add_column :clusters, :encrypted_ssl_client_cert, :text
+    add_column :clusters, :encrypted_ssl_client_cert_iv, :string
+    add_column :clusters, :encrypted_ssl_client_cert_key, :text
+    add_column :clusters, :encrypted_ssl_client_cert_key_iv, :string
   end
 end

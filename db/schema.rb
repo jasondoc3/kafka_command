@@ -33,6 +33,10 @@ ActiveRecord::Schema.define(version: 2018_08_09_050613) do
     t.string "sasl_scram_mechanism"
     t.text "encrypted_ssl_ca_cert"
     t.string "encrypted_ssl_ca_cert_iv"
+    t.text "encrypted_ssl_client_cert"
+    t.string "encrypted_ssl_client_cert_iv"
+    t.text "encrypted_ssl_client_cert_key"
+    t.string "encrypted_ssl_client_cert_key_iv"
   end
 
 end
