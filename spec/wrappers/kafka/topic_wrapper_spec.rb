@@ -214,8 +214,8 @@ RSpec.describe Kafka::TopicWrapper do
     end
 
     before do
-      allow_any_instance_of(Kafka::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
       allow(topic).to receive(:replication_factor).and_return(replication_factor_double)
+      allow_any_instance_of(Kafka::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
     end
 
     context '100%' do

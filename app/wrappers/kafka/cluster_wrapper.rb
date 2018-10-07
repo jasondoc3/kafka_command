@@ -6,7 +6,8 @@ require_dependency 'app/wrappers/kafka/topic_wrapper'
 module Kafka
   class ClusterWrapper
     extend Forwardable
-    attr_reader :brokers, :cluster, :topics, :groups
+    attr_reader :cluster
+
     METHOD_DELGATIONS = %i(
       delete_topic
       alter_topic
@@ -21,17 +22,40 @@ module Kafka
 
     def initialize(cluster)
       @cluster = cluster
-      refresh!
     end
 
     def refresh!
-      initialize_brokers
-      initialize_groups
-      initialize_topics
+      refresh_brokers!
+      refresh_topics!
+      refresh_groups!
+    end
+
+    def topics
+      @topics ||= initialize_topics
+    end
+
+    def brokers
+      @brokers ||= initialize_brokers
+    end
+
+    def groups
+      @groups ||= initialize_groups
+    end
+
+    def refresh_groups!
+      @groups = initialize_groups
+    end
+
+    def refresh_topics!
+      @topics = initialize_topics
+    end
+
+    def refresh_brokers!
+     @brokers = initialize_brokers
     end
 
     def fetch_metadata(topics: nil)
-      @brokers.sample.fetch_metadata(topics: topics)
+      brokers.sample.fetch_metadata(topics: topics)
     end
 
     def get_group_coordinator(group_id:)
@@ -40,7 +64,7 @@ module Kafka
     end
 
     def find_topic(topic_name)
-      @topics.find { |t| t.name == topic_name }
+      topics.find { |t| t.name == topic_name }
     end
 
     private
@@ -54,7 +78,7 @@ module Kafka
         @cluster.broker_pool.connect(broker.host, broker.port, node_id: broker.node_id)
       end
 
-      @brokers = @cluster.broker_pool.brokers.map do |broker_id, broker|
+      @cluster.broker_pool.brokers.map do |_, broker|
         BrokerWrapper.new(broker)
       end
     end
@@ -62,13 +86,13 @@ module Kafka
     def initialize_topics
       # returns information about each topic
       # i.e isr, leader, partitions
-      @topics = fetch_metadata.topics.map { |tm| TopicWrapper.new(tm, self) }
+      fetch_metadata.topics.map { |tm| TopicWrapper.new(tm, self) }
     end
 
     def initialize_groups
       group_ids = @cluster.list_groups
 
-      @groups = group_ids.map do |g|
+      group_ids.map do |g|
         group_metadata = @cluster.describe_group(g)
         ConsumerGroupWrapper.new(group_metadata, self)
       end

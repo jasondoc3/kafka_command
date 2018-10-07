@@ -7,11 +7,15 @@ RSpec.describe Kafka::ClusterWrapper do
   let(:client)          { Kafka.new(seed_brokers: brokers) }
   let(:cluster_wrapper) { described_class.new(client.cluster) }
 
+  after { delete_topic(topic_name) if topic_exists?(topic_name) }
+
   describe '#new' do
     it 'wraps a Kafka::Cluster' do
       expect(cluster_wrapper.cluster).to be_an_instance_of(Kafka::Cluster)
     end
+  end
 
+  describe '#brokers' do
     it 'initializes brokers' do
       expect(cluster_wrapper.brokers).to_not be_empty
       expect(cluster_wrapper.brokers.count).to eq(1)
@@ -19,54 +23,70 @@ RSpec.describe Kafka::ClusterWrapper do
       expect(cluster_wrapper.brokers.first.host).to eq('localhost')
       expect(cluster_wrapper.brokers.first.port).to eq(9092)
     end
+  end
 
-    context 'topics' do
-      before { create_topic(topic_name) }
-      after  { delete_topic(topic_name) }
+  describe '#topics' do
+    before { create_topic(topic_name) }
 
-      it 'initializes topics' do
-        expect(cluster_wrapper.topics).to_not be_empty
-        expect(cluster_wrapper.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
-        expect(cluster_wrapper.topics.map(&:name)).to include(topic_name)
-      end
-    end
-
-    context 'groups' do
-      before do
-        create_topic(topic_name)
-        run_consumer_group(topic_name, group_id)
-      end
-
-      after { delete_topic(topic_name) }
-
-      it 'initializes groups' do
-        expect(cluster_wrapper.groups).to_not be_empty
-        expect(cluster_wrapper.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
-        expect(cluster_wrapper.groups.map(&:group_id)).to include(group_id)
-      end
+    it 'initializes topics' do
+      expect(cluster_wrapper.topics).to_not be_empty
+      expect(cluster_wrapper.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
+      expect(cluster_wrapper.topics.map(&:name)).to include(topic_name)
     end
   end
 
-  describe '#refresh!' do
+  describe '#groups' do
+    before do
+      create_topic(topic_name)
+      run_consumer_group(topic_name, group_id)
+    end
+
+    it 'initializes groups' do
+      expect(cluster_wrapper.groups).to_not be_empty
+      expect(cluster_wrapper.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
+      expect(cluster_wrapper.groups.map(&:group_id)).to include(group_id)
+    end
+  end
+
+  describe '#refresh_topics!' do
     let!(:cluster_wrapper) { described_class.new(client.cluster) }
-    before { create_topic(topic_name) }
-    after  { delete_topic(topic_name) }
 
     it 'refreshes topic information' do
       expect(cluster_wrapper.topics.map(&:name)).to_not include(topic_name)
-      cluster_wrapper.refresh!
+      create_topic(topic_name)
+      cluster_wrapper.refresh_topics!
       expect(cluster_wrapper.topics).to_not be_empty
       expect(cluster_wrapper.topics.map(&:name)).to include(topic_name)
     end
   end
 
-  describe '#fetch_metadata' do
+  describe '#refresh_groups!' do
     let!(:cluster_wrapper) { described_class.new(client.cluster) }
 
-    it 'calls fetch metadata on a Kafka::Broker' do
-      expect_any_instance_of(Kafka::Broker).to receive(:fetch_metadata)
-      cluster_wrapper.fetch_metadata
+    before do
+      cluster_wrapper.groups
+      create_topic(topic_name)
+      run_consumer_group(topic_name, group_id)
     end
+
+    it 'refreshes group information' do
+      expect(cluster_wrapper.groups.map(&:group_id)).to_not include(group_id)
+      cluster_wrapper.refresh_groups!
+      expect(cluster_wrapper.groups.map(&:group_id)).to include(group_id)
+    end
+  end
+
+  describe '#refresh!' do
+    it 'refreshes cluster information' do
+      expect(cluster_wrapper).to receive(:refresh_topics!).once
+      expect(cluster_wrapper).to receive(:refresh_brokers!).once
+      expect(cluster_wrapper).to receive(:refresh_groups!).once
+      cluster_wrapper.refresh!
+    end
+  end
+
+  describe '#fetch_metadata' do
+    let!(:cluster_wrapper) { described_class.new(client.cluster) }
 
     it 'returns a Kafka::Protocol::MetadataResponse' do
       expect(cluster_wrapper.fetch_metadata).to be_an_instance_of(Kafka::Protocol::MetadataResponse)
@@ -75,7 +95,6 @@ RSpec.describe Kafka::ClusterWrapper do
     context 'with topics' do
       let(:metadata) { cluster_wrapper.fetch_metadata }
       before { create_topic(topic_name) }
-      after  { delete_topic(topic_name) }
 
       it 'contains topic and partition metadata' do
         expect(metadata.topics).to_not be_empty
@@ -88,7 +107,6 @@ RSpec.describe Kafka::ClusterWrapper do
   describe '#find_topic' do
     context 'topic exists' do
       before { create_topic(topic_name) }
-      after  { delete_topic(topic_name) }
 
       it 'returns the topic' do
         expect(cluster_wrapper.find_topic(topic_name)).to be_an_instance_of(Kafka::TopicWrapper)
@@ -144,7 +162,6 @@ RSpec.describe Kafka::ClusterWrapper do
 
       context 'altering the topic' do
         before { create_topic(topic_name) }
-        after  { delete_topic(topic_name) }
 
         it 'alters the configs' do
           cluster_wrapper.alter_topic(topic_name, alter_topic_configs)
@@ -166,7 +183,6 @@ RSpec.describe Kafka::ClusterWrapper do
 
       context 'describing the topic' do
         before { create_topic(topic_name) }
-        after  { delete_topic(topic_name) }
 
         it 'describes the topic' do
           config = cluster_wrapper.describe_topic(topic_name, describe_topic_configs)
@@ -187,7 +203,6 @@ RSpec.describe Kafka::ClusterWrapper do
 
       context 'altering partitions' do
         before { create_topic(topic_name, num_partitions: 1) }
-        after  { delete_topic(topic_name) }
 
         it 'changes the number of partitions' do
           expect(partitions_for(topic_name)).to eq(1)
@@ -207,7 +222,6 @@ RSpec.describe Kafka::ClusterWrapper do
 
       context 'retrieving offsets 'do
         before { create_topic(topic_name) }
-        after  { delete_topic(topic_name) }
 
         it 'returns the offset' do
           offset = cluster_wrapper.resolve_offset(topic_name, partition_id, :latest)
@@ -231,7 +245,6 @@ RSpec.describe Kafka::ClusterWrapper do
 
       context 'retrieving offsets 'do
         before { create_topic(topic_name, num_partitions: num_partitions) }
-        after  { delete_topic(topic_name) }
 
         it 'returns the offsets' do
           offsets = cluster_wrapper.resolve_offsets(topic_name, partition_ids, :latest)
@@ -258,8 +271,6 @@ RSpec.describe Kafka::ClusterWrapper do
           create_topic(topic_name)
           run_consumer_group(topic_name, group_id)
         end
-
-        after  { delete_topic(topic_name) }
 
         it 'returns the group metadata' do
           expect(cluster_wrapper.describe_group(group_id)).to be_an_instance_of(Kafka::Protocol::DescribeGroupsResponse::Group)

@@ -37,7 +37,6 @@ class Cluster < ApplicationRecord
   end
 
   def topics
-    client.refresh!
     client.topics
   end
 
@@ -52,7 +51,7 @@ class Cluster < ApplicationRecord
 
   def create_topic(name, **kwargs)
     client.create_topic(name, **kwargs)
-    client.refresh!
+    client.refresh_topics!
     topics.find { |t| t.name == name }
   end
 
