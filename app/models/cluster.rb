@@ -1,6 +1,8 @@
 class Cluster < ApplicationRecord
   has_many :brokers, dependent: :destroy
   validates :name, presence: true
+  validates :brokers, presence: true
+  validates_associated :brokers
 
   ENCRYPTION_KEY = Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
 
