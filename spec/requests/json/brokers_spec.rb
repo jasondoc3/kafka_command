@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Brokers Api', type: :request do
-  let!(:cluster) { create(:cluster, :with_broker) }
+  let!(:cluster) { create(:cluster) }
   let(:broker) { cluster.brokers.first }
   let(:uri_base) { '/clusters' }
 

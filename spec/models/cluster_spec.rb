@@ -2,11 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Cluster do
   let(:cluster_name) { 'test_cluster' }
-  let(:broker)       { build(:broker) }
-  let(:cluster)      { create(:cluster, name: cluster_name, brokers: [broker]) }
+  let(:cluster)      { create(:cluster, name: cluster_name) }
   let(:topic_name)   { SecureRandom.hex(12) }
 
   describe '#client' do
+    let(:broker) { cluster.brokers.first }
+
     it 'creates and returns a Kafka::ClientWrapper' do
       expect(Kafka::ClientWrapper)
         .to receive(:new)
@@ -57,7 +58,7 @@ RSpec.describe Cluster do
   end
 
   describe '#init_brokers' do
-    let(:cluster) { create(:cluster, name: cluster_name) }
+    let(:cluster) { build(:cluster_without_broker, name: cluster_name) }
 
     it 'initializes broker objects with hosts' do
       cluster.init_brokers('localhost:9092')

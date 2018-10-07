@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Clusters Api', type: :request do
-  let!(:cluster) { create(:cluster) }
-
   describe 'listing all clusters' do
+    let!(:cluster) { create(:cluster) }
     let!(:cluster_two) { create(:cluster, name: 'number two') }
 
     it 'lists' do
@@ -32,6 +31,8 @@ RSpec.describe 'Clusters Api', type: :request do
   end
 
   describe 'showing a single cluster' do
+    let!(:cluster) { create(:cluster) }
+
     context 'cluster exists' do
       it 'shows' do
         get "/clusters/#{cluster.id}.json"
@@ -122,6 +123,8 @@ RSpec.describe 'Clusters Api', type: :request do
   end
 
   describe 'destroying a cluster' do
+    let!(:cluster) { create(:cluster) }
+
     context 'cluster exists' do
       it 'destroys' do
         expect do

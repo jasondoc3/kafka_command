@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Consumer Groups Api', type: :request do
-  let(:cluster) { create(:cluster, :with_broker) }
+  let(:cluster) { create(:cluster) }
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:group_id_1) { "test-group-#{SecureRandom.hex(12)}" }
   let(:group_id_2) { "test-group-#{SecureRandom.hex(12)}" }

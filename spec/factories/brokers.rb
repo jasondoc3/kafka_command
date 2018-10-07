@@ -1,6 +1,8 @@
 FactoryBot.define do
+  sequence(:host, 2) { |n| "localhost:909#{n}" }
+
   factory :broker do
-    host 'localhost:9092'
+    host { generate(:host) }
     sequence(:kafka_broker_id) { |n| n }
     association :cluster, factory: :cluster
   end

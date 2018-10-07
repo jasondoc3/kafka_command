@@ -65,6 +65,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
+    FactoryBot.rewind_sequences
     DatabaseCleaner.strategy = :transaction
   end
 end

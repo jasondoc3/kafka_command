@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Topics API', type: :request do
-  let(:cluster) { create(:cluster, :with_broker) }
+  let(:cluster) { create(:cluster) }
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:num_partitions) { 5 }
   let(:replication_factor) { 1 }
