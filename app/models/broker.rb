@@ -22,7 +22,7 @@ class Broker < ApplicationRecord
   end
 
   def port
-    host.split(':').last
+    host.split(':').last.to_i
   end
 
   def kafka_broker

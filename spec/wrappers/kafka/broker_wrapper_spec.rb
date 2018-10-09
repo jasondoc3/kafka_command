@@ -15,6 +15,24 @@ RSpec.describe Kafka::BrokerWrapper do
     end
   end
 
+  describe '#connected' do
+    context 'when connected' do
+      it 'returns true' do
+        expect(broker.connected?).to eq(true)
+      end
+    end
+
+    context 'when not connected' do
+      before do
+        allow(broker.broker).to receive(:api_versions).and_raise(Kafka::ConnectionError)
+      end
+
+      it 'returns false' do
+        expect(broker.connected?).to eq(false)
+      end
+    end
+  end
+
   context 'forwarding' do
     describe '#port' do
       it 'forwards port to the Kafka::Broker' do

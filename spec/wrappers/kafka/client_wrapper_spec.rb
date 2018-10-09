@@ -12,7 +12,6 @@ RSpec.describe Kafka::ClientWrapper do
     end
   end
 
-
   describe '#find_broker' do
     let(:client_wrapper) { described_class.new(brokers: brokers, client_id: client_id) }
 
@@ -73,6 +72,27 @@ RSpec.describe Kafka::ClientWrapper do
       it 'forwards #groups to the Kafka::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:groups)
         client_wrapper.groups
+      end
+    end
+
+    describe '#refresh!' do
+      it 'forwards #refresh! to the Kafka::ClusterWrapper' do
+        expect(client_wrapper.cluster).to receive(:refresh!)
+        client_wrapper.refresh!
+      end
+    end
+
+    describe '#refresh_topics!' do
+      it 'forwards #refresh_topics! to the Kafka::ClusterWrapper' do
+        expect(client_wrapper.cluster).to receive(:refresh_topics!)
+        client_wrapper.refresh_topics!
+      end
+    end
+
+    describe '#connect_to_broker' do
+      it 'forwards #connect_to_broker to the Kafka::ClusterWrapper' do
+        expect(client_wrapper.cluster).to receive(:connect_to_broker)
+        client_wrapper.connect_to_broker(host: 'localhost', port: 9092, broker_id: 1)
       end
     end
   end

@@ -1,7 +1,9 @@
 require 'app/wrappers/kafka/cluster_wrapper'
 
 RSpec.describe Kafka::ClusterWrapper do
-  let(:brokers)         { ['localhost:9092'] }
+  let(:host)            { 'localhost' }
+  let(:port)            { 9092 }
+  let(:brokers)         { ["#{host}:#{port}"] }
   let(:topic_name)      { "test-#{SecureRandom.hex(12)}" }
   let(:group_id)        { "test-#{SecureRandom.hex(12)}" }
   let(:client)          { Kafka.new(seed_brokers: brokers) }
@@ -121,7 +123,35 @@ RSpec.describe Kafka::ClusterWrapper do
     end
   end
 
+  describe '#connect_to_broker' do
+    let(:broker_id) { cluster_wrapper.brokers.first.node_id }
+
+    it 'returns a Kafka::BrokerWrapper' do
+      result = cluster_wrapper.connect_to_broker(
+        host: host,
+        port: port,
+        broker_id: broker_id
+      )
+
+      expect(result).to be_an_instance_of(Kafka::BrokerWrapper)
+      expect(result.port).to eq(port)
+      expect(result.host).to eq(host)
+      expect(result.node_id).to eq(broker_id)
+    end
+  end
+
   context 'forwarding' do
+    describe '#broker_pool' do
+      it 'forwards broker_pool to the Kafka::Cluster' do
+        expect(cluster_wrapper.cluster).to receive(:broker_pool)
+        cluster_wrapper.broker_pool
+      end
+
+      it 'returns a Kafka::BrokerPool' do
+        expect(cluster_wrapper.broker_pool).to be_an_instance_of(Kafka::BrokerPool)
+      end
+    end
+
     describe '#delete_topic' do
       let(:delete_topic_kwargs) do
         { timeout: 30 }
