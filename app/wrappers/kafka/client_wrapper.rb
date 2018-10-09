@@ -7,7 +7,7 @@ module Kafka
 
     attr_reader :cluster, :client
     def_delegators :@client, :create_topic
-    def_delegators :@cluster, :topics, :groups, :refresh!, :refresh_topics!
+    def_delegators :@cluster, :topics, :groups, :refresh!, :refresh_topics!, :connect_to_broker
 
     def initialize(brokers:, **kwargs)
       @client = Kafka.new(brokers, **kwargs)

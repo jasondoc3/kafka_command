@@ -9,6 +9,7 @@ module Kafka
     attr_reader :cluster
 
     METHOD_DELGATIONS = %i(
+      broker_pool
       delete_topic
       alter_topic
       describe_topic
@@ -67,6 +68,10 @@ module Kafka
       topics.find { |t| t.name == topic_name }
     end
 
+    def connect_to_broker(host:, port:, broker_id:)
+      BrokerWrapper.new(broker_pool.connect(host, port, node_id: broker_id))
+    end
+
     private
 
     def initialize_brokers
@@ -74,12 +79,12 @@ module Kafka
       # i.e node_id, port, host
       cluster_info = @cluster.refresh_metadata!
 
-      cluster_info.brokers.each do |broker|
-        @cluster.broker_pool.connect(broker.host, broker.port, node_id: broker.node_id)
-      end
-
-      @cluster.broker_pool.brokers.map do |_, broker|
-        BrokerWrapper.new(broker)
+      cluster_info.brokers.map do |broker|
+        connect_to_broker(
+          host: broker.host,
+          port: broker.port,
+          broker_id: broker.node_id
+        )
       end
     end
 

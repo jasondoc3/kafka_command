@@ -10,13 +10,26 @@ class Broker < ApplicationRecord
   validates :kafka_broker_id, presence: { message: 'Cannot find Kafka broker ID' }
 
   def connected?
-    client.topics
-    true
-  rescue Kafka::ConnectionError
-    false
+    kafka_broker.connected?
   end
 
   def client
     @client ||= cluster.client(seed_brokers: [host])
+  end
+
+  def hostname
+    host.split(':').first
+  end
+
+  def port
+    host.split(':').last
+  end
+
+  def kafka_broker
+    client.connect_to_broker(
+      host: hostname,
+      port: port,
+      broker_id: kafka_broker_id
+    )
   end
 end

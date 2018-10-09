@@ -41,7 +41,8 @@ class Cluster < ApplicationRecord
   end
 
   def connected?
-    brokers.all?(&:connected?)
+    # Tried using all?(&:connected?) here, but was getting some weird behavior with the views
+    brokers.map(&:connected?).all?
   end
 
   def groups

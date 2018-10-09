@@ -20,5 +20,12 @@ module Kafka
       offsets.keys.each { |partition_id| offsets[partition_id] = offsets[partition_id].offset }
       offsets
     end
+
+    def connected?
+      @broker.api_versions # simple request to check connections
+      true
+    rescue Kafka::ConnectionError
+      false
+    end
   end
 end
