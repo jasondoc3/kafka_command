@@ -75,8 +75,6 @@ module Kafka
     private
 
     def initialize_brokers
-      # returns information about each broker in the cluster
-      # i.e node_id, port, host
       cluster_info = @cluster.refresh_metadata!
 
       cluster_info.brokers.map do |broker|

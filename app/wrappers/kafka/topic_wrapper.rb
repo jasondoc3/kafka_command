@@ -23,7 +23,7 @@ module Kafka
     ].freeze
 
     def initialize(topic_metadata, cluster)
-      @cluster = cluster
+      @cluster        = cluster
       @topic_metadata = topic_metadata
       initialize_from_metadata
     end
@@ -85,21 +85,42 @@ module Kafka
     end
 
     # Needs arguments to be compatible with rails as_json calls
-    def as_json(*)
-      {
+    def as_json(include_config: false, **kwargs)
+      json = {
         name: @name,
         replication_factor: @replication_factor,
-        config: {
-          max_message_bytes: @max_message_bytes,
-          retention_ms: @retention_ms,
-          retention_bytes: @retention_bytes
-        },
         partitions: @partitions.sort_by(&:partition_id).map(&:as_json)
       }
+
+      if include_config
+        json[:config] = {
+          max_message_bytes: max_message_bytes,
+          retention_ms: retention_ms,
+          retention_bytes: retention_bytes
+        }
+      end
+
+      json
     end
 
     def ==(other)
       @name == other.name
+    end
+
+    def topic_configs
+      @topic_configs ||= describe
+    end
+
+    def retention_ms
+      topic_configs['retention.ms'].to_i
+    end
+
+    def retention_bytes
+      topic_configs['retention.bytes'].to_i
+    end
+
+    def max_message_bytes
+      topic_configs['max.message.bytes'].to_i
     end
 
     private
@@ -109,17 +130,9 @@ module Kafka
     end
 
     def initialize_from_metadata
-      @name = @topic_metadata.topic_name
-      @partitions = @topic_metadata.partitions.map do |pm|
-        PartitionWrapper.new(pm, self)
-      end
-
+      @name               = @topic_metadata.topic_name
+      @partitions         = @topic_metadata.partitions.map { |pm| PartitionWrapper.new(pm, self) }
       @replication_factor = @partitions.map(&:isr).map(&:length).max
-
-      config = describe
-      @retention_ms = config['retention.ms'].to_i
-      @retention_bytes = config['retention.bytes'].to_i
-      @max_message_bytes = config['max.message.bytes'].to_i
     end
   end
 end

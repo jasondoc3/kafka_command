@@ -6,8 +6,7 @@ RSpec.describe Kafka::TopicWrapper do
   let(:replication_factor) { 1 }
   let(:topic_creation_kwargs) do
     {
-      num_partitions: num_partitions,
-      replication_factor: replication_factor
+      num_partitions: num_partitions, replication_factor: replication_factor
     }
   end
 
@@ -184,21 +183,38 @@ RSpec.describe Kafka::TopicWrapper do
 
   describe '#as_json' do
     let(:partition_json) { topic.partitions.sort_by(&:partition_id).map(&:as_json) }
-    let(:expected_json) do
-      {
-        name: topic_name,
-        replication_factor: replication_factor,
-        config: {
-          max_message_bytes: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
-          retention_ms: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
-          retention_bytes: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES
-        },
-        partitions: partition_json
-      }.to_json
+
+    context 'including the config' do
+      let(:expected_json) do
+        {
+          name: topic_name,
+          replication_factor: replication_factor,
+          partitions: partition_json,
+          config: {
+            max_message_bytes: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
+            retention_ms: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
+            retention_bytes: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES
+          },
+        }.to_json
+      end
+
+      it 'equals the expected payload' do
+        expect(topic.as_json(include_config: true).to_json).to eq(expected_json)
+      end
     end
 
-    it 'equals the expected payload' do
-      expect(topic.as_json.to_json).to eq(expected_json)
+    context 'not including the config' do
+      let(:expected_json) do
+        {
+          name: topic_name,
+          replication_factor: replication_factor,
+          partitions: partition_json
+        }.to_json
+      end
+
+      it 'equals the expected payload' do
+        expect(topic.as_json.to_json).to eq(expected_json)
+      end
     end
   end
 

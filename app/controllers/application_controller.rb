@@ -29,15 +29,17 @@ class ApplicationController < ActionController::Base
     )
   end
 
-  def serialize_json(data)
+  def serialize_json(data, **kwargs)
     if data.is_a?(ActiveRecord::Relation) || data.is_a?(Array)
-      return { data: data }
+      return {
+        data: data.map { |d| d.as_json(**kwargs) }
+      }
     end
 
-    data.as_json
+    data.as_json(**kwargs)
   end
 
-  def render_success(data, status: :ok, redirection_path: nil, flash: {})
+  def render_success(data, status: :ok, redirection_path: nil, flash: {}, **kwargs)
     respond_to do |format|
       format.html do
         redirect_to redirection_path, flash: flash if redirection_path
@@ -47,7 +49,7 @@ class ApplicationController < ActionController::Base
         if status == :no_content || status.to_s.to_i == 204
           head :no_content
         else
-          render_json(data, status: status)
+          render_json(data, status: status, **kwargs)
         end
       end
     end
@@ -69,8 +71,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def render_json(data, status:)
-    render json: serialize_json(data), status: status
+  def render_json(data, status:, **kwargs)
+    render json: serialize_json(data, **kwargs), status: status
   end
 
   def render_json_errors(errors, status: :unprocessible_entity)

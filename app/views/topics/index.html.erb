@@ -23,7 +23,6 @@
     <th>Partitions</th>
     <th>Replication Factor</th>
     <th>Broker Spread</th>
-    <th>Offset Sum</th>
     <th></th>
   </thead>
   <tbody>
@@ -33,7 +32,6 @@
         <td><%= topic.partitions.count %></td>
         <td><%= topic.replication_factor %></td>
         <td><%= "#{topic.brokers_spread} %" %></td>
-        <td><%= topic.offset_sum %></td>
         <td>
           <%= link_to "#{topic_path(topic)}/edit" do %>
             <span class="icon has-text-grey"><i class="fas fa-edit"></i></span>

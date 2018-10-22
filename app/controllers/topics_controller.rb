@@ -32,7 +32,7 @@ class TopicsController < ApplicationController
     if @topic.nil?
       render_error('Topic not found', status: 404)
     else
-      render_success(@topic)
+      render_success(@topic, include_config: true)
     end
   end
 
@@ -62,7 +62,8 @@ class TopicsController < ApplicationController
       @topic,
       status: :created,
       redirection_path: cluster_topics_path,
-      flash: { success: 'Topic created' }
+      flash: { success: 'Topic created' },
+      include_config: true
     )
   end
 
