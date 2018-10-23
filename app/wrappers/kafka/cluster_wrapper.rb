@@ -94,11 +94,7 @@ module Kafka
 
     def initialize_groups
       group_ids = @cluster.list_groups
-
-      group_ids.map do |g|
-        group_metadata = @cluster.describe_group(g)
-        ConsumerGroupWrapper.new(group_metadata, self)
-      end
+      group_ids.map { |id| ConsumerGroupWrapper.new(id, self) }
     end
   end
 end

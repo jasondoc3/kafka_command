@@ -3,16 +3,15 @@ require_dependency 'app/wrappers/kafka/consumer_group_partition_wrapper'
 
 module Kafka
   class ConsumerGroupWrapper
-    attr_reader :group_id, :members, :state, :coordinator
+    attr_reader :group_id
 
-    def initialize(group_metadata, cluster)
-      @cluster = cluster
-      initialize_from_metadata(group_metadata)
+    def initialize(group_id, cluster)
+      @cluster  = cluster
+      @group_id = group_id
     end
 
     def refresh!
-      group_metadata = @cluster.describe_group(@group_id)
-      initialize_from_metadata(group_metadata)
+      clear_group_metadata!
     end
 
     def stable?
@@ -52,16 +51,34 @@ module Kafka
 
       {
         group_id: @group_id,
-        state: @state,
+        state: state,
         topics: topics_json
       }
     end
 
     def consumed_topics
-      topic_names = @members.flat_map(&:topic_names).uniq
+      topic_names = members.flat_map(&:topic_names).uniq
 
       @cluster.topics.select do |t|
         topic_names.include?(t.name)
+      end
+    end
+
+    def coordinator
+      @coordinator ||= @cluster.get_group_coordinator(group_id: @group_id)
+    end
+
+    def group_metadata
+      @group_metadata ||= initialize_group_metadata
+    end
+
+    def state
+      group_metadata.state
+    end
+
+    def members
+      group_metadata.members.map do |member|
+        GroupMemberWrapper.new(member)
       end
     end
 
@@ -84,7 +101,7 @@ module Kafka
     def offsets_for(topic_name)
       topic = @cluster.find_topic(topic_name)
 
-      offsets = @coordinator.fetch_offsets(
+      offsets = coordinator.fetch_offsets(
         group_id: @group_id,
         topics: { topic.name => topic.partitions.map(&:partition_id) }
       ).topics[topic.name]
@@ -115,14 +132,12 @@ module Kafka
       end
     end
 
-    def initialize_from_metadata(group_metadata)
-      @group_id = group_metadata.group_id
-      @state    = group_metadata.state
-      @coordinator = @cluster.get_group_coordinator(group_id: @group_id)
+    def initialize_group_metadata
+      @cluster.describe_group(@group_id)
+    end
 
-      @members = group_metadata.members.map do |member|
-        GroupMemberWrapper.new(member)
-      end
+    def clear_group_metadata!
+      @group_metadata = nil
     end
   end
 end

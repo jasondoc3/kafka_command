@@ -46,7 +46,6 @@ class Cluster < ApplicationRecord
   end
 
   def groups
-    client.refresh!
     client.groups
   end
 

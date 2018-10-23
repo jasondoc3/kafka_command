@@ -18,7 +18,6 @@
   <thead>
     <th>Group Id</th>
     <th>Topic(s)</th>
-    <th>Coordinator</th>
     <th>Members</th>
     <th>State</th>
   </thead>
@@ -31,7 +30,6 @@
         <% else %>
           <td class="has-text-grey-lighter">N/A</td>
         <% end %>
-        <td><%= group.coordinator.node_id %></td>
         <td><%= group.members.count %></td>
         <td class="<%= status_color(group) %>"><%= group.state.upcase %></td>
       </tr>
