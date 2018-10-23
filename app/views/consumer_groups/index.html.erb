@@ -14,25 +14,19 @@
   %>
 </div>
 
-<table class="table is-striped is-fullwidth is-bordered">
-  <thead>
-    <th>Group Id</th>
-    <th>Topic(s)</th>
-    <th>Members</th>
-    <th>State</th>
-  </thead>
-  <tbody>
-    <% @groups.each do |group| %>
-      <tr>
-        <td><%= link_to group.group_id, consumer_groups_path(group) %>
-        <% if group.consumed_topics.any? %>
-          <td><%= group.consumed_topics.map(&:name).join(', ') %>
-        <% else %>
-          <td class="has-text-grey-lighter">N/A</td>
+<div class="columns">
+  <div class="column is-5">
+    <table class="table is-striped is-bordered is-fullwidth">
+      <thead>
+        <th>Group Id</th>
+      </thead>
+      <tbody>
+        <% @groups.each do |group| %>
+          <tr>
+            <td><%= link_to group.group_id, consumer_groups_path(group) %>
+          </tr>
         <% end %>
-        <td><%= group.members.count %></td>
-        <td class="<%= status_color(group) %>"><%= group.state.upcase %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>
