@@ -1,171 +1,173 @@
-class TopicsController < ApplicationController
-  rescue_from Kafka::InvalidPartitions, with: :invalid_partitions
-  rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
-  rescue_from Kafka::InvalidTopic, with: :invalid_topic_name
-  rescue_from Kafka::TopicAlreadyExists, with: :topic_already_exists
-  rescue_from Kafka::UnknownError, with: :unknown_error
-  rescue_from Kafka::InvalidRequest, with: :unknown_error
-  rescue_from Kafka::TopicAuthorizationFailed, with: :kafka_authorization_error
+module KafkaCommand
+  class TopicsController < ApplicationController
+    rescue_from Kafka::InvalidPartitions, with: :invalid_partitions
+    rescue_from Kafka::InvalidReplicationFactor, with: :invalid_replication_factor
+    rescue_from Kafka::InvalidTopic, with: :invalid_topic_name
+    rescue_from Kafka::TopicAlreadyExists, with: :topic_already_exists
+    rescue_from Kafka::UnknownError, with: :unknown_error
+    rescue_from Kafka::InvalidRequest, with: :unknown_error
+    rescue_from Kafka::TopicAuthorizationFailed, with: :kafka_authorization_error
 
-  # GET /clusters/:cluster_id/topics
-  def index
-    @cluster = Cluster.find(params[:cluster_id])
-    @topics = @cluster.topics
+    # GET /clusters/:cluster_id/topics
+    def index
+      @cluster = Cluster.find(params[:cluster_id])
+      @topics = @cluster.topics
 
-    flash[:search] = params[:name]
+      flash[:search] = params[:name]
 
-    if params[:name].present?
-      @topics = @topics.select do |t|
-        regex = /#{params[:name]}/i
-        t.name.match?(regex)
+      if params[:name].present?
+        @topics = @topics.select do |t|
+          regex = /#{params[:name]}/i
+          t.name.match?(regex)
+        end
+      end
+
+      render_success(@topics)
+    end
+
+    # GET /clusters/:cluster_id/topics/:id
+    def show
+      @cluster = Cluster.find(params[:cluster_id])
+      @topic = @cluster.topics.find { |t| t.name == params[:id] }
+
+      if @topic.nil?
+        render_error('Topic not found', status: 404)
+      else
+        render_success(@topic, include_config: true)
       end
     end
 
-    render_success(@topics)
-  end
-
-  # GET /clusters/:cluster_id/topics/:id
-  def show
-    @cluster = Cluster.find(params[:cluster_id])
-    @topic = @cluster.topics.find { |t| t.name == params[:id] }
-
-    if @topic.nil?
-      render_error('Topic not found', status: 404)
-    else
-      render_success(@topic, include_config: true)
-    end
-  end
-
-  # GET /clusters/:cluster_id/topics/new
-  def new
-    @cluster = Cluster.find(params[:cluster_id])
-  end
-
-  # GET /clusters/:cluster_id/topics/edit
-  def edit
-    @cluster = Cluster.find(params[:cluster_id])
-    @topic = @cluster.topics.find { |t| t.name == params[:id] }
-    @redirect_path = params[:redirect_path]
-  end
-
-  # POST /clusters/:cluster_id/topics
-  def create
-    @cluster = Cluster.find(params[:cluster_id])
-    @topic = @cluster.create_topic(
-      params[:name],
-      num_partitions: params[:num_partitions].to_i,
-      replication_factor: params[:replication_factor].to_i,
-      config: build_config
-    )
-
-    render_success(
-      @topic,
-      status: :created,
-      redirection_path: cluster_topics_path,
-      flash: { success: 'Topic created' },
-      include_config: true
-    )
-  end
-
-  # PATCH/PUT /clusters/:cluster_id/topics/:id
-  def update
-    cluster = Cluster.find(params[:cluster_id])
-    @topic = cluster.topics.find { |t| t.name == params[:id] }
-
-    render_error('Topic not found', status: 404) and return if @topic.nil?
-    if params[:num_partitions]
-      @topic.set_partitions!(params[:num_partitions].to_i) unless params[:num_partitions].to_i == @topic.partitions.count
+    # GET /clusters/:cluster_id/topics/new
+    def new
+      @cluster = Cluster.find(params[:cluster_id])
     end
 
-    if build_config.present?
-      @topic.set_configs!(
-        max_message_bytes: params[:max_message_bytes],
-        retention_ms: params[:retention_ms],
-        retention_bytes: params[:retention_bytes]
+    # GET /clusters/:cluster_id/topics/edit
+    def edit
+      @cluster = Cluster.find(params[:cluster_id])
+      @topic = @cluster.topics.find { |t| t.name == params[:id] }
+      @redirect_path = params[:redirect_path]
+    end
+
+    # POST /clusters/:cluster_id/topics
+    def create
+      @cluster = Cluster.find(params[:cluster_id])
+      @topic = @cluster.create_topic(
+        params[:name],
+        num_partitions: params[:num_partitions].to_i,
+        replication_factor: params[:replication_factor].to_i,
+        config: build_config
       )
-    end
 
-    render_success(
-      @topic,
-      status: :ok,
-      redirection_path: params[:redirect_path] || cluster_topics_path,
-      flash: { success: 'Topic updated' }
-    )
-  end
-
-  # DELETE /clusters/:cluster_id/topics/:id
-  def destroy
-    @cluster = Cluster.find(params[:cluster_id])
-    @topic = @cluster.topics.find { |t| t.name == params[:id] }
-
-    if @topic.nil?
-      render_error('Topic not found', status: 404)
-    else
-      @topic.destroy
       render_success(
         @topic,
-        status: :no_content,
+        status: :created,
         redirection_path: cluster_topics_path,
-        flash: { success: "Topic \"#{@topic.name}\" is marked for deletion. <strong>Note: This will have no impact if delete.topic.enable is not set to true.</strong>".html_safe }
+        flash: { success: 'Topic created' },
+        include_config: true
       )
     end
-  end
 
-  private
+    # PATCH/PUT /clusters/:cluster_id/topics/:id
+    def update
+      cluster = Cluster.find(params[:cluster_id])
+      @topic = cluster.topics.find { |t| t.name == params[:id] }
 
-  def build_config
-    {}.tap do |config|
-      config['max.message.bytes'] = params[:max_message_bytes] if params[:max_message_bytes]
-      config['retention.ms']      = params[:retention_ms]      if params[:retention_ms]
-      config['retention.bytes']   = params[:retention_bytes]   if params[:retention_bytes]
+      render_error('Topic not found', status: 404) and return if @topic.nil?
+      if params[:num_partitions]
+        @topic.set_partitions!(params[:num_partitions].to_i) unless params[:num_partitions].to_i == @topic.partitions.count
+      end
+
+      if build_config.present?
+        @topic.set_configs!(
+          max_message_bytes: params[:max_message_bytes],
+          retention_ms: params[:retention_ms],
+          retention_bytes: params[:retention_bytes]
+        )
+      end
+
+      render_success(
+        @topic,
+        status: :ok,
+        redirection_path: params[:redirect_path] || cluster_topics_path,
+        flash: { success: 'Topic updated' }
+      )
     end
-  end
 
-  def invalid_partitions
-    error_msg = 'Num partitions must be > 0 or > current number of partitions'
+    # DELETE /clusters/:cluster_id/topics/:id
+    def destroy
+      @cluster = Cluster.find(params[:cluster_id])
+      @topic = @cluster.topics.find { |t| t.name == params[:id] }
 
-    render_error(
-      error_msg,
-      status: 422,
-      flash: { error: error_msg }
-    )
-  end
+      if @topic.nil?
+        render_error('Topic not found', status: 404)
+      else
+        @topic.destroy
+        render_success(
+          @topic,
+          status: :no_content,
+          redirection_path: cluster_topics_path,
+          flash: { success: "Topic \"#{@topic.name}\" is marked for deletion. <strong>Note: This will have no impact if delete.topic.enable is not set to true.</strong>".html_safe }
+        )
+      end
+    end
 
-  def invalid_replication_factor
-    error_msg = 'Replication factor must be > 0 and < total number of brokers'
+    private
 
-    render_error(
-      error_msg,
-      status: 422,
-      flash: { error: error_msg }
-    )
-  end
+    def build_config
+      {}.tap do |config|
+        config['max.message.bytes'] = params[:max_message_bytes] if params[:max_message_bytes]
+        config['retention.ms']      = params[:retention_ms]      if params[:retention_ms]
+        config['retention.bytes']   = params[:retention_bytes]   if params[:retention_bytes]
+      end
+    end
 
-  def invalid_topic_name
-    error_msg = 'Topic must have a name'
-    render_error(
-      error_msg,
-      status: 422,
-      flash: { error: error_msg }
-    )
-  end
+    def invalid_partitions
+      error_msg = 'Num partitions must be > 0 or > current number of partitions'
 
-  def topic_already_exists
-    error_msg = 'Topic already exists'
-    render_error(
-      error_msg,
-      status: 422,
-      flash: { error: error_msg }
-    )
-  end
+      render_error(
+        error_msg,
+        status: 422,
+        flash: { error: error_msg }
+      )
+    end
 
-  def unknown_error
-    error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
+    def invalid_replication_factor
+      error_msg = 'Replication factor must be > 0 and < total number of brokers'
 
-    render_error(
-      error_msg,
-      status: 422,
-      flash: { error: error_msg }
-    )
+      render_error(
+        error_msg,
+        status: 422,
+        flash: { error: error_msg }
+      )
+    end
+
+    def invalid_topic_name
+      error_msg = 'Topic must have a name'
+      render_error(
+        error_msg,
+        status: 422,
+        flash: { error: error_msg }
+      )
+    end
+
+    def topic_already_exists
+      error_msg = 'Topic already exists'
+      render_error(
+        error_msg,
+        status: 422,
+        flash: { error: error_msg }
+      )
+    end
+
+    def unknown_error
+      error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
+
+      render_error(
+        error_msg,
+        status: 422,
+        flash: { error: error_msg }
+      )
+    end
   end
 end
