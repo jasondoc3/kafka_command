@@ -1,4 +1,4 @@
-Rails.application.routes.draw do
+KafkCommand::Engine.routes.draw do
   root 'clusters#index'
 
   resources :clusters, except: [:update, :edit] do
