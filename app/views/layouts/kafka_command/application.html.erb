@@ -28,7 +28,7 @@
               <div class="navbar-item has-dropdown is-hoverable">
                 <%= link_to 'Clusters', clusters_path, class: 'navbar-link has-text-weight-bold' %>
                 <div class="navbar-dropdown is-boxed">
-                  <% Cluster.all.each do |cluster| %>
+                  <% KafkaCommand::Cluster.all.each do |cluster| %>
                     <%= link_to trim_name(cluster.name), cluster_topics_path(cluster), class: 'navbar-item' %>
                   <% end %>
                 </div>

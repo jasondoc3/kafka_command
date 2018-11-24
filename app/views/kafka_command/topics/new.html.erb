@@ -1,4 +1,4 @@
-<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
+<%= render partial: 'kafka_command/shared/title', locals: { title: @cluster.to_human, subtitle: 'Add a topic' } %>
 
 <div class="column is-one-third">
   <%= form_tag cluster_topics_path, method: :post  do |f| %>

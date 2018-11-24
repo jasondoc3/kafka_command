@@ -1,9 +1,9 @@
-<%= render partial: 'shared/title', locals: { title: @cluster.to_human, subtitle: 'Topics' } %>
+<%= render partial: 'kafka_command/shared/title', locals: { title: @cluster.to_human, subtitle: 'Topics' } %>
 
 <div class="level"a>
   <%=
     render(
-      partial: 'shared/search_bar',
+      partial: 'kafka_command/shared/search_bar',
       locals: {
         resources: @topics,
         resource_name: 'topic',
