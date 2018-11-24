@@ -2,7 +2,7 @@ require_dependency 'kafka_command/application_controller'
 
 module KafkaCommand
   class ClustersController < ApplicationController
-    before_action :check_hosts, only: :create
+#    before_action :check_hosts, only: :create
 
     # GET /clusters
     def index
@@ -28,10 +28,11 @@ module KafkaCommand
     end
 
     # GET /clusters/new
-    def new
-      @cluster = Cluster.new
-    end
+#    def new
+#      @cluster = Cluster.new
+#    end
 
+=begin
     # POST /clusters
     def create
       @cluster = Cluster.new(cluster_params.slice(*cluster_params_keys))
@@ -71,7 +72,9 @@ module KafkaCommand
         )
       end
     end
+=end
 
+=begin
     # DELETE /clusters/:id
     def destroy
       @cluster = Cluster.find(params[:id])
@@ -84,8 +87,10 @@ module KafkaCommand
         flash: { success: 'Cluster destroyed' }
       )
     end
+=end
 
     private
+    # leave for config validation
 
     def cluster_params
       params.permit(*cluster_params_keys)

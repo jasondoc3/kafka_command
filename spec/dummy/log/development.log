@@ -89,3 +89,4 @@ Migrating to CreateKafkaCommandBrokers (20181124002014)
   ↳ /home/jdougher/.rvm/gems/ruby-2.5.1/bin/rake:23
   [1m[35m (1.1ms)[0m  [1m[36mcommit transaction[0m
   ↳ /home/jdougher/.rvm/gems/ruby-2.5.1/bin/rake:23
+kafka_command.yml not found. KafkaCommand not configured.

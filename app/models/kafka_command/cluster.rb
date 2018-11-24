@@ -1,55 +1,32 @@
-require_dependency 'kafka_command/application_record'
-
 module KafkaCommand
-  class Cluster < ApplicationRecord
-    has_many :brokers, dependent: :destroy
-    validates :name, presence: true
-    validates :brokers, presence: true
-    validates_associated :brokers
+  class Cluster
+    DEFAULT_PROTOCOL = 'PLAINTEXT'
 
-    ENCRYPTION_KEY = Base64.decode64(ENV.fetch('KAFKA_COMMAND_ENCRYPTION_KEY'))
+    attr_reader :client,
+      :name,
+      :description,
+      :seed_brokers,
+      :protocol,
+      :sasl_scram_username,
+      :sasl_scram_password,
+      :ssl_ca_cert,
+      :ssl_client_cert,
+      :ssl_client_cert_key
 
-    %i(
-      sasl_scram_password
-      ssl_ca_cert
-      ssl_client_cert
-      ssl_client_cert_key
-    ).each { |attribute| attr_encrypted attribute, key: ENCRYPTION_KEY }
+    alias_method :id, :name
 
-    def client(seed_brokers: nil)
-      hosts = seed_brokers || brokers.map(&:host)
+    delegate :brokers, :topics, :groups, to: :client
 
-      client_kwargs = {
-        brokers: hosts,
-        client_id: name
-      }
-
-      if sasl?
-        client_kwargs[:sasl_scram_username] = sasl_scram_username
-        client_kwargs[:sasl_scram_password] = sasl_scram_password
-        client_kwargs[:sasl_scram_mechanism] = 'sha256'
-        client_kwargs[:ssl_ca_cert] = ssl_ca_cert
-      elsif ssl?
-        client_kwargs[:ssl_ca_cert] = ssl_ca_cert
-        client_kwargs[:ssl_client_cert] = ssl_client_cert
-        client_kwargs[:ssl_client_cert_key] = ssl_client_cert_key
-        client_kwargs
-      end
-
-      ClientWrapper.new(**client_kwargs, logger: Rails.logger)
-    end
-
-    def topics
-      client.topics
+    def initialize(name:, seed_brokers:, description: '', protocol: DEFAULT_PROTOCOL)
+      @name = name
+      @seed_brokers = seed_brokers
+      @client = initialize_client
+      @description = description
     end
 
     def connected?
       # Tried using all?(&:connected?) here, but was getting some weird behavior with the views
       brokers.map(&:connected?).all?
-    end
-
-    def groups
-      client.groups
     end
 
     def create_topic(name, **kwargs)
@@ -58,24 +35,72 @@ module KafkaCommand
       topics.find { |t| t.name == name }
     end
 
-    def init_brokers(hosts)
-      client(seed_brokers: hosts.split(',')).cluster.brokers.each do |broker|
-        brokers.new(host: "#{broker.host}:#{broker.port}", kafka_broker_id: broker.node_id)
-      end
-    end
-
     def to_human
       name.humanize.capitalize
     end
 
+    def to_s
+      name
+    end
+
+    def self.find(cluster_name)
+      all.find { |c| c.name == cluster_name }
+    end
+
+    def self.none?
+      all.none?
+    end
+
+    def self.all
+      @clusters ||=
+        begin
+          KafkaCommand.config['clusters'].map do |cluster|
+            cluster_name = cluster.keys.first
+            cluster_info = cluster.values.first
+
+            new(
+              name: cluster_name,
+              seed_brokers: cluster_info['seed_brokers'],
+              protocol: cluster_info['protocol'],
+              description: cluster_info['description']
+            )
+          end
+        end
+    end
+
     def ssl?
-      encrypted_ssl_ca_cert.present? &&
-        encrypted_ssl_client_cert.present? &&
-        encrypted_ssl_client_cert_key.present?
+      ssl_ca_cert.present? &&
+        ssl_client_cert.present? &&
+        ssl_client_cert_key.present?
     end
 
     def sasl?
       sasl_scram_username.present? && sasl_scram_password.present?
     end
+
+    private
+
+      def initialize_client
+        @client ||= begin
+          client_kwargs = {
+            brokers: seed_brokers,
+            client_id: name
+          }
+
+          if sasl?
+            client_kwargs[:sasl_scram_username] = sasl_scram_username
+            client_kwargs[:sasl_scram_password] = sasl_scram_password
+            client_kwargs[:sasl_scram_mechanism] = 'sha256'
+            client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+          elsif ssl?
+            client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+            client_kwargs[:ssl_client_cert] = ssl_client_cert
+            client_kwargs[:ssl_client_cert_key] = ssl_client_cert_key
+            client_kwargs
+          end
+
+          ClientWrapper.new(**client_kwargs, logger: Rails.logger)
+        end
+      end
   end
 end

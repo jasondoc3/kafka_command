@@ -5,6 +5,8 @@ module KafkaCommand
     extend Forwardable
     attr_reader :broker
     def_delegators :@broker, :port, :host, :node_id, :fetch_metadata, :fetch_offsets
+    alias_method :kafka_broker_id, :node_id
+    alias_method :hostname, :host
 
     def initialize(broker)
       @broker = broker

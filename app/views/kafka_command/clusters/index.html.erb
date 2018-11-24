@@ -12,9 +12,6 @@
       }
     )
   %>
-  <div class="level-right">
-    <%= link_to 'Add Cluster', new_cluster_path, class: 'button is-primary is-small' %>
-  </div>
 </div>
 
 <table class="table is-striped is-fullwidth is-bordered">
@@ -24,7 +21,6 @@
     <th>Brokers</th>
     <th>Protocol</th>
     <th>Connection Status</th>
-    <th></th>
   </thead>
   <tbody>
     <% @clusters.each do |cluster| %>
@@ -50,11 +46,6 @@
             <span class="icon has-text-danger">
               <i class="fas fa-times-circle"></i>
             </span>
-          <% end %>
-        </td>
-        <td>
-          <%= link_to cluster_path(cluster), method: :delete, data: { confirm: 'Are you sure?' } do %>
-            <span class="icon has-text-danger"><i class="fas fa-trash-alt"></i></span>
           <% end %>
         </td>
       </tr>

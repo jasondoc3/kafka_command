@@ -3,5 +3,7 @@ require "kafka"
 require "attr_encrypted"
 
 module KafkaCommand
-  # Your code goes here...
+  class << self
+    attr_accessor :config
+  end
 end
