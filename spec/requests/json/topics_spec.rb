@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Topics API', type: :request do
-  let(:cluster) { create(:cluster) }
+  let(:cluster) { KafkaCommand::Cluster.all.first }
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:num_partitions) { 5 }
   let(:replication_factor) { 1 }
@@ -100,7 +100,7 @@ RSpec.describe 'Topics API', type: :request do
         expect(json['config']['retention_ms']).to eq(retention_ms)
         expect(json['config']['retention_bytes']).to eq(retention_bytes)
         expect(json['config']['max_message_bytes']).to eq(max_message_bytes)
-      end.to change { cluster.topics.count }.by(1)
+      end.to change { cluster.client.refresh_topics!; cluster.topics.count }.by(1)
     end
 
     context 'invalid parameters' do
@@ -112,7 +112,7 @@ RSpec.describe 'Topics API', type: :request do
             post "#{uri_base}/#{cluster.id}/topics.json", params: create_topic_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Topic must have a name')
-          end.to change { cluster.topics.count }.by(0)
+          end.to change { cluster.client.refresh_topics!; cluster.topics.count }.by(0)
         end
       end
 
@@ -246,7 +246,7 @@ RSpec.describe 'Topics API', type: :request do
         expect do
           delete "#{uri_base}/#{cluster.id}/topics/#{topic_name}.json"
           expect(response.status).to eq(204)
-        end.to change { cluster.topics.count }.by(-1)
+        end.to change { cluster.client.refresh_topics!; cluster.topics.count }.by(-1)
       end
     end
 

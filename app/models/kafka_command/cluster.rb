@@ -18,7 +18,7 @@ module KafkaCommand
 
     delegate :brokers, :topics, :groups, to: :client
 
-    def initialize(name:, seed_brokers:, description: '', protocol: DEFAULT_PROTOCOL, version:)
+    def initialize(name:, seed_brokers:, description: nil, protocol: DEFAULT_PROTOCOL, version: nil)
       @name = name
       @seed_brokers = seed_brokers
       @client = initialize_client
