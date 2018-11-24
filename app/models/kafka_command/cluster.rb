@@ -96,7 +96,7 @@ module KafkaCommand
             client_kwargs
           end
 
-          ClientWrapper.new(**client_kwargs, logger: Rails.logger)
+          Client.new(**client_kwargs, logger: Rails.logger)
         end
       end
   end

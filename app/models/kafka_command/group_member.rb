@@ -1,5 +1,5 @@
 module KafkaCommand
-  class GroupMemberWrapper
+  class GroupMember
     attr_reader :member_id, :client_host, :client_id, :topic_assignment
 
     def initialize(member_metadata)

@@ -1,8 +1,8 @@
-require_dependency 'kafka_command/group_member_wrapper'
-require_dependency 'kafka_command/consumer_group_partition_wrapper'
+require_dependency 'kafka_command/group_member'
+require_dependency 'kafka_command/consumer_group_partition'
 
 module KafkaCommand
-  class ConsumerGroupWrapper
+  class ConsumerGroup
     attr_reader :group_id
 
     def initialize(group_id, cluster)
@@ -27,7 +27,7 @@ module KafkaCommand
       partition_lag = lag_for(topic.name)
 
       topic.partitions.map do |p|
-        ConsumerGroupPartitionWrapper.new(
+        ConsumerGroupPartition.new(
           lag: partition_lag[p.partition_id][:lag],
           offset: partition_lag[p.partition_id][:offset],
           group_id: @group_id,
@@ -78,7 +78,7 @@ module KafkaCommand
 
     def members
       group_metadata.members.map do |member|
-        GroupMemberWrapper.new(member)
+        GroupMember.new(member)
       end
     end
 

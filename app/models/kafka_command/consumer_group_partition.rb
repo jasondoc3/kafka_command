@@ -1,5 +1,5 @@
 module KafkaCommand
-  class ConsumerGroupPartitionWrapper
+  class ConsumerGroupPartition
     attr_reader :lag, :topic_name, :offset, :partition_id, :group_id
 
     def initialize(lag:, topic_name:, offset:, group_id:, partition_id:)

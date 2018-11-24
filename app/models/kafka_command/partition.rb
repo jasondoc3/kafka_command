@@ -1,7 +1,7 @@
 require 'forwardable'
 
 module KafkaCommand
-  class PartitionWrapper
+  class Partition
     extend Forwardable
     attr_reader :topic
     def_delegators :@partition_metadata, :isr, :leader, :partition_id, :replicas

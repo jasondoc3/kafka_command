@@ -1,7 +1,7 @@
-require_dependency 'kafka_command/partition_wrapper'
+require_dependency 'kafka_command/partition'
 
 module KafkaCommand
-  class TopicWrapper
+  class Topic
     attr_reader :name,
                 :partitions,
                 :replication_factor,
@@ -131,7 +131,7 @@ module KafkaCommand
 
     def initialize_from_metadata
       @name               = @topic_metadata.topic_name
-      @partitions         = @topic_metadata.partitions.map { |pm| PartitionWrapper.new(pm, self) }
+      @partitions         = @topic_metadata.partitions.map { |pm| Partition.new(pm, self) }
       @replication_factor = @partitions.map(&:isr).map(&:length).max
     end
   end

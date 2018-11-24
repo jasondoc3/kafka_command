@@ -1,7 +1,7 @@
 require 'forwardable'
 
 module KafkaCommand
-  class ClientWrapper
+  class Client
     extend Forwardable
 
     CLUSTER_METHOD_DELGATIONS = %i(
@@ -60,7 +60,7 @@ module KafkaCommand
 
     def get_group_coordinator(group_id:)
       broker = @cluster.get_group_coordinator(group_id: group_id)
-      BrokerWrapper.new(broker)
+      Broker.new(broker)
     end
 
     def find_topic(topic_name)
@@ -68,7 +68,7 @@ module KafkaCommand
     end
 
     def connect_to_broker(host:, port:, broker_id:)
-      BrokerWrapper.new(broker_pool.connect(host, port, node_id: broker_id))
+      Broker.new(broker_pool.connect(host, port, node_id: broker_id))
     end
 
     private
@@ -88,12 +88,12 @@ module KafkaCommand
     def initialize_topics
       # returns information about each topic
       # i.e isr, leader, partitions
-      fetch_metadata.topics.map { |tm| TopicWrapper.new(tm, self) }
+      fetch_metadata.topics.map { |tm| Topic.new(tm, self) }
     end
 
     def initialize_groups
       group_ids = @cluster.list_groups
-      group_ids.map { |id| ConsumerGroupWrapper.new(id, self) }
+      group_ids.map { |id| ConsumerGroup.new(id, self) }
     end
   end
 end
