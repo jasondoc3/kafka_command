@@ -11,17 +11,19 @@ module KafkaCommand
       :sasl_scram_password,
       :ssl_ca_cert,
       :ssl_client_cert,
-      :ssl_client_cert_key
+      :ssl_client_cert_key,
+      :version
 
     alias_method :id, :name
 
     delegate :brokers, :topics, :groups, to: :client
 
-    def initialize(name:, seed_brokers:, description: '', protocol: DEFAULT_PROTOCOL)
+    def initialize(name:, seed_brokers:, description: '', protocol: DEFAULT_PROTOCOL, version:)
       @name = name
       @seed_brokers = seed_brokers
       @client = initialize_client
       @description = description
+      @version = version
     end
 
     def connected?
@@ -49,6 +51,10 @@ module KafkaCommand
 
     def self.none?
       all.none?
+    end
+
+    def self.count
+      all.count
     end
 
     def self.all

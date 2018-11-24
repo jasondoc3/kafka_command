@@ -3,15 +3,21 @@ FactoryBot.define do
     name { 'test_cluster' }
     version { '1.0.0' }
     description { 'Test Cluster' }
-
-    before(:create) do |cluster|
-      cluster.brokers = [build(:broker, cluster: cluster)] if cluster.brokers.none?
-    end
+    seed_brokers { ['localhost:9092'] }
   end
 
   factory :cluster_without_broker, class: KafkaCommand::Cluster do
     name { 'test_cluster' }
     version { '1.0.0' }
     description { 'Test Cluster' }
+  end
+
+  initialize_with do
+    new(
+      name: name,
+      description: description,
+      seed_brokers: seed_brokers,
+      version: version
+    )
   end
 end

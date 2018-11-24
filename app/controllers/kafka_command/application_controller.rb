@@ -2,7 +2,6 @@ module KafkaCommand
   class ApplicationController < ActionController::Base
     protect_from_forgery unless: -> { request.format.json? }
 
-    rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
     rescue_from Kafka::ConnectionError, with: :kafka_connection_error
     rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
 

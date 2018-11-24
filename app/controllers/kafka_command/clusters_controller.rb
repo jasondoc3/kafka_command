@@ -22,7 +22,12 @@ module KafkaCommand
     # GET /clusters/:id
     def show
       @cluster = Cluster.find(params[:id])
-      render_success(@cluster)
+
+      if @cluster
+        render_success(@cluster)
+      else
+        record_not_found
+      end
     end
 
     private
