@@ -2,8 +2,6 @@ require_dependency 'kafka_command/application_controller'
 
 module KafkaCommand
   class ClustersController < ApplicationController
-#    before_action :check_hosts, only: :create
-
     # GET /clusters
     def index
       @clusters = Cluster.all
@@ -26,68 +24,6 @@ module KafkaCommand
       @cluster = Cluster.find(params[:id])
       render_success(@cluster)
     end
-
-    # GET /clusters/new
-#    def new
-#      @cluster = Cluster.new
-#    end
-
-=begin
-    # POST /clusters
-    def create
-      @cluster = Cluster.new(cluster_params.slice(*cluster_params_keys))
-      @cluster.ssl_ca_cert = params[:ssl_ca_cert] if params[:ssl_ca_cert]
-      @cluster.ssl_client_cert = params[:ssl_client_cert] if params[:ssl_client_cert]
-      @cluster.ssl_client_cert_key = params[:ssl_client_cert_key] if params[:ssl_client_cert_key]
-      @cluster.ssl_client_cert = params[:ssl_client_cert] if params[:ssl_client_cert]
-      @cluster.ssl_client_cert_key = params[:ssl_client_cert_key] if params[:ssl_client_cert_key]
-      @cluster.sasl_scram_username = params[:sasl_scram_username] if params[:sasl_scram_username]
-      @cluster.sasl_scram_password = params[:sasl_scram_password] if params[:sasl_scram_password]
-      @cluster.init_brokers(params[:hosts])
-
-      invalid_broker = @cluster.brokers.to_a.find(&:invalid?)
-
-      if invalid_broker
-        render_error(
-          invalid_broker.errors,
-          status: 422,
-          flash: { error: invalid_broker.errors }
-        )
-
-        return
-      end
-
-      if @cluster.save
-        render_success(
-          @cluster,
-          status: :created,
-          redirection_path: clusters_path,
-          flash: { success: 'Cluster created' }
-        )
-      else
-        render_error(
-          @cluster.errors,
-          status: 422,
-          flash: { error: @cluster.errors }
-        )
-      end
-    end
-=end
-
-=begin
-    # DELETE /clusters/:id
-    def destroy
-      @cluster = Cluster.find(params[:id])
-      @cluster.destroy
-
-      render_success(
-        @cluster,
-        status: :no_content,
-        redirection_path: root_path,
-        flash: { success: 'Cluster destroyed' }
-      )
-    end
-=end
 
     private
     # leave for config validation
