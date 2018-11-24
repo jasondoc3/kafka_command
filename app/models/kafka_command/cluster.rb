@@ -52,20 +52,17 @@ module KafkaCommand
     end
 
     def self.all
-      @clusters ||=
-        begin
-          KafkaCommand.config['clusters'].map do |cluster|
-            cluster_name = cluster.keys.first
-            cluster_info = cluster.values.first
+      KafkaCommand.config['clusters'].map do |cluster|
+        cluster_name = cluster.keys.first
+        cluster_info = cluster.values.first
 
-            new(
-              name: cluster_name,
-              seed_brokers: cluster_info['seed_brokers'],
-              protocol: cluster_info['protocol'],
-              description: cluster_info['description']
-            )
-          end
-        end
+        new(
+          name: cluster_name,
+          seed_brokers: cluster_info['seed_brokers'],
+          protocol: cluster_info['protocol'],
+          description: cluster_info['description']
+        )
+      end
     end
 
     def ssl?
