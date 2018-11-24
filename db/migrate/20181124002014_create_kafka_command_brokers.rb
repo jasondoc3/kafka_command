@@ -1,6 +1,6 @@
-class CreateBrokers < ActiveRecord::Migration[5.2]
+class CreateKafkaCommandBrokers < ActiveRecord::Migration[5.2]
   def change
-    create_table :brokers do |t|
+    create_table :kafka_command_brokers do |t|
       t.string :host
       t.integer :kafka_broker_id
       t.references :cluster, index: true
