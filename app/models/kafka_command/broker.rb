@@ -1,3 +1,5 @@
+require_dependency 'kafka_command/application_record'
+
 module KafkaCommand
   class Broker < ApplicationRecord
     HOST_REGEX = /[^\:]+:[0-9]{1,5}/

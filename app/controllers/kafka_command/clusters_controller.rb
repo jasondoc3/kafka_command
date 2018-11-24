@@ -1,3 +1,5 @@
+require_dependency 'kafka_command/application_controller'
+
 module KafkaCommand
   class ClustersController < ApplicationController
     before_action :check_hosts, only: :create

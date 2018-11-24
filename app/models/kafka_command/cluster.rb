@@ -1,3 +1,5 @@
+require_dependency 'kafka_command/application_record'
+
 module KafkaCommand
   class Cluster < ApplicationRecord
     has_many :brokers, dependent: :destroy

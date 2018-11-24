@@ -1,3 +1,5 @@
+require_dependency 'kafka_command/application_controller'
+
 module KafkaCommand
   class ConsumerGroupsController < ApplicationController
 
