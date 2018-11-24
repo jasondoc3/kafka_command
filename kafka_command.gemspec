@@ -14,7 +14,10 @@ Gem::Specification.new do |s|
   s.description = "Description of Kafka Command."
   s.license     = "MIT"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  s.bindir        = "exe"
+  s.require_paths = ["lib"]
+  s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails", "~> 5.2.1"
   s.add_dependency "ruby-kafka", "~> 0.6.8"

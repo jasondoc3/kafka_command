@@ -3,6 +3,8 @@ require 'securerandom'
 require 'kafka'
 require 'config/initializers/kafka'
 
+$LOAD_PATH.unshift(File.expand_path('.'))
+
 begin
   Kafka.new(seed_brokers: ['localhost:9092']).topics
 rescue => e

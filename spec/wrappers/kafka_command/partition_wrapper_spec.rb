@@ -1,9 +1,9 @@
-require 'app/wrappers/kafka/client_wrapper'
+require 'app/wrappers/kafka_command/client_wrapper'
 
-RSpec.describe Kafka::PartitionWrapper do
+RSpec.describe KafkaCommand::PartitionWrapper do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:partition) do
-    Kafka::ClientWrapper
+    KafkaCommand::ClientWrapper
       .new(brokers: ['localhost:9092'])
       .cluster
       .topics
@@ -17,7 +17,7 @@ RSpec.describe Kafka::PartitionWrapper do
 
   describe '#new' do
     it 'contains a reference to a topic wrapper' do
-      expect(partition.topic).to be_an_instance_of(Kafka::TopicWrapper)
+      expect(partition.topic).to be_an_instance_of(KafkaCommand::TopicWrapper)
     end
   end
 

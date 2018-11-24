@@ -1,6 +1,6 @@
-require 'app/wrappers/kafka/cluster_wrapper'
+require 'app/wrappers/kafka_command/cluster_wrapper'
 
-RSpec.describe Kafka::ClusterWrapper do
+RSpec.describe KafkaCommand::ClusterWrapper do
   let(:host)            { 'localhost' }
   let(:port)            { 9092 }
   let(:brokers)         { ["#{host}:#{port}"] }
@@ -21,7 +21,7 @@ RSpec.describe Kafka::ClusterWrapper do
     it 'initializes brokers' do
       expect(cluster_wrapper.brokers).to_not be_empty
       expect(cluster_wrapper.brokers.count).to eq(1)
-      expect(cluster_wrapper.brokers.first).to be_an_instance_of(Kafka::BrokerWrapper)
+      expect(cluster_wrapper.brokers.first).to be_an_instance_of(KafkaCommand::BrokerWrapper)
       expect(cluster_wrapper.brokers.first.host).to eq('localhost')
       expect(cluster_wrapper.brokers.first.port).to eq(9092)
     end
@@ -32,7 +32,7 @@ RSpec.describe Kafka::ClusterWrapper do
 
     it 'initializes topics' do
       expect(cluster_wrapper.topics).to_not be_empty
-      expect(cluster_wrapper.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
+      expect(cluster_wrapper.topics.first).to be_an_instance_of(KafkaCommand::TopicWrapper)
       expect(cluster_wrapper.topics.map(&:name)).to include(topic_name)
     end
   end
@@ -45,7 +45,7 @@ RSpec.describe Kafka::ClusterWrapper do
 
     it 'initializes groups' do
       expect(cluster_wrapper.groups).to_not be_empty
-      expect(cluster_wrapper.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
+      expect(cluster_wrapper.groups.first).to be_an_instance_of(KafkaCommand::ConsumerGroupWrapper)
       expect(cluster_wrapper.groups.map(&:group_id)).to include(group_id)
     end
   end
@@ -111,7 +111,7 @@ RSpec.describe Kafka::ClusterWrapper do
       before { create_topic(topic_name) }
 
       it 'returns the topic' do
-        expect(cluster_wrapper.find_topic(topic_name)).to be_an_instance_of(Kafka::TopicWrapper)
+        expect(cluster_wrapper.find_topic(topic_name)).to be_an_instance_of(KafkaCommand::TopicWrapper)
         expect(cluster_wrapper.find_topic(topic_name).name).to eq(topic_name)
       end
     end
@@ -133,7 +133,7 @@ RSpec.describe Kafka::ClusterWrapper do
         broker_id: broker_id
       )
 
-      expect(result).to be_an_instance_of(Kafka::BrokerWrapper)
+      expect(result).to be_an_instance_of(KafkaCommand::BrokerWrapper)
       expect(result.port).to eq(port)
       expect(result.host).to eq(host)
       expect(result.node_id).to eq(broker_id)
@@ -204,7 +204,7 @@ RSpec.describe Kafka::ClusterWrapper do
     end
 
     describe '#describe_topic' do
-      let(:describe_topic_configs) { Kafka::TopicWrapper::TOPIC_CONFIGS }
+      let(:describe_topic_configs) { KafkaCommand::TopicWrapper::TOPIC_CONFIGS }
 
       it 'forwards describe_topic to the Kafka::Cluster' do
         expect(cluster_wrapper.cluster).to receive(:describe_topic).with(topic_name, describe_topic_configs)

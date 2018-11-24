@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :cluster do
+  factory :cluster, class: KafkaCommand::Cluster do
     name { 'test_cluster' }
     version { '1.0.0' }
     description { 'Test Cluster' }
@@ -9,7 +9,7 @@ FactoryBot.define do
     end
   end
 
-  factory :cluster_without_broker, class: Cluster do
+  factory :cluster_without_broker, class: KafkaCommand::Cluster do
     name { 'test_cluster' }
     version { '1.0.0' }
     description { 'Test Cluster' }

@@ -63,9 +63,9 @@ module KafkaCommand
 
           case status
           when :not_found, 404
-            render file: 'public/404.html', status: status, layout: false
+            render json: '404 Not Found', status: status, layout: false
           else
-            render file: 'public/500.html', status: status, layout: false
+            render json: '500 Internal Server Error', status: status, layout: false
           end
         end
         format.json { render_json_errors(data, status: status) }

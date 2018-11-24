@@ -1,6 +1,6 @@
-require 'app/wrappers/kafka/client_wrapper'
+require 'app/wrappers/kafka_command/client_wrapper'
 
-RSpec.describe Kafka::ClientWrapper do
+RSpec.describe KafkaCommand::ClientWrapper do
   let(:brokers)        { ['localhost:9092'] }
   let(:client_id)      { 'test_client' }
   let(:client_wrapper) { described_class.new(brokers: brokers, client_id: client_id) }
@@ -8,7 +8,7 @@ RSpec.describe Kafka::ClientWrapper do
   describe '#new' do
     it 'creates a Kafka::ClientWrapper that wraps a Kafka::Client' do
       expect(client_wrapper.client).to be_an_instance_of(Kafka::Client)
-      expect(client_wrapper.cluster).to be_an_instance_of(Kafka::ClusterWrapper)
+      expect(client_wrapper.cluster).to be_an_instance_of(KafkaCommand::ClusterWrapper)
     end
   end
 
@@ -16,9 +16,9 @@ RSpec.describe Kafka::ClientWrapper do
     let(:client_wrapper) { described_class.new(brokers: brokers, client_id: client_id) }
 
     describe 'broker exists' do
-      it 'returns a Kafka::BrokerWrapper' do
+      it 'returns a KafkaCommand::BrokerWrapper' do
         broker = client_wrapper.find_broker(brokers.first)
-        expect(broker).to be_an_instance_of(Kafka::BrokerWrapper)
+        expect(broker).to be_an_instance_of(KafkaCommand::BrokerWrapper)
       end
     end
 
@@ -62,35 +62,35 @@ RSpec.describe Kafka::ClientWrapper do
     end
 
     describe '#topics' do
-      it' forwards #topics to the Kafka::ClusterWrapper' do
+      it' forwards #topics to the KafkaCommand::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:topics)
         client_wrapper.topics
       end
     end
 
     describe '#groups' do
-      it 'forwards #groups to the Kafka::ClusterWrapper' do
+      it 'forwards #groups to the KafkaCommand::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:groups)
         client_wrapper.groups
       end
     end
 
     describe '#refresh!' do
-      it 'forwards #refresh! to the Kafka::ClusterWrapper' do
+      it 'forwards #refresh! to the KafkaCommand::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:refresh!)
         client_wrapper.refresh!
       end
     end
 
     describe '#refresh_topics!' do
-      it 'forwards #refresh_topics! to the Kafka::ClusterWrapper' do
+      it 'forwards #refresh_topics! to the KafkaCommand::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:refresh_topics!)
         client_wrapper.refresh_topics!
       end
     end
 
     describe '#connect_to_broker' do
-      it 'forwards #connect_to_broker to the Kafka::ClusterWrapper' do
+      it 'forwards #connect_to_broker to the KafkaCommand::ClusterWrapper' do
         expect(client_wrapper.cluster).to receive(:connect_to_broker)
         client_wrapper.connect_to_broker(host: 'localhost', port: 9092, broker_id: 1)
       end

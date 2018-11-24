@@ -72,16 +72,16 @@ RSpec.describe 'Clusters Api', type: :request do
         expect(json['name']).to eq(cluster_params[:name])
         expect(json['description']).to eq(cluster_params[:description])
         expect(json['version']).to eq(cluster_params[:version])
-      end.to change { Cluster.count }.by(1)
+      end.to change { KafkaCommand::Cluster.count }.by(1)
     end
 
     it 'creates brokers with the cluster' do
       expect do
         post '/clusters.json', params: cluster_params
         expect(response.status).to eq(201)
-        cluster = Cluster.find(json['id'])
+        cluster = KafkaCommand::Cluster.find(json['id'])
         expect(cluster.brokers.map(&:host)).to eq(cluster_params[:hosts].split(','))
-      end.to change { Broker.count }.by(1)
+      end.to change { KafkaCommand::Broker.count }.by(1)
     end
 
     context 'invalid hosts' do
@@ -93,7 +93,7 @@ RSpec.describe 'Clusters Api', type: :request do
             post '/clusters.json', params: cluster_params
             expect(response.status).to eq(422)
             expect(response.body).to eq('Please specify a list of hosts')
-          end.to change { Cluster.count }.by(0)
+          end.to change { KafkaCommand::Cluster.count }.by(0)
         end
       end
 
@@ -104,7 +104,7 @@ RSpec.describe 'Clusters Api', type: :request do
           expect do
             post '/clusters.json', params: cluster_params
             expect(response.status).to eq(422)
-          end.to change { Cluster.count }.by(0)
+          end.to change { KafkaCommand::Cluster.count }.by(0)
         end
       end
 
@@ -116,7 +116,7 @@ RSpec.describe 'Clusters Api', type: :request do
             post '/clusters.json', params: cluster_params
             expect(response.status).to eq(500)
             expect(response.body).to eq('Could not connect to Kafka with the specified brokers')
-          end.to change { Cluster.count }.by(0)
+          end.to change { KafkaCommand::Cluster.count }.by(0)
         end
       end
     end
@@ -130,14 +130,14 @@ RSpec.describe 'Clusters Api', type: :request do
         expect do
           delete "/clusters/#{cluster.id}.json"
           expect(response.status).to eq(204)
-        end.to change { Cluster.count }.by(-1)
+        end.to change { KafkaCommand::Cluster.count }.by(-1)
       end
 
       it 'destroys the broker' do
         expect do
           delete "/clusters/#{cluster.id}.json"
           expect(response.status).to eq(204)
-        end.to change { Broker.count }.by(-cluster.brokers.count)
+        end.to change { KafkaCommand::Broker.count }.by(-cluster.brokers.count)
       end
     end
 
@@ -147,7 +147,7 @@ RSpec.describe 'Clusters Api', type: :request do
       it 'returns not found' do
         expect do
           delete "/clusters/#{cluster.id}"
-        end.to change { Cluster.count }.by(0)
+        end.to change { KafkaCommand::Cluster.count }.by(0)
       end
     end
   end

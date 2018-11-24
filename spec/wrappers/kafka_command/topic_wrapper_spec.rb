@@ -1,6 +1,6 @@
-require 'app/wrappers/kafka/client_wrapper'
+require 'app/wrappers/kafka_command/client_wrapper'
 
-RSpec.describe Kafka::TopicWrapper do
+RSpec.describe KafkaCommand::TopicWrapper do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:num_partitions) { 5 }
   let(:replication_factor) { 1 }
@@ -11,7 +11,7 @@ RSpec.describe Kafka::TopicWrapper do
   end
 
   let(:topic) do
-    Kafka::ClientWrapper
+    KafkaCommand::ClientWrapper
       .new(brokers: ['localhost:9092'])
       .cluster
       .topics
@@ -26,7 +26,7 @@ RSpec.describe Kafka::TopicWrapper do
       expect(topic.name).to eq(topic_name)
       expect(topic.replication_factor).to eq(1)
       expect(topic.partitions.count).to eq(5)
-      expect(topic.partitions.first).to be_an_instance_of(Kafka::PartitionWrapper)
+      expect(topic.partitions.first).to be_an_instance_of(KafkaCommand::PartitionWrapper)
     end
   end
 
@@ -191,9 +191,9 @@ RSpec.describe Kafka::TopicWrapper do
           replication_factor: replication_factor,
           partitions: partition_json,
           config: {
-            max_message_bytes: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
-            retention_ms: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
-            retention_bytes: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES
+            max_message_bytes: described_class::DEFAULT_MAX_MESSAGE_BYTES,
+            retention_ms: described_class::DEFAULT_RETENTION_MS,
+            retention_bytes: described_class::DEFAULT_RETENTION_BYTES
           },
         }.to_json
       end
@@ -231,7 +231,7 @@ RSpec.describe Kafka::TopicWrapper do
 
     before do
       allow(topic).to receive(:replication_factor).and_return(replication_factor_double)
-      allow_any_instance_of(Kafka::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
+      allow_any_instance_of(KafkaCommand::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
     end
 
     context '100%' do
@@ -272,7 +272,7 @@ RSpec.describe Kafka::TopicWrapper do
 
   describe '#consumer_offset_topic?' do
     context 'when consumer offset topic' do
-      let(:consumer_offset_topic) { Kafka::TopicWrapper::CONSUMER_OFFSET_TOPIC }
+      let(:consumer_offset_topic) { described_class::CONSUMER_OFFSET_TOPIC }
 
       before do
         allow(topic).to receive(:name).and_return(consumer_offset_topic)

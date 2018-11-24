@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Broker do
+RSpec.describe KafkaCommand::Broker do
   let(:cluster)   { build(:cluster_without_broker) }
   let(:hostname) { 'localhost' }
   let(:port)     { 9092 }
@@ -30,7 +30,7 @@ RSpec.describe Broker do
   describe '#kafka_broker' do
     it 'returns a Kafka::BrokerWrapper' do
       kafka_broker = subject.kafka_broker
-      expect(kafka_broker).to be_an_instance_of(Kafka::BrokerWrapper)
+      expect(kafka_broker).to be_an_instance_of(KafkaCommand::BrokerWrapper)
       expect(kafka_broker.port).to eq(port)
       expect(kafka_broker.host).to eq(hostname)
     end
@@ -39,7 +39,7 @@ RSpec.describe Broker do
   describe '#connected?' do
     context 'when connected' do
       before do
-        allow_any_instance_of(Kafka::BrokerWrapper).to receive(:connected?).and_return(true)
+        allow_any_instance_of(KafkaCommand::BrokerWrapper).to receive(:connected?).and_return(true)
       end
 
       it 'returns true' do
@@ -49,7 +49,7 @@ RSpec.describe Broker do
 
     context 'not connected' do
       before do
-        allow_any_instance_of(Kafka::BrokerWrapper).to receive(:connected?).and_return(false)
+        allow_any_instance_of(KafkaCommand::BrokerWrapper).to receive(:connected?).and_return(false)
       end
 
       it 'returns false' do

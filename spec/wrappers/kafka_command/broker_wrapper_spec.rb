@@ -1,8 +1,8 @@
-require 'app/wrappers/kafka/client_wrapper'
+require 'app/wrappers/kafka_command/client_wrapper'
 
-RSpec.describe Kafka::BrokerWrapper do
+RSpec.describe KafkaCommand::BrokerWrapper do
   let(:broker) do
-    Kafka::ClientWrapper
+    KafkaCommand::ClientWrapper
       .new(brokers: ['localhost:9092'])
       .cluster
       .brokers

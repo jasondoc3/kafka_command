@@ -1,11 +1,11 @@
-require 'app/wrappers/kafka/client_wrapper'
+require 'app/wrappers/kafka_command/client_wrapper'
 
-RSpec.describe Kafka::ConsumerGroupWrapper do
+RSpec.describe KafkaCommand::ConsumerGroupWrapper do
   let(:group_id) { "test-group-#{SecureRandom.hex(24)}" }
   let(:topic_name) { "test-topic-#{SecureRandom.hex(24)}" }
   let(:num_partitions) { 5 }
   let(:group) do
-    Kafka::ClientWrapper
+    KafkaCommand::ClientWrapper
       .new(brokers: ['localhost:9092'])
       .cluster
       .groups
@@ -21,7 +21,7 @@ RSpec.describe Kafka::ConsumerGroupWrapper do
         run_consumer_group(topic_name, group_id) do
           expect(group.group_id).to eq(group_id)
           expect(group.members).to_not be_empty
-          expect(group.members.sample).to be_an_instance_of(Kafka::GroupMemberWrapper)
+          expect(group.members.sample).to be_an_instance_of(KafkaCommand::GroupMemberWrapper)
           expect(group.state).to eq('Stable')
         end
       end
@@ -113,7 +113,7 @@ RSpec.describe Kafka::ConsumerGroupWrapper do
     it 'returns ConsumerGroupPartitionWrappers' do
       run_consumer_group(topic_name, group_id) do
         expect(partitions.count).to eq(num_partitions)
-        expect(partitions.sample).to be_an_instance_of(Kafka::ConsumerGroupPartitionWrapper)
+        expect(partitions.sample).to be_an_instance_of(KafkaCommand::ConsumerGroupPartitionWrapper)
         expect(partitions.sample.group_id).to eq(group_id)
         expect(partitions.sample.topic_name).to eq(topic_name)
       end

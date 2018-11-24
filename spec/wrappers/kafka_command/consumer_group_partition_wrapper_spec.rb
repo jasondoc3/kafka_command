@@ -1,6 +1,6 @@
-require 'app/wrappers/kafka/consumer_group_partition_wrapper'
+require 'app/wrappers/kafka_command/consumer_group_partition_wrapper'
 
-RSpec.describe Kafka::ConsumerGroupPartitionWrapper do
+RSpec.describe KafkaCommand::ConsumerGroupPartitionWrapper do
   let(:group_id)     { "group-#{SecureRandom.hex(12)}" }
   let(:topic_name)   { "test-#{SecureRandom.hex(12)}" }
   let(:lag)          { 1 }

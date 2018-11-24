@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Cluster do
+RSpec.describe KafkaCommand::Cluster do
   let(:cluster_name) { 'test_cluster' }
   let(:cluster)      { create(:cluster, name: cluster_name) }
   let(:topic_name)   { SecureRandom.hex(12) }
@@ -9,7 +9,7 @@ RSpec.describe Cluster do
     let(:broker) { cluster.brokers.first }
 
     it 'creates and returns a Kafka::ClientWrapper' do
-      expect(Kafka::ClientWrapper)
+      expect(KafkaCommand::ClientWrapper)
         .to receive(:new)
         .with(
           hash_including(
@@ -18,7 +18,7 @@ RSpec.describe Cluster do
           )
         ).and_call_original
 
-      expect(cluster.client).to be_an_instance_of(Kafka::ClientWrapper)
+      expect(cluster.client).to be_an_instance_of(KafkaCommand::ClientWrapper)
     end
   end
 
@@ -28,7 +28,7 @@ RSpec.describe Cluster do
     before { create_topic(topic_name) }
 
     it 'returns a list of topics' do
-      expect(cluster.topics.first).to be_an_instance_of(Kafka::TopicWrapper)
+      expect(cluster.topics.first).to be_an_instance_of(KafkaCommand::TopicWrapper)
       expect(cluster.topics.map(&:name)).to include(topic_name)
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe Cluster do
 
     it 'returns a list of groups' do
       run_consumer_group(topic_name, group_id) do
-        expect(cluster.groups.first).to be_an_instance_of(Kafka::ConsumerGroupWrapper)
+        expect(cluster.groups.first).to be_an_instance_of(KafkaCommand::ConsumerGroupWrapper)
         expect(cluster.groups.map(&:group_id)).to include(group_id)
       end
     end
@@ -52,7 +52,7 @@ RSpec.describe Cluster do
     end
 
     it 'calls ClientWrapper#create_topic' do
-      expect_any_instance_of(Kafka::ClientWrapper).to receive(:create_topic).with(topic_name, **kwargs)
+      expect_any_instance_of(KafkaCommand::ClientWrapper).to receive(:create_topic).with(topic_name, **kwargs)
       cluster.create_topic(topic_name, **kwargs)
     end
   end
