@@ -1,6 +1,6 @@
-require_dependency 'app/wrappers/kafka/partition_wrapper'
+require_dependency 'kafka_command/partition_wrapper'
 
-module Kafka
+module KafkaCommand
   class TopicWrapper
     attr_reader :name,
                 :partitions,

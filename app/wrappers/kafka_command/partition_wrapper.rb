@@ -1,6 +1,6 @@
 require 'forwardable'
 
-module Kafka
+module KafkaCommand
   class PartitionWrapper
     extend Forwardable
     attr_reader :topic

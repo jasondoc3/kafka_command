@@ -1,7 +1,7 @@
 require 'forwardable'
-require_dependency 'app/wrappers/kafka/cluster_wrapper'
+require_dependency 'kafka_command/cluster_wrapper'
 
-module Kafka
+module KafkaCommand
   class ClientWrapper
     extend Forwardable
 

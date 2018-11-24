@@ -1,4 +1,4 @@
-module Kafka
+module KafkaCommand
   class ConsumerGroupPartitionWrapper
     attr_reader :lag, :topic_name, :offset, :partition_id, :group_id
 

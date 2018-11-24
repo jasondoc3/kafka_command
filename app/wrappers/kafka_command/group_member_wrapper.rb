@@ -1,4 +1,4 @@
-module Kafka
+module KafkaCommand
   class GroupMemberWrapper
     attr_reader :member_id, :client_host, :client_id, :topic_assignment
 

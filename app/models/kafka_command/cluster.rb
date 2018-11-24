@@ -36,7 +36,7 @@ module KafkaCommand
         client_kwargs
       end
 
-      Kafka::ClientWrapper.new(**client_kwargs, logger: Rails.logger)
+      ClientWrapper.new(**client_kwargs, logger: Rails.logger)
     end
 
     def topics

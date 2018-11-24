@@ -1,9 +1,9 @@
 require 'forwardable'
-require_dependency 'app/wrappers/kafka/broker_wrapper'
-require_dependency 'app/wrappers/kafka/consumer_group_wrapper'
-require_dependency 'app/wrappers/kafka/topic_wrapper'
+require_dependency 'kafka_command/broker_wrapper'
+require_dependency 'kafka_command/consumer_group_wrapper'
+require_dependency 'kafka_command/topic_wrapper'
 
-module Kafka
+module KafkaCommand
   class ClusterWrapper
     extend Forwardable
     attr_reader :cluster

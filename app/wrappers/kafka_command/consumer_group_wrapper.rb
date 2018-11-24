@@ -1,7 +1,7 @@
-require_dependency 'app/wrappers/kafka/group_member_wrapper'
-require_dependency 'app/wrappers/kafka/consumer_group_partition_wrapper'
+require_dependency 'kafka_command/group_member_wrapper'
+require_dependency 'kafka_command/consumer_group_partition_wrapper'
 
-module Kafka
+module KafkaCommand
   class ConsumerGroupWrapper
     attr_reader :group_id
 

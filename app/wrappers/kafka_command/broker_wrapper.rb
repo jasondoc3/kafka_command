@@ -1,6 +1,6 @@
 require 'forwardable'
 
-module Kafka
+module KafkaCommand
   class BrokerWrapper
     extend Forwardable
     attr_reader :broker
