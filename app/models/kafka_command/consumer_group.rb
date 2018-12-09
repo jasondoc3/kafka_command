@@ -1,5 +1,5 @@
-require_dependency 'kafka_command/group_member'
-require_dependency 'kafka_command/consumer_group_partition'
+require_dependency 'app/models/kafka_command/group_member'
+require_dependency 'app/models/kafka_command/consumer_group_partition'
 
 module KafkaCommand
   class ConsumerGroup

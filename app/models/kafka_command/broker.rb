@@ -12,10 +12,14 @@ module KafkaCommand
       @broker = broker
     end
 
+    def host_with_port
+      "#{host}:#{port}"
+    end
+
     def as_json(*)
       {
         id: node_id,
-        host: "#{host}:#{port}"
+        host: host_with_port
       }
     end
 

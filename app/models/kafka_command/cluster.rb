@@ -1,5 +1,9 @@
+require 'forwardable'
+require_dependency 'app/models/kafka_command/client'
+
 module KafkaCommand
   class Cluster
+    extend Forwardable
     DEFAULT_PROTOCOL = 'PLAINTEXT'
 
     attr_reader :client,
@@ -9,21 +13,29 @@ module KafkaCommand
       :protocol,
       :sasl_scram_username,
       :sasl_scram_password,
-      :ssl_ca_cert,
-      :ssl_client_cert,
-      :ssl_client_cert_key,
+      :ssl_ca_cert_file_path,
+      :ssl_client_cert_file_path,
+      :ssl_client_cert_key_file_path,
       :version
 
     alias_method :id, :name
 
-    delegate :brokers, :topics, :groups, to: :client
+    def_delegators :@client, :topics, :groups, :brokers
 
-    def initialize(name:, seed_brokers:, description: nil, protocol: DEFAULT_PROTOCOL, version: nil)
+    def initialize(name:, seed_brokers:, description: nil, protocol: DEFAULT_PROTOCOL,
+                   sasl_scram_username: nil, sasl_scram_password: nil, ssl_ca_cert_file_path: nil,
+                   ssl_client_cert_file_path: nil, ssl_client_cert_key_file_path: nil, version: nil
+                  )
       @name = name
       @seed_brokers = seed_brokers
-      @client = initialize_client
       @description = description
+      @sasl_scram_username = sasl_scram_username
+      @sasl_scram_password = sasl_scram_password
+      @ssl_ca_cert_file_path = ssl_ca_cert_file_path
+      @ssl_client_cert_file_path = ssl_client_cert_file_path
+      @ssl_client_cert_key_file_path = ssl_client_cert_key_file_path
       @version = version
+      @client = initialize_client
     end
 
     def connected?
@@ -43,6 +55,20 @@ module KafkaCommand
 
     def to_s
       name
+    end
+
+    def ssl?
+      ssl_ca_cert_file_path.present? &&
+        ssl_client_cert_file_path.present? &&
+        ssl_client_cert_key_file_path.present?
+    end
+
+    def sasl?
+      sasl_scram_password.present? && sasl_scram_password.present?
+    end
+
+    def ==(other)
+      name == other.name
     end
 
     def self.find(cluster_name)
@@ -66,19 +92,14 @@ module KafkaCommand
           name: cluster_name,
           seed_brokers: cluster_info['seed_brokers'],
           protocol: cluster_info['protocol'],
-          description: cluster_info['description']
+          description: cluster_info['description'],
+          sasl_scram_username: cluster_info['sasl_scram_username'],
+          sasl_scram_password: cluster_info['sasl_scram_password'],
+          ssl_ca_cert_file_path: cluster_info['ssl_ca_cert_file_path'],
+          ssl_client_cert_file_path: cluster_info['ssl_client_cert_file_path'],
+          ssl_client_cert_key_file_path: cluster_info['ssl_client_cert_key_file_path']
         )
       end
-    end
-
-    def ssl?
-      ssl_ca_cert.present? &&
-        ssl_client_cert.present? &&
-        ssl_client_cert_key.present?
-    end
-
-    def sasl?
-      sasl_scram_username.present? && sasl_scram_password.present?
     end
 
     private
@@ -94,15 +115,14 @@ module KafkaCommand
             client_kwargs[:sasl_scram_username] = sasl_scram_username
             client_kwargs[:sasl_scram_password] = sasl_scram_password
             client_kwargs[:sasl_scram_mechanism] = 'sha256'
-            client_kwargs[:ssl_ca_cert] = ssl_ca_cert
+            client_kwargs[:ssl_ca_cert] = File.read(ssl_ca_cert_file_path).strip
           elsif ssl?
-            client_kwargs[:ssl_ca_cert] = ssl_ca_cert
-            client_kwargs[:ssl_client_cert] = ssl_client_cert
-            client_kwargs[:ssl_client_cert_key] = ssl_client_cert_key
-            client_kwargs
+            client_kwargs[:ssl_ca_cert] = File.read(ssl_ca_cert_file_path).strip
+            client_kwargs[:ssl_client_cert] = File.read(ssl_client_cert_file_path).strip
+            client_kwargs[:ssl_client_cert_key] = File.read(ssl_client_cert_key_file_path).strip
           end
 
-          Client.new(**client_kwargs, logger: Rails.logger)
+          Client.new(**client_kwargs)
         end
       end
   end

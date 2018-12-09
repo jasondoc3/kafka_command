@@ -1,4 +1,4 @@
-require_dependency 'kafka_command/partition'
+require_dependency 'app/models/kafka_command/partition'
 
 module KafkaCommand
   class Topic

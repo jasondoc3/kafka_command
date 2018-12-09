@@ -3,6 +3,12 @@ require 'securerandom'
 require 'kafka'
 require 'config/initializers/kafka'
 
+module KafkaCommand
+  def self.config
+    @config ||= YAML.load(File.read('spec/dummy/config/kafka_command.yml'))['test']
+  end
+end
+
 $LOAD_PATH.unshift(File.expand_path('.'))
 
 begin
@@ -13,6 +19,10 @@ rescue => e
 end
 
 module KafkaHelpers
+  def kafka_command_cluster
+    KafkaCommand::Cluster.all.find { |c| c.name == 'test_cluster' }
+  end
+
   def kafka_client
     Kafka.new(seed_brokers: ['localhost:9092'])
   end

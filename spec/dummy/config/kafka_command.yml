@@ -1,7 +1,8 @@
-clusters:
-  - production:
-      protocol: PLAINTEXT
-      description: 'Producing Things'
-      version: 1.0.0
-      seed_brokers:
-        - localhost:9092
+test:
+  clusters:
+    - test_cluster:
+        protocol: PLAINTEXT
+        description: 'Producing Things'
+        version: 1.0.0
+        seed_brokers:
+          - localhost:9092

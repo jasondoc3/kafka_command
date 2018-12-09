@@ -1,0 +1,11 @@
+test:
+  clusters:
+    - ssl_test_cluster:
+        protocol: SSL
+        description: 'Production Things With SSL'
+        version: 1.0.0
+        seed_brokers:
+          - localhost:9092
+        ssl_ca_cert_file_path: spec/dummy/config/ssl/test_ca_cert
+        ssl_client_cert_file_path: spec/dummy/config/ssl/test_client_cert
+        ssl_client_cert_key_file_path: spec/dummy/config/ssl/test_client_cert_key
