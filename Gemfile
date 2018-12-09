@@ -11,6 +11,4 @@ group :development, :test do
   gem 'rubocop-rails_config'
   gem 'rubocop-rspec'
   gem 'rspec-rails'
-  gem 'database_cleaner'
-  gem 'factory_bot_rails'
 end

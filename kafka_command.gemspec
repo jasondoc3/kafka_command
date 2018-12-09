@@ -19,9 +19,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.test_files = Dir["spec/**/*"]
 
-  s.add_dependency "rails", "~> 5.2.1"
+  s.add_dependency "rails", "~> 5"
   s.add_dependency "ruby-kafka", "~> 0.6.8"
-  s.add_dependency "attr_encrypted"
-
-  s.add_development_dependency "sqlite3"
 end

@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Clusters Api', type: :request do
+  let!(:cluster) { KafkaCommand::Cluster.all.first }
+
   describe 'listing all clusters' do
-    let!(:cluster) { build(:cluster) }
-    let!(:cluster_two) { build(:cluster, name: 'number two') }
+    let!(:cluster_two) { KafkaCommand::Cluster.new(seed_brokers: ['localhost:9092'], name: 'cluster_two') }
 
     before do
       allow(KafkaCommand::Cluster).to receive(:all).and_return([cluster, cluster_two])
@@ -35,12 +36,6 @@ RSpec.describe 'Clusters Api', type: :request do
   end
 
   describe 'showing a single cluster' do
-    let!(:cluster) { build(:cluster) }
-
-    before do
-      allow(KafkaCommand::Cluster).to receive(:all).and_return([cluster])
-    end
-
     context 'cluster exists' do
       it 'shows' do
         get "/clusters/#{cluster.name}.json"
