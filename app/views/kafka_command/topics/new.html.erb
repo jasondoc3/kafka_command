@@ -24,9 +24,9 @@
       render(
         partial: 'form_fields',
         locals: {
-          retention_bytes_value: Kafka::TopicWrapper::DEFAULT_RETENTION_BYTES,
-          retention_ms_value: Kafka::TopicWrapper::DEFAULT_RETENTION_MS,
-          max_message_bytes_value: Kafka::TopicWrapper::DEFAULT_MAX_MESSAGE_BYTES,
+          retention_bytes_value: KafkaCommand::Topic::DEFAULT_RETENTION_BYTES,
+          retention_ms_value: KafkaCommand::Topic::DEFAULT_RETENTION_MS,
+          max_message_bytes_value: KafkaCommand::Topic::DEFAULT_MAX_MESSAGE_BYTES,
           partitions_value: 5
         }
      )

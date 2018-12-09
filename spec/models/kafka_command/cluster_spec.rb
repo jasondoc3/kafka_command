@@ -76,7 +76,7 @@ RSpec.describe KafkaCommand::Cluster do
       { replication_factor: 1, num_partitions: 1 }
     end
 
-    it 'calls ClientWrapper#create_topic' do
+    it 'calls KafkaCommand::Client#create_topic' do
       expect_any_instance_of(KafkaCommand::Client).to receive(:create_topic).with(topic_name, **kwargs)
       cluster.create_topic(topic_name, **kwargs)
     end
