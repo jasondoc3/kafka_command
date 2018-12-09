@@ -1,6 +1,7 @@
-require 'app/wrappers/kafka_command/client_wrapper'
+require 'app/models/kafka_command/cluster'
+require 'app/models/kafka_command/topic'
 
-RSpec.describe KafkaCommand::TopicWrapper do
+RSpec.describe KafkaCommand::Topic do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:num_partitions) { 5 }
   let(:replication_factor) { 1 }
@@ -11,22 +12,18 @@ RSpec.describe KafkaCommand::TopicWrapper do
   end
 
   let(:topic) do
-    KafkaCommand::ClientWrapper
-      .new(brokers: ['localhost:9092'])
-      .cluster
-      .topics
-      .find { |t| t.name == topic_name }
+    KafkaCommand::Cluster.all.first.topics.find { |t| t.name == topic_name }
   end
 
   before { create_topic(topic_name, **topic_creation_kwargs) }
   after  { delete_topic(topic_name) if topic_exists?(topic_name) }
 
   describe '#new' do
-    it 'initializes Kafka::TopicWrapper with name, replication_factor, and partitions' do
+    it 'initializes Kafka::Topic with name, replication_factor, and partitions' do
       expect(topic.name).to eq(topic_name)
       expect(topic.replication_factor).to eq(1)
       expect(topic.partitions.count).to eq(5)
-      expect(topic.partitions.first).to be_an_instance_of(KafkaCommand::PartitionWrapper)
+      expect(topic.partitions.first).to be_an_instance_of(KafkaCommand::Partition)
     end
   end
 
@@ -231,7 +228,7 @@ RSpec.describe KafkaCommand::TopicWrapper do
 
     before do
       allow(topic).to receive(:replication_factor).and_return(replication_factor_double)
-      allow_any_instance_of(KafkaCommand::ClusterWrapper).to receive(:brokers).and_return(broker_doubles)
+      allow_any_instance_of(KafkaCommand::Client).to receive(:brokers).and_return(broker_doubles)
     end
 
     context '100%' do
