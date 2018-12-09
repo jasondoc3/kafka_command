@@ -1,7 +1,4 @@
 require 'forwardable'
-require_dependency 'app/models/kafka_command/broker'
-require_dependency 'app/models/kafka_command/consumer_group'
-require_dependency 'app/models/kafka_command/topic'
 
 module KafkaCommand
   class Client

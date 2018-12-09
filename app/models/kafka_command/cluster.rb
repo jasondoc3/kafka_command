@@ -1,5 +1,4 @@
 require 'forwardable'
-require_dependency 'app/models/kafka_command/client'
 
 module KafkaCommand
   class Cluster

@@ -2,6 +2,13 @@ require 'fast_helper'
 require 'securerandom'
 require 'kafka'
 require 'config/initializers/kafka'
+require 'app/models/kafka_command/client'
+require 'app/models/kafka_command/cluster'
+require 'app/models/kafka_command/topic'
+require 'app/models/kafka_command/consumer_group'
+require 'app/models/kafka_command/partition'
+require 'app/models/kafka_command/consumer_group_partition'
+require 'app/models/kafka_command/group_member'
 
 module KafkaCommand
   def self.config

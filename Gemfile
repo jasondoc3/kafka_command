@@ -11,4 +11,5 @@ group :development, :test do
   gem 'rubocop-rails_config'
   gem 'rubocop-rspec'
   gem 'rspec-rails'
+  gem 'sqlite3'
 end

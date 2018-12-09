@@ -1,5 +1,3 @@
-require_dependency 'app/models/kafka_command/partition'
-
 module KafkaCommand
   class Topic
     attr_reader :name,
