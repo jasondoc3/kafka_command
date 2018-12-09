@@ -12,8 +12,14 @@ module KafkaCommand
 
     # GET /clusters/:cluster_id/brokers/:id
     def show
-      @broker = Broker.find(params[:id])
-      render_success(@broker)
+      cluster = Cluster.find(params[:cluster_id])
+      @broker = cluster.brokers.find { |b| b.node_id == params[:id].to_i }
+
+      if @broker.present?
+        render_success(@broker)
+      else
+        record_not_found
+      end
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Consumer Groups Api', type: :request do
-  let(:cluster) { create(:cluster) }
+  let(:cluster) { KafkaCommand::Cluster.all.first }
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:group_id_1) { "test-group-#{SecureRandom.hex(12)}" }
   let(:group_id_2) { "test-group-#{SecureRandom.hex(12)}" }

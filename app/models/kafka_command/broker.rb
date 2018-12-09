@@ -12,6 +12,13 @@ module KafkaCommand
       @broker = broker
     end
 
+    def as_json(*)
+      {
+        id: node_id,
+        host: "#{host}:#{port}"
+      }
+    end
+
     # needs to be the group coordinator to work
     def offsets_for(group, topic)
       offsets = @broker.fetch_offsets(
