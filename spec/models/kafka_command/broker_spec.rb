@@ -1,60 +1,83 @@
-require 'rails_helper'
+require 'app/models/kafka_command/broker'
 
 RSpec.describe KafkaCommand::Broker do
-  let(:cluster)   { build(:cluster_without_broker) }
   let(:hostname) { 'localhost' }
   let(:port)     { 9092 }
-  subject { cluster.brokers.first }
+  subject        { KafkaCommand::Cluster.all.first.brokers.first }
 
-  before do
-    cluster.init_brokers("#{hostname}:#{port}")
-    cluster.save!
-  end
-
-  it 'sets the kafka broker id when created' do
-    expect(subject.reload.kafka_broker_id).to_not be_nil
-  end
-
-  describe '#hostname' do
-    it 'returns the hostname' do
-      expect(subject.hostname).to eq(hostname)
+  describe '#new' do
+    it 'wraps a Kafka::Broker' do
+      expect(subject.broker).to be_an_instance_of(Kafka::Broker)
     end
   end
 
-  describe '#port' do
-    it 'returns the port' do
-      expect(subject.port).to eq(port)
-    end
-  end
-
-  describe '#kafka_broker' do
-    it 'returns a Kafka::BrokerWrapper' do
-      kafka_broker = subject.kafka_broker
-      expect(kafka_broker).to be_an_instance_of(KafkaCommand::BrokerWrapper)
-      expect(kafka_broker.port).to eq(port)
-      expect(kafka_broker.host).to eq(hostname)
-    end
-  end
-
-  describe '#connected?' do
+  describe '#connected' do
     context 'when connected' do
-      before do
-        allow_any_instance_of(KafkaCommand::BrokerWrapper).to receive(:connected?).and_return(true)
-      end
-
       it 'returns true' do
         expect(subject.connected?).to eq(true)
       end
     end
 
-    context 'not connected' do
+    context 'when not connected' do
       before do
-        allow_any_instance_of(KafkaCommand::BrokerWrapper).to receive(:connected?).and_return(false)
+        allow(subject.broker).to receive(:api_versions).and_raise(Kafka::ConnectionError)
       end
 
       it 'returns false' do
         expect(subject.connected?).to eq(false)
       end
+    end
+  end
+
+  context 'forwarding' do
+    describe '#port' do
+      it 'forwards port to the Kafka::Broker' do
+        expect_any_instance_of(Kafka::Broker).to receive(:port)
+        subject.port
+      end
+
+      it 'returns the port' do
+        expect(subject.port).to eq(9092)
+      end
+    end
+
+    describe '#host' do
+      it 'forwards host to the Kafka::Broker' do
+        expect(subject.broker).to receive(:host)
+        subject.host
+      end
+
+      it 'returns the host' do
+        expect(subject.host).to eq('localhost')
+      end
+    end
+
+    describe '#node_id' do
+      it 'forwards node_id to the Kafka::Broker' do
+        expect(subject.broker).to receive(:node_id)
+        subject.node_id
+      end
+
+      it 'returns the node_id' do
+        expect(subject.node_id).to eq(subject.broker.node_id)
+      end
+    end
+
+    describe '#fetch_metadata' do
+      it 'forwards fetch_metdata to the Kafka::Broker' do
+        expect(subject.broker).to receive(:fetch_metadata).and_call_original
+        subject.fetch_metadata
+      end
+
+      it 'returns an instance of Kafka::Protocol::MetadataResponse' do
+        expect(subject.fetch_metadata).to be_an_instance_of(Kafka::Protocol::MetadataResponse)
+      end
+    end
+  end
+
+  describe '#host_with_port' do
+    it 'returns the host and port combination' do
+      expect(subject.hostname).to eq(hostname)
     end
   end
 end
