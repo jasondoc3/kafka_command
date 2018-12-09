@@ -1,15 +1,12 @@
-require 'app/wrappers/kafka_command/client_wrapper'
+require 'app/models/kafka_command/cluster'
+require 'app/models/kafka_command/consumer_group'
 
-RSpec.describe KafkaCommand::ConsumerGroupWrapper do
+RSpec.describe KafkaCommand::ConsumerGroup do
   let(:group_id) { "test-group-#{SecureRandom.hex(24)}" }
   let(:topic_name) { "test-topic-#{SecureRandom.hex(24)}" }
   let(:num_partitions) { 5 }
   let(:group) do
-    KafkaCommand::ClientWrapper
-      .new(brokers: ['localhost:9092'])
-      .cluster
-      .groups
-      .find { |g| g.group_id == group_id }
+    KafkaCommand::Cluster.all.first.groups.find { |g| g.group_id == group_id }
   end
 
   before { create_topic(topic_name, num_partitions: num_partitions) }
@@ -17,11 +14,11 @@ RSpec.describe KafkaCommand::ConsumerGroupWrapper do
 
   describe '#new' do
     describe 'running' do
-      it 'initializes a stable Kafka::ConsumerGroupWrapper with group_id, members, and state' do
+      it 'initializes a stable Kafka::ConsumerGroup with group_id, members, and state' do
         run_consumer_group(topic_name, group_id) do
           expect(group.group_id).to eq(group_id)
           expect(group.members).to_not be_empty
-          expect(group.members.sample).to be_an_instance_of(KafkaCommand::GroupMemberWrapper)
+          expect(group.members.sample).to be_an_instance_of(KafkaCommand::GroupMember)
           expect(group.state).to eq('Stable')
         end
       end
@@ -30,7 +27,7 @@ RSpec.describe KafkaCommand::ConsumerGroupWrapper do
     describe 'dormant' do
       before { run_consumer_group(topic_name, group_id) }
 
-      it 'initializes an empty Kafka::ConsumerGroupWrapper with group_id, members, and state' do
+      it 'initializes an empty Kafka::ConsumerGroup with group_id, members, and state' do
         expect(group.group_id).to eq(group_id)
         expect(group.members).to be_empty
         expect(group.state).to eq('Empty')
@@ -110,10 +107,10 @@ RSpec.describe KafkaCommand::ConsumerGroupWrapper do
     let(:partitions) { group.partitions_for(topic_name) }
     let(:total_lag)  { partitions.map(&:lag).compact.reduce(:+) }
 
-    it 'returns ConsumerGroupPartitionWrappers' do
+    it 'returns ConsumerGroupPartitions' do
       run_consumer_group(topic_name, group_id) do
         expect(partitions.count).to eq(num_partitions)
-        expect(partitions.sample).to be_an_instance_of(KafkaCommand::ConsumerGroupPartitionWrapper)
+        expect(partitions.sample).to be_an_instance_of(KafkaCommand::ConsumerGroupPartition)
         expect(partitions.sample.group_id).to eq(group_id)
         expect(partitions.sample.topic_name).to eq(topic_name)
       end
