@@ -7,8 +7,7 @@ module KafkaCommand
     @config
   end
 
-  class ConfigurationError < StandardError; end
-
+  class ConfigurationError < StandardError; end 
   class Configuration
     HOST_REGEX = /[^\:]+:[0-9]{1,5}/
     attr_reader :config_hash, :clusters, :errors
@@ -71,7 +70,7 @@ module KafkaCommand
           end
         end
 
-        if cluster['seed_brokers'].blank?
+        if cluster['seed_brokers']&.compact&.blank?
           errors << 'Must specify a list of seed brokers'
           return
         end
@@ -85,7 +84,7 @@ module KafkaCommand
       end
 
       def validate_broker(broker)
-        unless broker.match?(HOST_REGEX)
+        unless broker&.match?(HOST_REGEX)
           errors << 'Broker must be a valid host/portname combination'
         end
       end
