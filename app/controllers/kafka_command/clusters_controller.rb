@@ -40,20 +40,5 @@ module KafkaCommand
     def cluster_params_keys
       [:name, :description, :version]
     end
-
-    def check_hosts
-      if params[:hosts].blank?
-        error_msg = 'Please specify a list of hosts'
-        render_error(error_msg, status: 422, flash: { error: error_msg })
-        return
-      else
-        hosts = params[:hosts].split(',')
-
-        if hosts.any? { |h| !h.match?(Broker::HOST_REGEX) }
-          render_error('Host must be a valid hostname port combination', status: 422, flash: { error: error_msg })
-          return
-        end
-      end
-    end
   end
 end

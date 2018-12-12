@@ -7,7 +7,8 @@ module KafkaCommand
 
     before_action do
       if KafkaCommand.config.invalid?
-        render json: "KafkaCommand config invalid #{KafkaCommand.config.errors}"
+        flash[:error] = KafkaCommand.config.errors.join("\n")
+        render 'kafka_command/configuration_error'
       end
     end
 
