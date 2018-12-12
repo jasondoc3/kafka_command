@@ -1,6 +1,7 @@
 require 'fast_helper'
 require 'securerandom'
 require 'kafka'
+require 'lib/kafka_command/configuration'
 require 'config/initializers/kafka'
 require 'app/models/kafka_command/client'
 require 'app/models/kafka_command/cluster'
@@ -10,13 +11,11 @@ require 'app/models/kafka_command/partition'
 require 'app/models/kafka_command/consumer_group_partition'
 require 'app/models/kafka_command/group_member'
 
-module KafkaCommand
-  def self.config
-    @config ||= YAML.load(File.read('spec/dummy/config/kafka_command.yml'))['test']
-  end
-end
-
 $LOAD_PATH.unshift(File.expand_path('.'))
+ENV['RAILS_ENV'] = 'test'
+
+KafkaCommand.config = YAML.load(File.read('spec/dummy/config/kafka_command.yml'))
+KafkaCommand.config.validate!
 
 begin
   Kafka.new(seed_brokers: ['localhost:9092']).topics

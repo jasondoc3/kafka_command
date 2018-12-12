@@ -1,4 +1,5 @@
 require 'app/models/kafka_command/cluster'
+require 'app/models/kafka_command/broker'
 
 RSpec.describe KafkaCommand::Cluster do
   let(:cluster)    { described_class.all.first }
@@ -26,13 +27,14 @@ RSpec.describe KafkaCommand::Cluster do
     context 'sasl config' do
       before do
         allow(KafkaCommand).to receive(:config).and_return(
-          YAML.load(File.read('spec/dummy/config/kafka_command_sasl.yml'))['test']
+          KafkaCommand::Configuration.new(YAML.load(File.read('spec/dummy/config/kafka_command_sasl.yml')))
         )
       end
 
       it 'creates a kafka client with brokers, client_id, and sasl params' do
         expect(KafkaCommand::Client).to receive(:new).with(
-          brokers: brokers, client_id: 'sasl_test_cluster',
+          brokers: brokers,
+          client_id: 'sasl_test_cluster',
           sasl_scram_username: 'test',
           sasl_scram_password: 'test',
           sasl_scram_mechanism: 'sha256',
@@ -41,7 +43,6 @@ RSpec.describe KafkaCommand::Cluster do
 
         cluster
 
-        expect(cluster.ssl?).to eq(false)
         expect(cluster.sasl?).to eq(true)
       end
     end
@@ -49,7 +50,7 @@ RSpec.describe KafkaCommand::Cluster do
     context 'ssl' do
       before do
         allow(KafkaCommand).to receive(:config).and_return(
-          YAML.load(File.read('spec/dummy/config/kafka_command_ssl.yml'))['test']
+          KafkaCommand::Configuration.new(YAML.load(File.read('spec/dummy/config/kafka_command_ssl.yml')))
         )
       end
 

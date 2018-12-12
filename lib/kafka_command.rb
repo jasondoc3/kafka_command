@@ -1,8 +1,6 @@
 require "kafka_command/engine"
 require "kafka"
+require "kafka_command/configuration"
 
 module KafkaCommand
-  class << self
-    attr_accessor :config
-  end
 end

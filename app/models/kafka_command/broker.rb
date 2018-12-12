@@ -8,6 +8,7 @@ module KafkaCommand
     alias_method :kafka_broker_id, :node_id
     alias_method :hostname, :host
 
+
     def initialize(broker)
       @broker = broker
     end

@@ -1,3 +1,4 @@
+require 'app/models/kafka_command/broker'
 require 'app/models/kafka_command/cluster'
 require 'app/models/kafka_command/topic'
 
