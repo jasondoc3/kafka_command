@@ -11,7 +11,7 @@ module KafkaCommand
 
   class Configuration
     HOST_REGEX = /[^\:]+:[0-9]{1,5}/
-    attr_reader :config_hash, :clusters
+    attr_reader :config_hash, :clusters, :errors
 
     CLUSTER_KEYS = %w(
       protocol
@@ -30,20 +30,31 @@ module KafkaCommand
 
     def initialize(config_hash)
       @config_hash = config_hash[ENV['RAILS_ENV']]
-      raise ConfigurationError, 'No config specified for environment' if @config_hash.blank?
+      @errors = []
 
-      @clusters = @config_hash['clusters']
-      validate!
+      if @config_hash.blank?
+        errors << 'No config specified for environment'
+      else
+        @clusters = @config_hash['clusters']
+        validate!
+      end
     end
 
     def validate!
       validate_clusters
     end
 
+    def invalid?
+      errors.any?
+    end
+
     private
 
       def validate_clusters
-        raise ConfigurationError, 'Clusters must be provided' if clusters.blank?
+        if clusters.blank?
+          errors << 'Cluster must be provided'
+          return
+        end
 
         clusters.each do |_, cluster_hash|
           validate_cluster(cluster_hash)
@@ -52,10 +63,16 @@ module KafkaCommand
 
       def validate_cluster(cluster)
         cluster.keys.each do |key|
-          raise ConfigurationError, "Invalid cluster option, #{key}" unless CLUSTER_KEYS.include?(key)
+          unless CLUSTER_KEYS.include?(key)
+            errors << "Invalid cluster option, #{key}"
+            return
+          end
         end
 
-        raise ConfigurationError, 'Must specify a list of seed brokers' if cluster['seed_brokers'].blank?
+        if cluster['seed_brokers'].blank?
+          errors << 'Must specify a list of seed brokers'
+          return
+        end
 
         cluster['seed_brokers'].each do |broker|
           validate_broker(broker)
@@ -67,23 +84,23 @@ module KafkaCommand
 
       def validate_broker(broker)
         unless broker.match?(HOST_REGEX)
-          raise ConfigurationError, 'Broker must be a valid host/portname combination'
+          errors << 'Broker must be a valid host/portname combination'
         end
       end
 
       def validate_ssl(cluster)
         if client_cert(cluster).present? && client_cert_key(cluster).blank?
-          raise ConfigurationError, 'KafkaCommand initialized with `ssl_client_cert` but no `ssl_client_cert_key`. Please provide both.'
+          errors << 'KafkaCommand initialized with `ssl_client_cert` but no `ssl_client_cert_key`. Please provide both.'
         elsif client_cert(cluster).blank? && client_cert_key(cluster).present?
-          raise ConfigurationError, 'KafkaCommand initialized with `ssl_client_cert_key`, but no `ssl_client_cert`. Please provide both.'
+          errors << 'KafkaCommand initialized with `ssl_client_cert_key`, but no `ssl_client_cert`. Please provide both.'
         end
       end
 
       def validate_sasl(cluster)
         if cluster['sasl_scram_username'].present? && cluster['sasl_scram_password'].blank?
-          raise ConfigurationError, 'KafkaCommand initialized with `sasl_scram_username` but no `sasl_scram_password`. Please provide both.'
+          errors << 'KafkaCommand initialized with `sasl_scram_username` but no `sasl_scram_password`. Please provide both.'
         elsif cluster['sasl_scram_username'].blank? && cluster['sasl_scram_password'].present?
-          raise ConfigurationError, 'KafkaCommand initialized with `sasl_scram_password` but no `sasl_scram_username`. Please provide both.'
+          errors << 'KafkaCommand initialized with `sasl_scram_password` but no `sasl_scram_username`. Please provide both.'
         end
       end
 
