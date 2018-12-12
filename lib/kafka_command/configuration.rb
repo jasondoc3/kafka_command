@@ -42,6 +42,8 @@ module KafkaCommand
 
     def validate!
       validate_clusters
+    rescue => e
+      errors << 'Kafka Command is configured incorrectly'
     end
 
     def invalid?

@@ -5,6 +5,12 @@ module KafkaCommand
     rescue_from Kafka::ConnectionError, with: :kafka_connection_error
     rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
 
+    before_action do
+      if KafkaCommand.config.invalid?
+        render json: "KafkaCommand config invalid #{KafkaCommand.config.errors}"
+      end
+    end
+
     protected
 
     def record_not_found
