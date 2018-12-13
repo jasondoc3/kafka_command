@@ -15,7 +15,13 @@ jobs:
         KAFKA_DELETE_TOPIC_ENABLE: true
     steps:
       - checkout
+      - restore_cache:
+          key:  bundle-{{ checksum "Gemfile.lock" }}
       - run: bundle install
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/bundle
       - run: bundle exec rspec
 
 workflows:
