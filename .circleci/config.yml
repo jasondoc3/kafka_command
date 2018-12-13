@@ -48,9 +48,59 @@ jobs:
             - vendor/bundle
       - run: bundle exec rspec
 
+  kafka-2.0:
+    environment:
+      RAILS_ENV: test
+    docker:
+    - image: circleci/ruby:2.5.1
+    - image: wurstmeister/zookeeper
+    - image: wurstmeister/kafka:2.11-2.0.1
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9092
+        KAFKA_PORT: 9092
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    steps:
+      - checkout
+      - restore_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+      - run: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle
+      - save_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: bundle exec rspec
+
+  kafka-2.1:
+    environment:
+      RAILS_ENV: test
+    docker:
+    - image: circleci/ruby:2.5.1
+    - image: wurstmeister/zookeeper
+    - image: wurstmeister/kafka:2.12-2.1.0
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9092
+        KAFKA_PORT: 9092
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    steps:
+      - checkout
+      - restore_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+      - run: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle
+      - save_cache:
+          key: circlev2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run: bundle exec rspec
+
 workflows:
   version: 2
   test:
     jobs:
       - kafka-1.0
       - kafka-1.1
+      - kafka-2.0
+      - kafka-2.1
