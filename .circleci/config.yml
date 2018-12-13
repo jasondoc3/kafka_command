@@ -17,3 +17,9 @@ jobs:
       - checkout
       - run: bundle install
       - run: bundle exec rspec
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - kafka-0.11
