@@ -1,5 +1,29 @@
 version: 2
 jobs:
+  kafka-0.10:
+    environment:
+      RAILS_ENV: test
+    docker:
+    - image: circleci/ruby:2.5.1
+    - image: wurstmeister/zookeeper
+    - image: wurstmeister/kafka:2.11-0.10.2.2
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9092
+        KAFKA_PORT: 9092
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: true
+    steps:
+      - checkout
+      - restore_cache:
+          key:  bundle-{{ checksum "Gemfile.lock" }}
+      - run: bundle install
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile.lock" }}
+          paths:
+            - ~/bundle
+      - run: bundle exec rspec
+
   kafka-0.11:
     environment:
       RAILS_ENV: test
@@ -28,4 +52,5 @@ workflows:
   version: 2
   test:
     jobs:
+      - kafka-0.10
       - kafka-0.11
