@@ -7,10 +7,10 @@ module KafkaCommand
     @config
   end
 
-  class ConfigurationError < StandardError; end 
+  class ConfigurationError < StandardError; end
   class Configuration
     HOST_REGEX = /[^\:]+:[0-9]{1,5}/
-    attr_reader :config_hash, :clusters, :errors
+    attr_reader :config, :clusters, :errors
 
     CLUSTER_KEYS = %w(
       protocol
@@ -28,28 +28,30 @@ module KafkaCommand
     )
 
     def initialize(config_hash)
-      @config_hash = config_hash[ENV['RAILS_ENV']]
+      @config = config_hash[ENV['RAILS_ENV']]
+      @clusters = config['clusters'] if config.present?
+      @errors = []
+    end
+
+    def valid?
       @errors = []
 
-      if @config_hash.blank?
+      if config.blank?
         errors << 'No config specified for environment'
-      else
-        @clusters = @config_hash['clusters']
-        validate!
+        return false
       end
-    end
 
-    def validate!
-      validate_clusters
-    rescue => e
-      errors << 'Kafka Command is configured incorrectly'
-    end
-
-    def invalid?
-      errors.any?
+      validate!
+      errors.none?
     end
 
     private
+
+      def validate!
+        validate_clusters
+      rescue => e
+        errors << 'Kafka Command is configured incorrectly'
+      end
 
       def validate_clusters
         if clusters.blank?
@@ -70,7 +72,7 @@ module KafkaCommand
           end
         end
 
-        if cluster['seed_brokers']&.compact&.blank?
+        if cluster['seed_brokers']&.compact.blank?
           errors << 'Must specify a list of seed brokers'
           return
         end
@@ -85,40 +87,44 @@ module KafkaCommand
 
       def validate_broker(broker)
         unless broker&.match?(HOST_REGEX)
-          errors << 'Broker must be a valid host/portname combination'
+          errors << 'Broker must be a valid host/port combination'
         end
       end
 
       def validate_ssl(cluster)
-        if client_cert(cluster).present? && client_cert_key(cluster).blank?
-          errors << 'KafkaCommand initialized with `ssl_client_cert` but no `ssl_client_cert_key`. Please provide both.'
-        elsif client_cert(cluster).blank? && client_cert_key(cluster).present?
-          errors << 'KafkaCommand initialized with `ssl_client_cert_key`, but no `ssl_client_cert`. Please provide both.'
+        ca_cert         = certificate_authority(cluster)
+        client_cert     = client_certificate(cluster)
+        client_cert_key = client_certificate_key(cluster)
+
+        if ca_cert
+          if client_cert && !client_cert_key
+            errors << 'Initialized with `ssl_client_cert` but no `ssl_client_cert_key`. Please provide both.'
+          elsif !client_cert && client_cert_key
+            errors << 'Initialized with `ssl_client_cert_key`, but no `ssl_client_cert`. Please provide both.'
+          end
+        elsif client_cert || client_cert_key
+          errors << 'Cannot provide client certificate/key without a certificate authority'
         end
       end
 
       def validate_sasl(cluster)
         if cluster['sasl_scram_username'].present? && cluster['sasl_scram_password'].blank?
-          errors << 'KafkaCommand initialized with `sasl_scram_username` but no `sasl_scram_password`. Please provide both.'
+          errors << 'Initialized with `sasl_scram_username` but no `sasl_scram_password`. Please provide both.'
         elsif cluster['sasl_scram_username'].blank? && cluster['sasl_scram_password'].present?
-          errors << 'KafkaCommand initialized with `sasl_scram_password` but no `sasl_scram_username`. Please provide both.'
+          errors << 'Initialized with `sasl_scram_password` but no `sasl_scram_username`. Please provide both.'
         end
       end
 
-      def client_cert(cluster)
-        cluster['ssl_client_cert'] ||
-
-        if cluster['ssl_client_cert_file_path'] && File.exists?(cluster['ssl_client_cert_file_path'])
-          cluster['ssl_client_cert_file_path']
-        end
+      def certificate_authority(cluster)
+        cluster['ssl_ca_cert'] || cluster['ssl_ca_cert_file_path']
       end
 
-      def client_cert_key(cluster)
-        cluster['ssl_client_cert_key']
+      def client_certificate(cluster)
+        cluster['ssl_client_cert'] || cluster['ssl_client_cert_file_path']
+      end
 
-        if cluster['ssl_client_cert_key_file_path'] && File.exists?(cluster['ssl_client_cert_key_file_path'])
-          cluster['ssl_client_cert_key_file_path']
-        end
+      def client_certificate_key(cluster)
+        cluster['ssl_client_cert_key'] || cluster['ssl_client_cert_key_file_path']
       end
   end
 end

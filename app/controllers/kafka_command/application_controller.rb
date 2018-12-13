@@ -6,7 +6,7 @@ module KafkaCommand
     rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
 
     before_action do
-      if KafkaCommand.config.invalid?
+      unless KafkaCommand.config.valid?
         flash[:error] = KafkaCommand.config.errors.join("\n")
         render 'kafka_command/configuration_error'
       end

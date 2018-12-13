@@ -15,7 +15,7 @@ $LOAD_PATH.unshift(File.expand_path('.'))
 ENV['RAILS_ENV'] = 'test'
 
 KafkaCommand.config = YAML.load(File.read('spec/dummy/config/kafka_command.yml'))
-KafkaCommand.config.validate!
+KafkaCommand.config.valid?
 
 begin
   Kafka.new(seed_brokers: ['localhost:9092']).topics

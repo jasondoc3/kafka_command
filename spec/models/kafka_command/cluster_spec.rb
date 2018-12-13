@@ -25,9 +25,11 @@ RSpec.describe KafkaCommand::Cluster do
     end
 
     context 'sasl config' do
+      let(:sasl_config) { File.read('spec/fixtures/files/kafka_command_sasl.yml') }
+
       before do
         allow(KafkaCommand).to receive(:config).and_return(
-          KafkaCommand::Configuration.new(YAML.load(File.read('spec/dummy/config/kafka_command_sasl.yml')))
+          KafkaCommand::Configuration.new(YAML.load(sasl_config))
         )
       end
 
@@ -48,9 +50,11 @@ RSpec.describe KafkaCommand::Cluster do
     end
 
     context 'ssl' do
+      let(:ssl_config) { File.read('spec/fixtures/files/kafka_command_ssl.yml') }
+
       before do
         allow(KafkaCommand).to receive(:config).and_return(
-          KafkaCommand::Configuration.new(YAML.load(File.read('spec/dummy/config/kafka_command_ssl.yml')))
+          KafkaCommand::Configuration.new(YAML.load(ssl_config))
         )
       end
 
