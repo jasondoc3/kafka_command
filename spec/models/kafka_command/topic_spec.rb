@@ -38,6 +38,18 @@ RSpec.describe KafkaCommand::Topic do
   end
 
   describe '#set_partitions!' do
+    describe 'api not supported' do
+      before do
+        allow_any_instance_of(KafkaCommand::Client).to receive(:supports_api?).and_return(false)
+      end
+
+      it 'raises' do
+        expect do
+          topic.set_partitions!(num_partitions + 1)
+        end.to raise_error(KafkaCommand::UnsupportedApiError)
+      end
+    end
+
     describe 'num_partitions > current num_partitions' do
       it 'increases partitions' do
         topic.set_partitions!(num_partitions + 1)

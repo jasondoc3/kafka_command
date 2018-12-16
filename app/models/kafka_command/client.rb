@@ -15,6 +15,7 @@ module KafkaCommand
       resolve_offset
       resolve_offsets
       describe_group
+      supports_api?
     ).freeze
 
     attr_reader :cluster, :client
@@ -22,7 +23,7 @@ module KafkaCommand
     def_delegators :@cluster, *CLUSTER_METHOD_DELGATIONS
 
     def initialize(brokers:, **kwargs)
-      @client = Kafka.new(brokers, **kwargs)
+      @client  = Kafka.new(brokers, **kwargs)
       @cluster = @client.cluster
     end
 

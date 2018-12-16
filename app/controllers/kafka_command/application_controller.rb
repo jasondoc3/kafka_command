@@ -6,6 +6,7 @@ module KafkaCommand
 
     rescue_from Kafka::ConnectionError, with: :kafka_connection_error
     rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
+    rescue_from UnsupportedApiError, with: :unsupported_api_error
 
     before_action do
       unless KafkaCommand.config.valid?
@@ -15,6 +16,10 @@ module KafkaCommand
     end
 
     protected
+
+      def unsupported_api_error(exception)
+        render_error(exception.message, status: 422, flash: { error: exception.message })
+      end
 
       def record_not_found
         render_error('Not Found', status: :not_found)

@@ -47,6 +47,10 @@ module KafkaCommand
     end
 
     def set_partitions!(num_partitions)
+      unless @client.supports_api?(Kafka::Protocol::CREATE_PARTITIONS_API)
+        raise UnsupportedApiError, 'This version of Kafka does not support the create partitions API.'
+      end
+
       @client.create_partitions_for(
         @name,
         num_partitions: num_partitions,
