@@ -23,7 +23,7 @@ RSpec.describe KafkaCommand::Client do
       expect(subject.brokers.count).to eq(1)
       expect(subject.brokers.first).to be_an_instance_of(KafkaCommand::Broker)
       expect(subject.brokers.first.host).to eq('localhost')
-      expect(subject.brokers.first.port).to eq(9092)
+      expect(subject.brokers.map(&:port)).to include(9092)
     end
   end
 

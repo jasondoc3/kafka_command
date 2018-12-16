@@ -33,7 +33,7 @@ module KafkaHelpers
   end
 
   def kafka_client
-    Kafka.new(seed_brokers: ['localhost:9092'])
+    Kafka.new(seed_brokers: ENV['SEED_BROKERS'].split(','))
   end
 
   def create_topic(topic_name, **kwargs)

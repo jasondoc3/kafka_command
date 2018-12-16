@@ -16,7 +16,6 @@ jobs:
             - vendor/bundle
       - run: bundle exec rubocop
 
-
   kafka-1.0:
     environment:
       RAILS_ENV: test
@@ -28,6 +27,20 @@ jobs:
         KAFKA_ADVERTISED_HOST_NAME: localhost
         KAFKA_ADVERTISED_PORT: 9092
         KAFKA_PORT: 9092
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-1.0.2
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9093
+        KAFKA_PORT: 9093
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-1.0.2
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9094
+        KAFKA_PORT: 9094
         KAFKA_ZOOKEEPER_CONNECT: localhost:2181
         KAFKA_DELETE_TOPIC_ENABLE: 'true'
     steps:
@@ -54,6 +67,20 @@ jobs:
         KAFKA_PORT: 9092
         KAFKA_ZOOKEEPER_CONNECT: localhost:2181
         KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-1.1.1
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9093
+        KAFKA_PORT: 9093
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-1.1.1
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9094
+        KAFKA_PORT: 9094
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
     steps:
       - checkout
       - restore_cache:
@@ -78,6 +105,20 @@ jobs:
         KAFKA_PORT: 9092
         KAFKA_ZOOKEEPER_CONNECT: localhost:2181
         KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-2.0.1
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9093
+        KAFKA_PORT: 9093
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.11-2.0.1
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9094
+        KAFKA_PORT: 9094
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
     steps:
       - checkout
       - restore_cache:
@@ -100,6 +141,20 @@ jobs:
         KAFKA_ADVERTISED_HOST_NAME: localhost
         KAFKA_ADVERTISED_PORT: 9092
         KAFKA_PORT: 9092
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.12-2.1.0
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9093
+        KAFKA_PORT: 9093
+        KAFKA_ZOOKEEPER_CONNECT: localhost:2181
+        KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    - image: wurstmeister/kafka:2.12-2.1.0
+      environment:
+        KAFKA_ADVERTISED_HOST_NAME: localhost
+        KAFKA_ADVERTISED_PORT: 9094
+        KAFKA_PORT: 9094
         KAFKA_ZOOKEEPER_CONNECT: localhost:2181
         KAFKA_DELETE_TOPIC_ENABLE: 'true'
     steps:

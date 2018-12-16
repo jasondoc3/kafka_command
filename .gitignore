@@ -30,6 +30,8 @@
 # ignore spec examples
 /spec/examples.txt
 
+.env.local
+
 spec/dummy/db/*.sqlite3
 spec/dummy/db/*.sqlite3-journal
 spec/dummy/db/log/*.log

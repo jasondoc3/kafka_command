@@ -3,7 +3,7 @@
 RSpec.describe KafkaCommand::Broker do
   let(:hostname) { 'localhost' }
   let(:port)     { 9092 }
-  subject        { KafkaCommand::Cluster.all.first.brokers.first }
+  subject        { KafkaCommand::Cluster.all.first.brokers.find { |b| b.port == port } }
 
   describe '#new' do
     it 'wraps a Kafka::Broker' do
@@ -32,12 +32,12 @@ RSpec.describe KafkaCommand::Broker do
   context 'forwarding' do
     describe '#port' do
       it 'forwards port to the Kafka::Broker' do
-        expect_any_instance_of(Kafka::Broker).to receive(:port)
+        expect_any_instance_of(Kafka::Broker).to receive(:port).at_least(:once).and_call_original
         subject.port
       end
 
       it 'returns the port' do
-        expect(subject.port).to eq(9092)
+        expect(subject.port).to eq(port)
       end
     end
 
