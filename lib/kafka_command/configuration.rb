@@ -76,15 +76,15 @@ module KafkaCommand
           end
         end
 
-        if cluster['seed_brokers']&.compact.blank?
+        seed_brokers = cluster['seed_brokers']
+        seed_brokers = seed_brokers.split(',') if seed_brokers.is_a?(String)
+
+        if seed_brokers&.compact.blank?
           errors << 'Must specify a list of seed brokers'
           return
         end
 
-        cluster['seed_brokers'].each do |broker|
-          validate_broker(broker)
-        end
-
+        seed_brokers.each(&method(:validate_broker))
         validate_ssl(cluster)
         validate_sasl(cluster)
       end

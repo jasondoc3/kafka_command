@@ -21,6 +21,10 @@ $LOAD_PATH.unshift(File.expand_path('.'))
 
 require 'pry'
 require 'json'
+require 'dotenv'
+
+Dotenv.load
+
 require 'support/kafka_helper'
 
 RSpec.configure do |config|

@@ -6,8 +6,7 @@ test:
       version: 1.0.0
       socket_timeout: 2
       connect_timeout: 2
-      seed_brokers:
-        - localhost:9092
+      seed_brokers: <%= ENV['SEED_BROKERS'] %>
 development:
   clusters:
     test_cluster:
@@ -16,5 +15,4 @@ development:
       version: 1.0.0
       socket_timeout: 2
       connect_timeout: 2
-      seed_brokers:
-        - localhost:9092
+      seed_brokers: <%= ENV['SEED_BROKERS'] %>

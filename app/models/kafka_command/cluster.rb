@@ -10,13 +10,9 @@ module KafkaCommand
     attr_reader :client,
       :name,
       :description,
-      :seed_brokers,
       :protocol,
       :sasl_scram_username,
       :sasl_scram_password,
-      :ssl_ca_cert,
-      :ssl_client_cert,
-      :ssl_client_cert_key,
       :version,
       :connect_timeout,
       :socket_timeout
@@ -136,6 +132,11 @@ module KafkaCommand
         if @ssl_client_cert_key_file_path && File.exists?(@ssl_client_cert_key_file_path)
           File.read(@ssl_client_cert_key_file_path).strip
         end
+      end
+
+      def seed_brokers
+        return @seed_brokers.split(',') if @seed_brokers.is_a?(String)
+        @seed_brokers
       end
 
       def initialize_client

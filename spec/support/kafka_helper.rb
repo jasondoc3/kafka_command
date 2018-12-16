@@ -17,7 +17,7 @@ require 'app/models/kafka_command/group_member'
 $LOAD_PATH.unshift(File.expand_path('.'))
 ENV['RAILS_ENV'] = 'test'
 
-KafkaCommand.config = YAML.load(File.read('spec/dummy/config/kafka_command.yml'))
+KafkaCommand.config = YAML.load(ERB.new(File.read('spec/dummy/config/kafka_command.yml')).result(binding))
 KafkaCommand.config.valid?
 
 begin
