@@ -4,8 +4,8 @@ module KafkaCommand
   class ConsumerGroup
     attr_reader :group_id
 
-    def initialize(group_id, cluster)
-      @cluster  = cluster
+    def initialize(group_id, client)
+      @client   = client
       @group_id = group_id
     end
 
@@ -22,7 +22,7 @@ module KafkaCommand
     end
 
     def partitions_for(topic_name)
-      topic = @cluster.find_topic(topic_name)
+      topic = @client.find_topic(topic_name)
       partition_lag = lag_for(topic.name)
 
       topic.partitions.map do |p|
@@ -58,13 +58,13 @@ module KafkaCommand
     def consumed_topics
       topic_names = members.flat_map(&:topic_names).uniq
 
-      @cluster.topics.select do |t|
+      @client.topics.select do |t|
         topic_names.include?(t.name)
       end
     end
 
     def coordinator
-      @coordinator ||= @cluster.get_group_coordinator(group_id: @group_id)
+      @coordinator ||= @client.get_group_coordinator(group_id: @group_id)
     end
 
     def group_metadata
@@ -84,7 +84,7 @@ module KafkaCommand
     private
 
       def lag_for(topic_name)
-        topic = @cluster.find_topic(topic_name)
+        topic = @client.find_topic(topic_name)
         topic_offsets = topic.offsets
         group_offsets = offsets_for(topic_name)
 
@@ -98,7 +98,7 @@ module KafkaCommand
       end
 
       def offsets_for(topic_name)
-        topic = @cluster.find_topic(topic_name)
+        topic = @client.find_topic(topic_name)
 
         offsets = coordinator.fetch_offsets(
           group_id: @group_id,
@@ -132,7 +132,7 @@ module KafkaCommand
       end
 
       def initialize_group_metadata
-        @cluster.describe_group(@group_id)
+        @client.describe_group(@group_id)
       end
 
       def clear_group_metadata!

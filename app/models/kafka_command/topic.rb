@@ -11,7 +11,7 @@ module KafkaCommand
 
     alias_method :id, :name
 
-    CLUSTER_API_TIMEOUT = 10
+    API_TIMEOUT = 10
     CONSUMER_OFFSET_TOPIC = '__consumer_offsets'
     DEFAULT_MAX_MESSAGE_BYTES = 1000012
     DEFAULT_RETENTION_MS = 604800000
@@ -22,18 +22,18 @@ module KafkaCommand
       retention.ms
     ].freeze
 
-    def initialize(topic_metadata, cluster)
-      @cluster        = cluster
+    def initialize(topic_metadata, client)
+      @client         = client
       @topic_metadata = topic_metadata
       initialize_from_metadata
     end
 
     def brokers_spread
-      ((replication_factor.to_f / @cluster.brokers.count.to_f) * 100).round
+      ((replication_factor.to_f / @client.brokers.count.to_f) * 100).round
     end
 
     def destroy
-      @cluster.delete_topic(@name, timeout: CLUSTER_API_TIMEOUT)
+      @client.delete_topic(@name, timeout: API_TIMEOUT)
     end
 
     def set_configs!(max_message_bytes: nil, retention_ms: nil, retention_bytes: nil)
@@ -42,32 +42,32 @@ module KafkaCommand
       config['retention.ms']      = retention_ms      if retention_ms
       config['retention.bytes']   = retention_bytes   if retention_bytes
 
-      @cluster.alter_topic(@name, config) unless config.empty?
+      @client.alter_topic(@name, config) unless config.empty?
       refresh!
     end
 
     def set_partitions!(num_partitions)
-      @cluster.create_partitions_for(
+      @client.create_partitions_for(
         @name,
         num_partitions: num_partitions,
-        timeout: CLUSTER_API_TIMEOUT
+        timeout: API_TIMEOUT
       )
 
       refresh!
     end
 
     def refresh!
-      @topic_metadata = @cluster.fetch_metadata(topics: [@name]).topics.first
+      @topic_metadata = @client.fetch_metadata(topics: [@name]).topics.first
       initialize_from_metadata
     end
 
     def offset_for(partition)
-      @cluster.resolve_offset(@name, partition.partition_id, :latest)
+      @client.resolve_offset(@name, partition.partition_id, :latest)
     end
 
     def offsets(partition_ids = nil)
       partition_ids ||= @partitions.map(&:partition_id)
-      @cluster.resolve_offsets(@name, partition_ids, :latest)
+      @client.resolve_offsets(@name, partition_ids, :latest)
     end
 
     def offset_sum
@@ -79,7 +79,7 @@ module KafkaCommand
     end
 
     def groups
-      @cluster.groups.select do |g|
+      @client.groups.select do |g|
         g.consumed_topics.include?(self)
       end
     end
@@ -126,7 +126,7 @@ module KafkaCommand
     private
 
       def describe
-        @cluster.describe_topic(@name, TOPIC_CONFIGS)
+        @client.describe_topic(@name, TOPIC_CONFIGS)
       end
 
       def initialize_from_metadata
