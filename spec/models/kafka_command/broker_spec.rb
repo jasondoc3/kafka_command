@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/broker'
-
 RSpec.describe KafkaCommand::Broker do
   let(:hostname) { 'localhost' }
   let(:port)     { 9092 }

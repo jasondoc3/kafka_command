@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/cluster'
-require 'app/models/kafka_command/consumer_group'
-
 RSpec.describe KafkaCommand::ConsumerGroup do
   let(:group_id) { "test-group-#{SecureRandom.hex(24)}" }
   let(:topic_name) { "test-topic-#{SecureRandom.hex(24)}" }

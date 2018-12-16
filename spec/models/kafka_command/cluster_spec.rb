@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/cluster'
-require 'app/models/kafka_command/broker'
-
 RSpec.describe KafkaCommand::Cluster do
   let(:cluster)    { described_class.all.first }
   let(:topic_name) { SecureRandom.hex(12) }

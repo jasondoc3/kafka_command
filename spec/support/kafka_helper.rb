@@ -7,6 +7,7 @@ require 'lib/kafka_command/configuration'
 require 'lib/kafka_command/errors'
 require 'config/initializers/kafka'
 require 'app/models/kafka_command/client'
+require 'app/models/kafka_command/broker'
 require 'app/models/kafka_command/cluster'
 require 'app/models/kafka_command/topic'
 require 'app/models/kafka_command/consumer_group'
@@ -17,13 +18,12 @@ require 'app/models/kafka_command/group_member'
 $LOAD_PATH.unshift(File.expand_path('.'))
 ENV['RAILS_ENV'] = 'test'
 
-KafkaCommand.config = YAML.load(ERB.new(File.read('spec/dummy/config/kafka_command.yml')).result(binding))
-KafkaCommand.config.valid?
+KafkaCommand::Configuration.load!('spec/dummy/config/kafka_command.yml')
 
 begin
-  Kafka.new(seed_brokers: ['localhost:9092']).topics
+  KafkaCommand::Cluster.all.first.topics
 rescue => e
-  puts "#{e.class}. A Kafka broker running at localhost:9092 is required to run the specs."
+  puts "#{e.class}. An online kafka cluster is required to run the specs."
   exit(0)
 end
 

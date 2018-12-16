@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/cluster'
-require 'app/models/kafka_command/partition'
-
 RSpec.describe KafkaCommand::Partition do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   subject do

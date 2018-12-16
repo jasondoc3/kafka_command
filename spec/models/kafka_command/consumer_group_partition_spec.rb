@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/consumer_group_partition'
-
 RSpec.describe KafkaCommand::ConsumerGroupPartition do
   let(:group_id)     { "group-#{SecureRandom.hex(12)}" }
   let(:topic_name)   { "test-#{SecureRandom.hex(12)}" }

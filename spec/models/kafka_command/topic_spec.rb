@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'app/models/kafka_command/broker'
-require 'app/models/kafka_command/cluster'
-require 'app/models/kafka_command/topic'
-
 RSpec.describe KafkaCommand::Topic do
   let(:topic_name) { "test-#{SecureRandom.hex(12)}" }
   let(:num_partitions) { 5 }

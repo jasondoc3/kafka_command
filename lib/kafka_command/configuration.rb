@@ -49,12 +49,20 @@ module KafkaCommand
       errors.none?
     end
 
+    def invalid?
+      !valid?
+    end
+
     def self.parse_yaml(file_path)
       YAML.load(ERB.new(File.read(file_path)).result(binding))
     end
 
-    def load!(file_path)
+    def self.load!(file_path)
       KafkaCommand.config = parse_yaml(file_path)
+
+      if KafkaCommand.config.invalid?
+        puts "KafkaCommand improperly configured. #{KafkaCommand.config.errors}"
+      end
     end
 
     private
