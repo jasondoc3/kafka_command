@@ -27,6 +27,8 @@ module KafkaCommand
       ssl_client_cert_key_file_path
       sasl_scram_username
       sasl_scram_password
+      socket_timeout
+      connect_timeout
     )
 
     def initialize(config_hash)

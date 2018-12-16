@@ -17,7 +17,9 @@ module KafkaCommand
       :ssl_ca_cert,
       :ssl_client_cert,
       :ssl_client_cert_key,
-      :version
+      :version,
+      :connect_timeout,
+      :socket_timeout
 
     alias_method :id, :name
 
@@ -26,7 +28,8 @@ module KafkaCommand
     def initialize(name:, seed_brokers:, description: nil, protocol: DEFAULT_PROTOCOL,
                    sasl_scram_username: nil, sasl_scram_password: nil, ssl_ca_cert_file_path: nil,
                    ssl_client_cert_file_path: nil, ssl_client_cert_key_file_path: nil, version: nil,
-                   ssl_ca_cert: nil, ssl_client_cert: nil, ssl_client_cert_key: nil
+                   ssl_ca_cert: nil, ssl_client_cert: nil, ssl_client_cert_key: nil, connect_timeout: nil,
+                   socket_timeout: nil
                   )
       @name = name
       @seed_brokers = seed_brokers
@@ -40,6 +43,8 @@ module KafkaCommand
       @ssl_client_cert_key = ssl_client_cert_key
       @ssl_client_cert_key_file_path = ssl_client_cert_key_file_path
       @version = version
+      @connect_timeout = connect_timeout
+      @socket_timeout = socket_timeout
       @client = initialize_client
     end
 
@@ -93,6 +98,8 @@ module KafkaCommand
           seed_brokers: cluster_info['seed_brokers'],
           protocol: cluster_info['protocol'],
           description: cluster_info['description'],
+          connect_timeout: cluster_info['connect_timeout'],
+          socket_timeout: cluster_info['socket_timeout'],
           sasl_scram_username: cluster_info['sasl_scram_username'],
           sasl_scram_password: cluster_info['sasl_scram_password'],
           ssl_ca_cert: cluster_info['ssl_ca_cert'],
@@ -100,7 +107,7 @@ module KafkaCommand
           ssl_client_cert: cluster_info['ssl_client_cert'],
           ssl_client_cert_file_path: cluster_info['ssl_client_cert_file_path'],
           ssl_client_cert_key: cluster_info['ssl_client_cert_key'],
-          ssl_client_cert_key_file_path: cluster_info['ssl_client_cert_key_file_path']
+          ssl_client_cert_key_file_path: cluster_info['ssl_client_cert_key_file_path'],
         )
       end
     end
@@ -148,6 +155,9 @@ module KafkaCommand
             client_kwargs[:ssl_client_cert] = get_ssl_client_cert
             client_kwargs[:ssl_client_cert_key] = get_ssl_client_cert_key
           end
+
+          client_kwargs[:connect_timeout] = connect_timeout if connect_timeout
+          client_kwargs[:socket_timeout] = socket_timeout if socket_timeout
 
           Client.new(**client_kwargs)
         end

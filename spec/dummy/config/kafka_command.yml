@@ -4,5 +4,17 @@ test:
       protocol: PLAINTEXT
       description: 'Producing Things'
       version: 1.0.0
+      socket_timeout: 2
+      connect_timeout: 2
+      seed_brokers:
+        - localhost:9092
+development:
+  clusters:
+    test_cluster:
+      protocol: PLAINTEXT
+      description: 'Producing Things'
+      version: 1.0.0
+      socket_timeout: 2
+      connect_timeout: 2
       seed_brokers:
         - localhost:9092
