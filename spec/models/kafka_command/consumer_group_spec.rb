@@ -9,7 +9,6 @@ RSpec.describe KafkaCommand::ConsumerGroup do
   end
 
   before { create_topic(topic_name, num_partitions: num_partitions) }
-  after  { delete_topic(topic_name) }
 
   describe '#new' do
     describe 'running' do

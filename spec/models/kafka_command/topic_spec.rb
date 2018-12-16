@@ -15,7 +15,6 @@ RSpec.describe KafkaCommand::Topic do
   end
 
   before { create_topic(topic_name, **topic_creation_kwargs) }
-  after  { delete_topic(topic_name) if topic_exists?(topic_name) }
 
   describe '#new' do
     it 'initializes Kafka::Topic with name, replication_factor, and partitions' do

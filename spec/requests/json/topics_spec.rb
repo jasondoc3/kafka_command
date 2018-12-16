@@ -16,13 +16,11 @@ RSpec.describe 'Topics API', type: :request do
   end
 
   before { create_topic(topic_name, **create_topic_kwargs) }
-  after { delete_topic(topic_name) if topic_exists?(topic_name) }
 
   describe 'listing all topics' do
     let(:topic_two_name) { "test-#{SecureRandom.hex(12)}" }
 
     before { create_topic(topic_two_name) }
-    after  { delete_topic(topic_two_name) }
 
     it 'lists' do
       get "#{uri_base}/#{cluster.id}/topics.json"
@@ -88,8 +86,6 @@ RSpec.describe 'Topics API', type: :request do
         max_message_bytes: max_message_bytes
       }
     end
-
-    after { delete_topic(topic_two_name) if topic_exists?(topic_two_name) }
 
     it 'creates' do
       expect do

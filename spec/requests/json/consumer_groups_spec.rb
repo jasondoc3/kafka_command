@@ -44,7 +44,6 @@ RSpec.describe 'Consumer Groups Api', type: :request do
   end
 
   before { create_topic(topic_name) }
-  after { delete_topic(topic_name) }
 
   describe 'listing all consumer groups' do
     describe 'dormant' do

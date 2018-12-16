@@ -7,7 +7,6 @@ RSpec.describe KafkaCommand::Partition do
   end
 
   before { create_topic(topic_name) }
-  after  { delete_topic(topic_name) }
 
   describe '#new' do
     it 'contains a reference to a topic wrapper' do

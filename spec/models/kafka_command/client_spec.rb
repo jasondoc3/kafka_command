@@ -8,7 +8,6 @@ RSpec.describe KafkaCommand::Client do
   let(:group_id)   { "test-#{SecureRandom.hex(12)}" }
   let(:client)     { kafka_client }
 
-  after { delete_topic(topic_name) if topic_exists?(topic_name) }
   subject { described_class.new(brokers: brokers) }
 
   describe '#new' do

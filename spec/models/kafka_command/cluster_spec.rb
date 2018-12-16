@@ -4,8 +4,6 @@ RSpec.describe KafkaCommand::Cluster do
   let(:cluster)    { described_class.all.first }
   let(:topic_name) { SecureRandom.hex(12) }
 
-  after { delete_topic(topic_name) if topic_exists?(topic_name) }
-
   describe '#new' do
     let(:brokers) { ENV['SEED_BROKERS'].split(',') }
 

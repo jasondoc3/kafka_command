@@ -173,7 +173,7 @@ workflows:
   test:
     jobs:
       - lint
-      - kafka-1.0
-      - kafka-1.1
-      - kafka-2.0
+        # - kafka-1.0
+        #- kafka-1.1
+        #- kafka-2.0
       - kafka-2.1
