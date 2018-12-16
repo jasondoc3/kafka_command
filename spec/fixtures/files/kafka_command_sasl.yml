@@ -4,8 +4,7 @@ test:
       protocol: SASL/SCRAM
       description: 'Production Things With SASL'
       version: 1.0.0
-      seed_brokers:
-        - localhost:9092
+      seed_brokers: <%= ENV['SEED_BROKERS'] %>
       sasl_scram_username: test
       sasl_scram_password: test
       ssl_ca_cert_file_path: spec/dummy/config/ssl/test_ca_cert

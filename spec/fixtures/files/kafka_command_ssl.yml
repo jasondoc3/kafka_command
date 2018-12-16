@@ -4,8 +4,7 @@ test:
       protocol: SSL
       description: 'Production Things With SSL'
       version: 1.0.0
-      seed_brokers:
-        - localhost:9092
+      seed_brokers: <%= ENV['SEED_BROKERS'] %>
       ssl_ca_cert: test_ca_cert
       ssl_client_cert: test_client_cert
       ssl_client_cert_key: test_client_cert_key
