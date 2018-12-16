@@ -1,4 +1,4 @@
-<%= render partial: 'kafka_command/shared/title', locals: { title: @cluster.name, subtitle: @topic.name } %>
+<%= render partial: 'kafka_command/shared/title', locals: { title: @cluster.to_human, subtitle: @topic.name } %>
 
 <div class="columns">
   <div class="column is-three-quarters">
