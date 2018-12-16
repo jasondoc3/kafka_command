@@ -9,3 +9,4 @@ AllCops:
   TargetRubyVersion: 2.5.1
   Exclude:
     - 'spec/dummy/**/*'
+    - 'vendor/**/*'
