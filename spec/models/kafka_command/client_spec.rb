@@ -20,7 +20,7 @@ RSpec.describe KafkaCommand::Client do
   describe '#brokers' do
     it 'initializes brokers' do
       expect(subject.brokers).to_not be_empty
-      expect(subject.brokers.count).to eq(1)
+      expect(subject.brokers.count).to eq(ENV['SEED_BROKERS'].split(',').count)
       expect(subject.brokers.first).to be_an_instance_of(KafkaCommand::Broker)
       expect(subject.brokers.first.host).to eq('localhost')
       expect(subject.brokers.map(&:port)).to include(9092)

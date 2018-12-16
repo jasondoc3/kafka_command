@@ -77,7 +77,6 @@ RSpec.describe KafkaCommand::Cluster do
   end
 
   describe '#create_topic' do
-    let(:topic_name) { 'test_topic' }
     let(:kwargs) do
       { replication_factor: 1, num_partitions: 1 }
     end

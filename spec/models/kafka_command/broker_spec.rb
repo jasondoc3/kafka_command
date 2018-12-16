@@ -32,7 +32,7 @@ RSpec.describe KafkaCommand::Broker do
   context 'forwarding' do
     describe '#port' do
       it 'forwards port to the Kafka::Broker' do
-        expect_any_instance_of(Kafka::Broker).to receive(:port).at_least(:once).and_call_original
+        expect(subject.broker).to receive(:port)
         subject.port
       end
 

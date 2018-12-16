@@ -23,7 +23,7 @@ require 'pry'
 require 'json'
 require 'dotenv'
 
-Dotenv.load
+Dotenv.load('.env.test.local', '.env.test')
 
 require 'support/kafka_helper'
 
