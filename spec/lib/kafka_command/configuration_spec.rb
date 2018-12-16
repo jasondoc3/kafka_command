@@ -5,7 +5,7 @@ RSpec.describe KafkaCommand::Configuration do
 
   describe '#valid?' do
     context 'valid' do
-      let(:config_hash) { YAML.load(File.read('spec/dummy/config/kafka_command.yml')) }
+      let(:config_hash) { described_class.parse_yaml('spec/dummy/config/kafka_command.yml') }
 
       it 'returns true' do
         expect(subject.valid?).to eq(true)
@@ -14,7 +14,7 @@ RSpec.describe KafkaCommand::Configuration do
 
       context 'ssl' do
         context 'no file paths' do
-          let(:config_hash) { YAML.load(File.read('spec/fixtures/files/kafka_command_ssl.yml')) }
+          let(:config_hash) { described_class.parse_yaml('spec/fixtures/files/kafka_command_ssl.yml') }
 
           it 'returns true' do
             expect(subject.valid?).to eq(true)
@@ -22,7 +22,7 @@ RSpec.describe KafkaCommand::Configuration do
         end
 
         context 'file paths' do
-          let(:config_hash) { YAML.load(File.read('spec/fixtures/files/kafka_command_ssl_file_paths.yml')) }
+          let(:config_hash) { described_class.parse_yaml('spec/fixtures/files/kafka_command_ssl_file_paths.yml') }
 
           it 'returns true' do
             expect(subject.valid?).to eq(true)
@@ -32,7 +32,7 @@ RSpec.describe KafkaCommand::Configuration do
       end
 
       context 'sasl' do
-        let(:config_hash) { YAML.load(File.read('spec/fixtures/files/kafka_command_sasl.yml')) }
+        let(:config_hash) { described_class.parse_yaml('spec/fixtures/files/kafka_command_sasl.yml') }
 
         it 'returns true' do
           expect(subject.valid?).to eq(true)

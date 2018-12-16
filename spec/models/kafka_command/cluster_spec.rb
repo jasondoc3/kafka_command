@@ -10,13 +10,15 @@ RSpec.describe KafkaCommand::Cluster do
   after { delete_topic(topic_name) if topic_exists?(topic_name) }
 
   describe '#new' do
-    let(:brokers) { ['localhost:9092'] }
+    let(:brokers) { ENV['SEED_BROKERS'].split(',') }
 
     context 'plaintext' do
       it 'creates a kafka client with brokers and client id' do
         expect(KafkaCommand::Client).to receive(:new).with(
-          brokers: brokers,
-          client_id: 'test_cluster'
+          hash_including(
+            brokers: brokers,
+            client_id: 'test_cluster'
+          )
         ).at_least(:once)
 
         cluster

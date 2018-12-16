@@ -49,6 +49,14 @@ module KafkaCommand
       errors.none?
     end
 
+    def self.parse_yaml(file_path)
+      YAML.load(ERB.new(File.read(file_path)).result(binding))
+    end
+
+    def load!(file_path)
+      KafkaCommand.config = parse_yaml(file_path)
+    end
+
     private
 
       def validate!
