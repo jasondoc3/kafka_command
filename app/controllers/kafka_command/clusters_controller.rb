@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_dependency 'kafka_command/application_controller'
 
 module KafkaCommand
@@ -31,14 +33,14 @@ module KafkaCommand
     end
 
     private
-    # leave for config validation
+      # leave for config validation
 
-    def cluster_params
-      params.permit(*cluster_params_keys)
-    end
+      def cluster_params
+        params.permit(*cluster_params_keys)
+      end
 
-    def cluster_params_keys
-      [:name, :description, :version]
-    end
+      def cluster_params_keys
+        [:name, :description, :version]
+      end
   end
 end

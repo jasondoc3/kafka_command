@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'app/models/kafka_command/broker'
 require 'app/models/kafka_command/cluster'
 require 'app/models/kafka_command/topic'
@@ -91,7 +93,7 @@ RSpec.describe KafkaCommand::Topic do
     end
 
     context 'retention ms' do
-      describe 'greater than 0'do
+      describe 'greater than 0' do
         let(:retention_ms) { 102400000 }
 
         it 'works' do
@@ -120,7 +122,7 @@ RSpec.describe KafkaCommand::Topic do
     end
 
     context 'retention bytes' do
-      describe 'greater than 0'do
+      describe 'greater than 0' do
         let(:retention_bytes) { 102400000 }
 
         it 'works' do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KafkaCommand
   class Topic
     attr_reader :name,
@@ -10,7 +12,7 @@ module KafkaCommand
     alias_method :id, :name
 
     CLUSTER_API_TIMEOUT = 10
-    CONSUMER_OFFSET_TOPIC = '__consumer_offsets'.freeze
+    CONSUMER_OFFSET_TOPIC = '__consumer_offsets'
     DEFAULT_MAX_MESSAGE_BYTES = 1000012
     DEFAULT_RETENTION_MS = 604800000
     DEFAULT_RETENTION_BYTES = -1
@@ -123,14 +125,14 @@ module KafkaCommand
 
     private
 
-    def describe
-      @cluster.describe_topic(@name, TOPIC_CONFIGS)
-    end
+      def describe
+        @cluster.describe_topic(@name, TOPIC_CONFIGS)
+      end
 
-    def initialize_from_metadata
-      @name               = @topic_metadata.topic_name
-      @partitions         = @topic_metadata.partitions.map { |pm| Partition.new(pm, self) }
-      @replication_factor = @partitions.map(&:isr).map(&:length).max
-    end
+      def initialize_from_metadata
+        @name               = @topic_metadata.topic_name
+        @partitions         = @topic_metadata.partitions.map { |pm| Partition.new(pm, self) }
+        @replication_factor = @partitions.map(&:isr).map(&:length).max
+      end
   end
 end

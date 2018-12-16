@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Clusters Api', type: :request do
@@ -27,7 +29,7 @@ RSpec.describe 'Clusters Api', type: :request do
       end
 
       it 'filters by name' do
-        get "/clusters.json?name=unknown"
+        get '/clusters.json?name=unknown'
         expect(response.status).to eq(200)
         expect(json['data']).to be_an_instance_of(Array)
         expect(json['data']).to be_empty
@@ -48,7 +50,7 @@ RSpec.describe 'Clusters Api', type: :request do
 
     context 'cluster does not exist' do
       it 'returns 404' do
-        get "/clusters/doesnotexist.json"
+        get '/clusters/doesnotexist.json'
         expect(response.status).to eq(404)
       end
     end

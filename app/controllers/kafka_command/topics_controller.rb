@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_dependency 'kafka_command/application_controller'
 
 module KafkaCommand
@@ -75,7 +77,7 @@ module KafkaCommand
       cluster = Cluster.find(params[:cluster_id])
       @topic = cluster.topics.find { |t| t.name == params[:id] }
 
-      render_error('Topic not found', status: 404) and return if @topic.nil?
+      render_error('Topic not found', status: 404) && (return) if @topic.nil?
       if params[:num_partitions]
         @topic.set_partitions!(params[:num_partitions].to_i) unless params[:num_partitions].to_i == @topic.partitions.count
       end
@@ -116,60 +118,60 @@ module KafkaCommand
 
     private
 
-    def build_config
-      {}.tap do |config|
-        config['max.message.bytes'] = params[:max_message_bytes] if params[:max_message_bytes]
-        config['retention.ms']      = params[:retention_ms]      if params[:retention_ms]
-        config['retention.bytes']   = params[:retention_bytes]   if params[:retention_bytes]
+      def build_config
+        {}.tap do |config|
+          config['max.message.bytes'] = params[:max_message_bytes] if params[:max_message_bytes]
+          config['retention.ms']      = params[:retention_ms]      if params[:retention_ms]
+          config['retention.bytes']   = params[:retention_bytes]   if params[:retention_bytes]
+        end
       end
-    end
 
-    def invalid_partitions
-      error_msg = 'Num partitions must be > 0 or > current number of partitions'
+      def invalid_partitions
+        error_msg = 'Num partitions must be > 0 or > current number of partitions'
 
-      render_error(
-        error_msg,
-        status: 422,
-        flash: { error: error_msg }
-      )
-    end
+        render_error(
+          error_msg,
+          status: 422,
+          flash: { error: error_msg }
+        )
+      end
 
-    def invalid_replication_factor
-      error_msg = 'Replication factor must be > 0 and < total number of brokers'
+      def invalid_replication_factor
+        error_msg = 'Replication factor must be > 0 and < total number of brokers'
 
-      render_error(
-        error_msg,
-        status: 422,
-        flash: { error: error_msg }
-      )
-    end
+        render_error(
+          error_msg,
+          status: 422,
+          flash: { error: error_msg }
+        )
+      end
 
-    def invalid_topic_name
-      error_msg = 'Topic must have a name'
-      render_error(
-        error_msg,
-        status: 422,
-        flash: { error: error_msg }
-      )
-    end
+      def invalid_topic_name
+        error_msg = 'Topic must have a name'
+        render_error(
+          error_msg,
+          status: 422,
+          flash: { error: error_msg }
+        )
+      end
 
-    def topic_already_exists
-      error_msg = 'Topic already exists'
-      render_error(
-        error_msg,
-        status: 422,
-        flash: { error: error_msg }
-      )
-    end
+      def topic_already_exists
+        error_msg = 'Topic already exists'
+        render_error(
+          error_msg,
+          status: 422,
+          flash: { error: error_msg }
+        )
+      end
 
-    def unknown_error
-      error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
+      def unknown_error
+        error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
 
-      render_error(
-        error_msg,
-        status: 422,
-        flash: { error: error_msg }
-      )
-    end
+        render_error(
+          error_msg,
+          status: 422,
+          flash: { error: error_msg }
+        )
+      end
   end
 end

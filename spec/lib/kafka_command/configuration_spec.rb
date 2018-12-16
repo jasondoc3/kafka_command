@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe KafkaCommand::Configuration do
   subject { described_class.new(config_hash) }
 

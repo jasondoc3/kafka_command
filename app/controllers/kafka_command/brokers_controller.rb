@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require_dependency 'kafka_command/application_controller'
 
 module KafkaCommand
   class BrokersController < ApplicationController
-
     # GET /clusters/:cluster_id/brokers
     def index
       @cluster = Cluster.find(params[:cluster_id])

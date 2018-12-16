@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KafkaCommand
   module ApplicationHelper
     def format_flash_errors
@@ -12,11 +14,11 @@ module KafkaCommand
     end
 
     def topic_path(topic)
-      "#{cluster_path(@cluster)}/topics/#{URI.escape(topic.name)}"
+      "#{cluster_path(@cluster)}/topics/#{CGI.escape(topic.name)}"
     end
 
     def consumer_groups_path(group)
-      "#{cluster_path(@cluster)}/consumer_groups/#{URI.escape(group.group_id)}"
+      "#{cluster_path(@cluster)}/consumer_groups/#{CGI.escape(group.group_id)}"
     end
 
     def trim_name(name)

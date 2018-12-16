@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Consumer Groups Api', type: :request do
@@ -46,7 +48,6 @@ RSpec.describe 'Consumer Groups Api', type: :request do
 
   describe 'listing all consumer groups' do
     describe 'dormant' do
-
       before do
         run_consumer_group(topic_name, group_id_1)
         run_consumer_group(topic_name, group_id_2)
@@ -78,7 +79,7 @@ RSpec.describe 'Consumer Groups Api', type: :request do
       end
     end
 
-    describe 'running 'do
+    describe 'running ' do
       let(:expected_json) do
         {
           group_id: group_id_1,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'app/models/kafka_command/client'
 require 'app/models/kafka_command/broker'
 
@@ -245,7 +247,7 @@ RSpec.describe KafkaCommand::Client do
         subject.resolve_offset(topic_name, partition_id, :latest)
       end
 
-      context 'retrieving offsets 'do
+      context 'retrieving offsets ' do
         before { create_topic(topic_name) }
 
         it 'returns the offset' do
@@ -268,7 +270,7 @@ RSpec.describe KafkaCommand::Client do
         subject.resolve_offsets(topic_name, partition_ids, :latest)
       end
 
-      context 'retrieving offsets 'do
+      context 'retrieving offsets ' do
         before { create_topic(topic_name, num_partitions: num_partitions) }
 
         it 'returns the offsets' do

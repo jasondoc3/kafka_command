@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'app/models/kafka_command/consumer_group_partition'
 
 RSpec.describe KafkaCommand::ConsumerGroupPartition do

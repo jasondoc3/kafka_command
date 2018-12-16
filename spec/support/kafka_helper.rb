@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fast_helper'
 require 'securerandom'
 require 'kafka'

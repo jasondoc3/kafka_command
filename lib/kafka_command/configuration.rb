@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KafkaCommand
   def self.config=(config_hash)
     @config ||= Configuration.new(config_hash)

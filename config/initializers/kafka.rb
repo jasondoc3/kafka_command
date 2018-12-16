@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'core_extensions/kafka/broker/attr_readers'
 require 'core_extensions/kafka/broker_pool/attr_readers'
 require 'core_extensions/kafka/client/attr_readers'

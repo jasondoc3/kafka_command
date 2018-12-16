@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 KafkaCommand::Engine.routes.draw do
   root 'clusters#index'
 

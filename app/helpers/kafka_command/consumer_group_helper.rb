@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KafkaCommand
   module ConsumerGroupHelper
     def status_color(group)

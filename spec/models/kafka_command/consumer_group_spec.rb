@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'app/models/kafka_command/cluster'
 require 'app/models/kafka_command/consumer_group'
 
@@ -140,7 +142,7 @@ RSpec.describe KafkaCommand::ConsumerGroup do
       before do
         deliver_message('test', topic: topic_name, partition: 0)
         deliver_message('test1', topic: topic_name,  partition: 1)
-        deliver_message('test2', topic: topic_name , partition: 2)
+        deliver_message('test2', topic: topic_name, partition: 2)
         run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
       end
 
@@ -194,7 +196,7 @@ RSpec.describe KafkaCommand::ConsumerGroup do
     before do
       deliver_message('test', topic: topic_name, partition: 0)
       deliver_message('test1', topic: topic_name,  partition: 1)
-      deliver_message('test2', topic: topic_name , partition: 2)
+      deliver_message('test2', topic: topic_name, partition: 2)
       run_consumer_group(topic_name, group_id, num_messages_to_consume: 3)
       2.times { deliver_message('test', topic: topic_name, partition: 0) }
       3.times { deliver_message('test1', topic: topic_name,  partition: 1) }

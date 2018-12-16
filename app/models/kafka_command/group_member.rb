@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module KafkaCommand
   class GroupMember
     attr_reader :member_id, :client_host, :client_id, :topic_assignment

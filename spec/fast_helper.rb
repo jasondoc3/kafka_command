@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 alias require_dependency require
 
 # This is called in some "non-rails" code

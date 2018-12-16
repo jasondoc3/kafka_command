@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 
 module KafkaCommand
@@ -51,7 +53,7 @@ module KafkaCommand
     end
 
     def refresh_brokers!
-     @brokers = initialize_brokers
+      @brokers = initialize_brokers
     end
 
     def fetch_metadata(topics: nil)
@@ -73,27 +75,27 @@ module KafkaCommand
 
     private
 
-    def initialize_brokers
-      cluster_info = @cluster.refresh_metadata!
+      def initialize_brokers
+        cluster_info = @cluster.refresh_metadata!
 
-      cluster_info.brokers.map do |broker|
-        connect_to_broker(
-          host: broker.host,
-          port: broker.port,
-          broker_id: broker.node_id
-        )
+        cluster_info.brokers.map do |broker|
+          connect_to_broker(
+            host: broker.host,
+            port: broker.port,
+            broker_id: broker.node_id
+          )
+        end
       end
-    end
 
-    def initialize_topics
-      # returns information about each topic
-      # i.e isr, leader, partitions
-      fetch_metadata.topics.map { |tm| Topic.new(tm, self) }
-    end
+      def initialize_topics
+        # returns information about each topic
+        # i.e isr, leader, partitions
+        fetch_metadata.topics.map { |tm| Topic.new(tm, self) }
+      end
 
-    def initialize_groups
-      group_ids = @cluster.list_groups
-      group_ids.map { |id| ConsumerGroup.new(id, self) }
-    end
+      def initialize_groups
+        group_ids = @cluster.list_groups
+        group_ids.map { |id| ConsumerGroup.new(id, self) }
+      end
   end
 end
