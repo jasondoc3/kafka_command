@@ -33,15 +33,17 @@ module KafkaHelpers
   end
 
   def kafka_client
-    Kafka.new(seed_brokers: ENV['SEED_BROKERS'].split(','))
+    Kafka.new(ENV['SEED_BROKERS'].split(','))
   end
 
   def create_topic(topic_name, **kwargs)
     kafka_client.create_topic(topic_name, **kwargs)
+    sleep_if_necessary
   end
 
   def delete_topic(topic_name)
     kafka_client.delete_topic(topic_name)
+    sleep_if_necessary
   end
 
   def list_topic_names
@@ -58,6 +60,7 @@ module KafkaHelpers
 
   def create_partitions_for(topic_name, **kwargs)
     kafka_client.create_partitions_for(topic_name, **kwargs)
+    sleep_if_necessary
   end
 
   def topic_exists?(topic_name)
@@ -77,6 +80,11 @@ module KafkaHelpers
       message_counter += 1
       consumer.stop if message_counter >= num_messages_to_consume
     end
+  end
+
+  # Sleep if more than one broker is in the cluster to fix flaky tests
+  def sleep_if_necessary
+    sleep(0.5) if ENV['SEED_BROKERS'].split(',').count > 1
   end
 end
 

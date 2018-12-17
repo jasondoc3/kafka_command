@@ -48,6 +48,8 @@ RSpec.describe KafkaCommand::Topic do
     describe 'num_partitions > current num_partitions' do
       it 'increases partitions' do
         topic.set_partitions!(num_partitions + 1)
+        sleep_if_necessary
+        topic.refresh!
         expect(topic.partitions.count).to eq(num_partitions + 1)
         expect(partitions_for(topic_name)).to eq(num_partitions + 1)
       end

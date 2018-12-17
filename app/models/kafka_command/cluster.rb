@@ -51,8 +51,13 @@ module KafkaCommand
 
     def create_topic(name, **kwargs)
       client.create_topic(name, **kwargs)
-      client.refresh_topics!
-      topics.find { |t| t.name == name }
+
+      # Give the cluster time to know about the topic
+      3.times do
+        client.refresh_topics!
+        topic = topics.find { |t| t.name == name }
+        return topic if topic
+      end
     end
 
     def to_human
