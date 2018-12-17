@@ -66,7 +66,12 @@ module KafkaCommand
     end
 
     def offset_for(partition)
+      tries = 0
       @client.resolve_offset(@name, partition.partition_id, :latest)
+    rescue Kafka::UnknownTopicOrPartition
+      raise if tries >= 3
+      tries += 1
+      retry
     end
 
     def offsets(partition_ids = nil)

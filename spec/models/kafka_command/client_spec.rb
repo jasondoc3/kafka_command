@@ -230,6 +230,7 @@ RSpec.describe KafkaCommand::Client do
         it 'changes the number of partitions' do
           expect(partitions_for(topic_name)).to eq(1)
           subject.create_partitions_for(topic_name, **create_partitions_kwargs)
+          sleep_if_necessary # For flaky spec
           expect(partitions_for(topic_name)).to eq(5)
         end
       end
