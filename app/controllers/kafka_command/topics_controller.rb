@@ -12,6 +12,7 @@ module KafkaCommand
     rescue_from Kafka::InvalidRequest, with: :unknown_error
     rescue_from Kafka::InvalidConfig, with: :unknown_error
     rescue_from Kafka::TopicAuthorizationFailed, with: :kafka_authorization_error
+    rescue_from KafkaCommand::Topic::DeletionError, with: :topic_deletion_error
 
     # GET /clusters/:cluster_id/topics
     def index
@@ -172,6 +173,14 @@ module KafkaCommand
           error_msg,
           status: 422,
           flash: { error: error_msg }
+        )
+      end
+
+      def topic_deletion_error(exception)
+        render_error(
+          exception.message,
+          status: 422,
+          flash: { error: exception.message }
         )
       end
   end

@@ -30,6 +30,16 @@ RSpec.describe KafkaCommand::Topic do
       topic.destroy
       expect(topic_exists?(topic_name)).to eq(false)
     end
+
+    context 'consumer offsets topic' do
+      before do
+        allow(topic).to receive(:name).and_return(described_class::CONSUMER_OFFSET_TOPIC)
+      end
+
+      it 'raises' do
+        expect { topic.destroy }.to raise_error(described_class::DeletionError)
+      end
+    end
   end
 
   describe '#set_partitions!' do

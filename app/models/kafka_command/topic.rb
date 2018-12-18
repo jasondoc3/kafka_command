@@ -22,6 +22,8 @@ module KafkaCommand
       retention.ms
     ].freeze
 
+    class DeletionError < StandardError; end
+
     def initialize(topic_metadata, client)
       @client         = client
       @topic_metadata = topic_metadata
@@ -33,6 +35,10 @@ module KafkaCommand
     end
 
     def destroy
+      if name == CONSUMER_OFFSET_TOPIC
+        raise DeletionError, "Cannot delete the #{CONSUMER_OFFSET_TOPIC} topic"
+      end
+
       @client.delete_topic(@name, timeout: API_TIMEOUT)
     end
 

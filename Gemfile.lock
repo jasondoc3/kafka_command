@@ -3,6 +3,7 @@ PATH
   specs:
     kafka_command (0.0.1)
       rails (>= 4)
+      rails-ujs
       ruby-kafka (~> 0.6.8)
 
 GEM
@@ -115,6 +116,8 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rails-ujs (0.1.0)
+      railties (>= 3.1)
     railties (5.2.1)
       actionpack (= 5.2.1)
       activesupport (= 5.2.1)

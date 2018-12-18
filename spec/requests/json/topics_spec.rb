@@ -246,6 +246,17 @@ RSpec.describe 'Topics API', type: :request do
           expect(response.status).to eq(204)
         end.to change { cluster.client.refresh_topics!; cluster.topics.count }.by(-1)
       end
+
+      context 'consumer offsets topic' do
+        before do
+          allow_any_instance_of(KafkaCommand::Topic).to receive(:name).and_return(KafkaCommand::Topic::CONSUMER_OFFSET_TOPIC)
+        end
+
+        it 'returns 422' do
+          delete "#{uri_base}/#{cluster.id}/topics/#{KafkaCommand::Topic::CONSUMER_OFFSET_TOPIC}.json"
+          expect(response.status).to eq(422)
+        end
+      end
     end
 
     context 'topic does not exist' do
