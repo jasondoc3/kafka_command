@@ -3,29 +3,6 @@ A simple Kafka management UI designed for use with Rails.
 
 [![CircleCI](https://circleci.com/gh/jasondoc3/kafka_command.svg?style=svg&circle-token=b30f42578f9568fefa4f28f6d8ecb590feed4ac2)](https://circleci.com/gh/jasondoc3/kafka_command)
 
-KafkaCommand can manage multiple clusters.
-
-It provides the ability to:
-
-* List topics
-* Show topic metadata
-  * Replication factor
-  * Partitions
-  * Offsets
-* List consumer groups
-* Show consumer group metadata
-  * Offsets
-  * Members
-  * Lag
-* List brokers
-* Create Topics
-* Alter topics
-  * Add partitions (Not supported on Kafka 0.11)
-  * Edit basic topic configurations
-* Delete topics
-
-This project is in an early state, and more functionality is planned for future releases.
-
 ## Installation
 
 Add this line to your application's Gemfile
@@ -53,6 +30,30 @@ Rails.application.routes.draw do
   mount KafkaCommand::Engine, at: '/kafka'
 end
 ```
+
+KafkaCommand can manage multiple clusters.
+
+It provides the ability to:
+
+* List topics
+* Show topic metadata
+  * Replication factor
+  * Partitions
+  * Offsets
+* List consumer groups
+* Show consumer group metadata
+  * Offsets
+  * Members
+  * Lag
+* List brokers
+* Create Topics
+* Alter topics
+  * Add partitions (Not supported on Kafka 0.11)
+  * Edit basic topic configurations
+* Delete topics
+
+This project is in an early state, and more functionality is planned for future releases.
+
 
 ## Configuration
 Add `kafka_command.yml` to your application's config directory. Kafka command can be configured with multiple Rails environments.
