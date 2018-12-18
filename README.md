@@ -66,8 +66,8 @@ development: # Rails environment
       version: 1.0
       seed_brokers:
         - localhost:9092
-    my_other_cluster: 
-      description: 'Development Cluster
+    my_other_cluster:
+      description: 'Development Cluster'
       version: 2.0
       seed_brokers:
         - localhost:9092
@@ -121,7 +121,7 @@ SEED_BROKERS=localhost:9092 bundle exec rspec
 ### Contributing
 Everyone is encouraged to help improve this project. Here are a few ways you can help:
 
-Report bugs
-Fix bugs and submit pull requests
-Write, clarify, or fix documentation
-Suggest or add new features
+- Report bugs
+- Fix bugs and submit pull requests
+- Write, clarify, or fix documentation
+- Suggest or add new features
