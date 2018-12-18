@@ -1,5 +1,7 @@
 # Kafka Command
-A simple Kafka management UI designed specifically for Rails.
+A simple Kafka management UI designed for use with Rails.
+
+[![CircleCI](https://circleci.com/gh/jasondoc3/kafka_command.svg?style=svg&circle-token=b30f42578f9568fefa4f28f6d8ecb590feed4ac2)](https://circleci.com/gh/jasondoc3/kafka_command)
 
 ## Installation
 
