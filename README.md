@@ -21,6 +21,14 @@ Designed for Rails 5. Should work with Rails 4.
 
 Fully compatible with Kafka versions `1.0`, `1.1`, `2.0`, and `2.1`. Limited functionality for `0.11`.
 
+## Screenshots
+
+### Cluster View
+![cluster](/app/assets/images/kafka_command/cluster_view.png)
+
+### Topics View
+![topic](/app/assets/images/kafka_command/topic_view.png)
+
 ## Usage
 
 Mount KafkaCommand inside your application's `config/routes.rb` file. Make sure it is configured.
@@ -53,7 +61,6 @@ It provides the ability to:
 * Delete topics
 
 This project is in an early state, and more functionality is planned for future releases.
-
 
 ## Configuration
 Add `kafka_command.yml` to your application's config directory. Kafka command can be configured with multiple Rails environments.
