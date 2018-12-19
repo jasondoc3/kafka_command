@@ -21,6 +21,10 @@ Designed for Rails 5. Should work with Rails 4.
 
 Fully compatible with Kafka versions `1.0`, `1.1`, `2.0`, and `2.1`. Limited functionality for `0.11`.
 
+### ruby-kafka
+
+Requires `ruby-kafka` version `> 0.6.3`
+
 ## Usage
 
 Mount KafkaCommand inside your application's `config/routes.rb` file. Make sure it is configured.
