@@ -22,6 +22,6 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*']
 
   s.add_dependency 'rails', '>= 4'
-  s.add_dependency 'ruby-kafka', '~> 0.6.8'
+  s.add_dependency 'ruby-kafka', '> 0.6.3'
   s.add_dependency 'rails-ujs'
 end
