@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
   s.version     = KafkaCommand::VERSION
   s.authors     = ['jasondoc3']
   s.email       = ['jasondoc3@gmail.com']
-  s.homepage    = ''
-  s.summary     = 'Summary of Kafka Command.'
-  s.description = 'Description of Kafka Command.'
+  s.homepage    = 'https://github.com/jasondoc3/kafka_command'
+  s.summary     = 'A simple Kafka management UI.'
+  s.description = 'A simple Kafka management UI.'
   s.license     = 'MIT'
 
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
