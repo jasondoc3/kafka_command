@@ -31,7 +31,7 @@ module KafkaCommand
       end
 
       def serialize_json(data, **kwargs)
-        if data.is_a?(ActiveRecord::Relation) || data.is_a?(Array)
+        if data.is_a?(Array)
           return {
             data: data.map { |d| d.as_json(**kwargs) }
           }
