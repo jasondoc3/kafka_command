@@ -30,6 +30,8 @@
 # ignore spec examples
 /spec/examples.txt
 
+Gemfile.lock
+
 .env.local
 .env.test.local
 

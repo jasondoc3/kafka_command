@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kafka_command (0.0.1)
+    kafka_command (0.0.2)
       rails (>= 4)
       rails-ujs
       ruby-kafka (> 0.6.3)
