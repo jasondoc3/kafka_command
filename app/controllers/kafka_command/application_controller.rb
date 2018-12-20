@@ -8,39 +8,26 @@ module KafkaCommand
     rescue_from Kafka::ClusterAuthorizationFailed, with: :kafka_authorization_error
     rescue_from UnsupportedApiError, with: :unsupported_api_error
 
-    before_action do
-      unless KafkaCommand.config.valid?
-        flash[:error] = KafkaCommand.config.errors.join("\n")
-        render 'kafka_command/configuration_error'
-      end
-    end
+    before_action :check_config
 
     protected
 
       def unsupported_api_error(exception)
-        render_error(exception.message, status: 422, flash: { error: exception.message })
+        render_error(exception.message, status: 422)
       end
 
       def record_not_found
         render_error('Not Found', status: :not_found)
       end
 
+      # Handle this error separately
       def kafka_connection_error
-        error_msg = 'Could not connect to Kafka with the specified brokers'
-        render_error(
-          error_msg,
-          status: 500,
-          flash: { error: error_msg }
-        )
+        flash[:error] = 'Could not connect to Kafka with the specified brokers'
+        render 'kafka_command/application/error', status: 500
       end
 
       def kafka_authorization_error
-        error_msg = 'You are not authorized to perform that action'
-        render_error(
-          error_msg,
-          status: 401,
-          flash: { error: error_msg }
-        )
+        render_error('You are not authorized to perform that action', status: 401)
       end
 
       def serialize_json(data, **kwargs)
@@ -69,18 +56,16 @@ module KafkaCommand
         end
       end
 
-      def render_error(data, status: :unprocessible_entity, flash: {})
+      def render_error(data, status: :unprocessible_entity)
         respond_to do |format|
           format.html do
-            redirect_back(fallback_location: root_path, flash: flash) && (return) if flash.present?
-
-            case status
-            when :not_found, 404
-              render json: '404 Not Found', status: status, layout: false
+            if Rails::VERSION::MAJOR >= 5
+              redirect_back(fallback_location: error_path, flash: { error: data })
             else
-              render json: '500 Internal Server Error', status: status, layout: false
+              redirect_to :back, flash: { error: data }
             end
           end
+
           format.json { render_json_errors(data, status: status) }
         end
       end
@@ -91,6 +76,19 @@ module KafkaCommand
 
       def render_json_errors(errors, status: :unprocessible_entity)
         render json: errors, status: status
+      end
+
+      def check_config
+        if KafkaCommand.config.blank?
+          flash[:error] = 'Kafka command is not configured'
+          render 'kafka_command/configuration_error'
+          return
+        end
+
+        unless KafkaCommand.config.valid?
+          flash[:error] = KafkaCommand.config.errors.join("\n")
+          render 'kafka_command/configuration_error'
+        end
       end
   end
 end

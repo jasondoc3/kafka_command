@@ -129,59 +129,30 @@ module KafkaCommand
       end
 
       def invalid_partitions
-        error_msg = 'Num partitions must be > 0 or > current number of partitions'
-
-        render_error(
-          error_msg,
-          status: 422,
-          flash: { error: error_msg }
-        )
+        render_error('Num partitions must be > 0 or > current number of partitions', status: 422)
       end
 
       def invalid_replication_factor
-        error_msg = 'Replication factor must be > 0 and < total number of brokers'
-
-        render_error(
-          error_msg,
-          status: 422,
-          flash: { error: error_msg }
-        )
+        render_error('Replication factor must be > 0 and < total number of brokers', status: 422)
       end
 
       def invalid_topic_name
-        error_msg = 'Topic must have a name'
-        render_error(
-          error_msg,
-          status: 422,
-          flash: { error: error_msg }
-        )
+        render_error('Topic must have a name', status: 422)
       end
 
       def topic_already_exists
-        error_msg = 'Topic already exists'
-        render_error(
-          error_msg,
-          status: 422,
-          flash: { error: error_msg }
-        )
+        render_error('Topic already exists', status: 422)
       end
 
       def unknown_error
-        error_msg = 'An unknown error occurred with the request to Kafka. Check any request parameters.'
-
         render_error(
-          error_msg,
-          status: 422,
-          flash: { error: error_msg }
+          'An unknown error occurred with the request to Kafka. Check any request parameters.',
+          status: 422
         )
       end
 
       def topic_deletion_error(exception)
-        render_error(
-          exception.message,
-          status: 422,
-          flash: { error: exception.message }
-        )
+        render_error(exception.message, status: 422)
       end
   end
 end

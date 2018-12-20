@@ -2,6 +2,7 @@
 
 KafkaCommand::Engine.routes.draw do
   root 'clusters#index'
+  get '/error', to: 'application#error'
 
   resources :clusters, only: [:index, :show] do
     resources :brokers, only: [:index, :show]

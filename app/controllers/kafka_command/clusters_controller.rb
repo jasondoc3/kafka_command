@@ -17,8 +17,7 @@ module KafkaCommand
         end
       end
 
-      redirection_path = new_cluster_path if Cluster.none?
-      render_success(@clusters, redirection_path: redirection_path, flash: flash.to_hash)
+      render_success(@clusters, flash: flash.to_hash)
     end
 
     # GET /clusters/:id

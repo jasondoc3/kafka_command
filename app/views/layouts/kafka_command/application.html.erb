@@ -16,7 +16,9 @@
       <div class="container">
         <div class="navbar-brand kafka-logo">
           <p class="navbar-item is-paddingless">
-            <%= image_tag('kafka_command/kafka.png', alt: '') %>
+            <%= link_to root_path do %>
+              <%= image_tag('kafka_command/kafka.png', alt: '') %>
+            <% end %>
           </p>
         </div>
         <div class="navbar-start">
